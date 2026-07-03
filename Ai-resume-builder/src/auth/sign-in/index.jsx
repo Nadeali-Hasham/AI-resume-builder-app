@@ -1,9 +1,12 @@
 'use client'
+import { SignIn } from "@clerk/clerk-react"
 
-const SignIn = () => {
+const SignInPage = () => {
   return (
-    <div>Sign In</div>
+    <div className="flex items-center justify-center min-h-screen">
+      <SignIn />
+    </div>
   )
 }
 
-export default SignIn
+export default SignInPage

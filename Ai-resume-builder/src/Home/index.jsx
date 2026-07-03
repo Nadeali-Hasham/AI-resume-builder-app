@@ -1,8 +1,13 @@
 'use client'
 
+import {  UserButton } from "@clerk/clerk-react"
+
 const Homepage = () => {
   return (
-    <div>Homepage</div>
+    <div>
+      <UserButton />
+      
+    </div>
   )
 }
 
