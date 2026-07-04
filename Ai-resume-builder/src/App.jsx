@@ -2,6 +2,7 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import './App.css'
 import { useUser } from '@clerk/clerk-react'
+import Header from './components/custom/header';
 
 function App() {
 
@@ -13,7 +14,8 @@ function App() {
 
   return (
     <>
-     <Outlet />
+      <Header />
+      <Outlet />
     </>
   )
 }
