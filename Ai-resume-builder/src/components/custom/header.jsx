@@ -4,7 +4,7 @@ import { UserButton, useUser } from "@clerk/clerk-react";
 
 const Header = () => {
 
-    const { user, isSignedIn } = useUser();
+    const { isSignedIn } = useUser();
   return (
     <div className="p-3 px-5 justify-between flex items-center border-b border-b-slate-300 mb-6 shadow-md">
       <img src="/logo.svg" alt="AI Resume Builder Logo" height={64} width={64} />
