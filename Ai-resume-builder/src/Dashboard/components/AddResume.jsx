@@ -41,9 +41,9 @@ const AddResume = () => {
 
         try {
             const response = await GlobalApi.createNewResume(data);
-            console.log("Resume created:", response.data);
+            console.log("Resume created:", response.data.data.documentId);
             setLoading(false);
-            navigate(`/dashboard/resume/${uuid}/edit`);
+            navigate(`/dashboard/resume/${response.data.data.documentId}/edit`);
             setOpenDialog(false);
             setResumeTitle(""); // Reset form
             // Optional: Refresh resumes list
