@@ -5,7 +5,7 @@ const EditResume = () => {
     const params = useParams();
     useEffect(() => {
         console.log("Resume ID:", params.resumeId);
-    },[]);
+    },[params.resumeId]);
 
   return (
     <div>
