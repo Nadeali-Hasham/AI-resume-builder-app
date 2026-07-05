@@ -13,12 +13,14 @@ import { Input } from "@/components/ui/input";
 import { v4 as uuidv4 } from 'uuid'
 import GlobalApi from "../../../Service/GlobalApi";
 import { useUser } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 
 const AddResume = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [resumeTitle, setResumeTitle] = useState("");
     const { user } = useUser();
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const onCreateResume = async () => {
         if (!resumeTitle) {
@@ -41,6 +43,7 @@ const AddResume = () => {
             const response = await GlobalApi.createNewResume(data);
             console.log("Resume created:", response.data);
             setLoading(false);
+            navigate(`/dashboard/resume/${uuid}/edit`);
             setOpenDialog(false);
             setResumeTitle(""); // Reset form
             // Optional: Refresh resumes list
