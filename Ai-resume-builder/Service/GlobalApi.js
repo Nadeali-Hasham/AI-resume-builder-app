@@ -21,7 +21,11 @@ export const getUserResumes = (userEmail) => axiosClient.get(`/user-resumes?filt
 //         }
 //     });
 // };
+
+export const updateResumeDetail = (id, data) => axiosClient.put(`/user-resumes/${id}`, data);
+
 export default {
     createNewResume,
-    getUserResumes
+    getUserResumes,
+    updateResumeDetail
 };

@@ -6,7 +6,7 @@ const ResumeCardsItem = ({ resume }) => {
 
   return (
     <div>
-    <Link to={`/dashboard/resume/${resumeData.resumeId}/edit`}>
+    <Link to={`/dashboard/resume/${resumeData.documentId}/edit`}>
         <div className="bg-gray-50 border p-14 bg-secondary flex items-center justify-center h-72 border-primary rounded-lg hover:scale-105 transition-all duration-200 hover:shadow-md shadow-primary">
             <Notebook />
         </div>
