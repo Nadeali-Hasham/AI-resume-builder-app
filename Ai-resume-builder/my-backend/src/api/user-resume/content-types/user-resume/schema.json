@@ -41,6 +41,9 @@
     },
     "email": {
       "type": "string"
+    },
+    "summary": {
+      "type": "text"
     }
   }
 }
