@@ -52,27 +52,27 @@ const PersonalDetail = ({enableNextButton}) => {
                 <div className="grid grid-cols-2 gap-4 mt-4">
                     <div className="flex flex-col gap-2">
                         <label htmlFor="firstName" className="text-sm font-medium">First Name</label>
-                        <Input name="firstName" defaultValue={resumeInfo.firstName} required onChange={handleInputChange}/>
+                        <Input name="firstName" defaultValue={resumeInfo?.firstName} required onChange={handleInputChange}/>
                     </div>
                     <div className="flex flex-col gap-2">
                         <label htmlFor="lastName" className="text-sm font-medium">Last Name</label>
-                        <Input name="lastName" defaultValue={resumeInfo.lastName} required onChange={handleInputChange}/>
+                        <Input name="lastName" defaultValue={resumeInfo?.lastName} required onChange={handleInputChange}/>
                     </div>
                     <div className="flex flex-col gap-2 col-span-2">
                         <label htmlFor="jobTitle" className="text-sm font-medium">Job Title</label>
-                        <Input name="jobTitle" defaultValue={resumeInfo.jobTitle} required onChange={handleInputChange}/>
+                        <Input name="jobTitle" defaultValue={resumeInfo?.jobTitle} required onChange={handleInputChange}/>
                     </div>
                     <div className="flex flex-col gap-2 col-span-2">
                         <label htmlFor="address" className="text-sm font-medium">Address</label>
-                        <Input name="address" defaultValue={resumeInfo.address} required onChange={handleInputChange}/>
+                        <Input name="address" defaultValue={resumeInfo?.address} required onChange={handleInputChange}/>
                     </div>
                     <div className="flex flex-col gap-2">
                         <label htmlFor="phone" className="text-sm font-medium">Phone</label>
-                        <Input name="phone" defaultValue={resumeInfo.phone} required onChange={handleInputChange}/>
+                        <Input name="phone" defaultValue={resumeInfo?.phone} required onChange={handleInputChange}/>
                     </div>
                     <div className="flex flex-col gap-2">
                         <label htmlFor="email" className="text-sm font-medium">Email</label>
-                        <Input name="email" defaultValue={resumeInfo.email} required onChange={handleInputChange}/>
+                        <Input name="email" defaultValue={resumeInfo?.email} required onChange={handleInputChange}/>
                     </div>
                     <div className="flex flex-col gap-2 col-span-2">
                         <Button 
