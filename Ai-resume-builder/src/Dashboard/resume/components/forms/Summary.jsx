@@ -6,17 +6,87 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import GlobalApi from "./../../../../../Service/GlobalApi";
+import { generateSummaryFromAI } from "./../../../../../Service/AiModal";
 
 const Summary = ({enableNextButton}) => {
     const params = useParams();
     const {resumeInfo, setResumeInfo} = useContext(ResumeInfoContext);
     const [summary, setSummary] = useState(resumeInfo?.summary || "");
     const [loading, setLoading] = useState(false);
+    const [aiLoading, setAiLoading] = useState(false); // ✅ AI loading state
 
     // ✅ ResumeInfo update karo jab summary change ho
     useEffect(() => {
         setResumeInfo((prev) => ({ ...prev, summary: summary }));
-    }, [summary]);
+    }, [summary, setResumeInfo]);
+
+    // ✅ Save function (reusable)
+    const saveSummary = async (summaryText) => {
+        setLoading(true);
+        
+        const data = {
+            data: {
+                summary: summaryText || summary
+            }
+        };
+
+        try {
+            const response = await GlobalApi.updateResumeDetail(params.resumeId, data);
+            console.log("Resume updated successfully:", response.data);
+            enableNextButton(true);
+            toast.success("Summary updated successfully");
+            return response;
+        } catch (error) {
+            console.error("Error updating resume:", error);
+            toast.error("Failed to update summary");
+            throw error;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // ✅ AI Summary Generate Function
+   const generateAISummary = async () => {
+    if (!resumeInfo?.jobTitle) {
+        toast.error("Please add your job title first");
+        return;
+    }
+
+    setAiLoading(true);
+    
+    try {
+        console.log("Calling AI with jobTitle:", resumeInfo.jobTitle); // ✅ Debug
+        
+        const aiSummary = await generateSummaryFromAI(resumeInfo.jobTitle);
+        console.log("AI Summary received:", aiSummary); // ✅ Debug
+        
+        if (!aiSummary) {
+            throw new Error("No summary generated");
+        }
+        
+        setSummary(aiSummary);
+        setResumeInfo((prev) => ({ ...prev, summary: aiSummary }));
+        await saveSummary(aiSummary);
+        
+        toast.success("AI summary generated and saved!");
+    } catch (error) {
+        console.error("Error in generateAISummary:", error); // ✅ Full error
+        console.error("Error message:", error.message);
+        
+        // ✅ Specific error messages
+        if (error.message.includes("API key")) {
+            toast.error("Invalid API key. Please check your .env file");
+        } else if (error.message.includes("network")) {
+            toast.error("Network error. Please check your internet connection");
+        } else if (error.message.includes("quota")) {
+            toast.error("API quota exceeded. Please try again later");
+        } else {
+            toast.error("Failed to generate AI summary: " + error.message);
+        }
+    } finally {
+        setAiLoading(false);
+    }
+};
 
     const onSave = (e) => {
         e.preventDefault();
@@ -26,27 +96,7 @@ const Summary = ({enableNextButton}) => {
             return;
         }
 
-        setLoading(true);
-        
-        // ✅ Sahi data format (Strapi ke liye)
-        const data = {
-            data: {
-                summary: summary
-            }
-        };
-
-        GlobalApi.updateResumeDetail(params.resumeId, data)
-            .then((response) => {
-                console.log("Resume updated successfully:", response.data);
-                enableNextButton(true);
-                setLoading(false);
-                toast.success("Summary updated successfully");
-            })
-            .catch((error) => {
-                console.error("Error updating resume:", error);
-                setLoading(false);
-                toast.error("Failed to update summary");
-            });
+        saveSummary(summary);
     };
 
     return (
@@ -62,9 +112,15 @@ const Summary = ({enableNextButton}) => {
                         size="sm"
                         className="flex gap-2 bg-white text-black cursor-pointer"
                         type="button"
+                        onClick={generateAISummary} // ✅ AI function attached
+                        disabled={aiLoading}
                     >
-                        <Brain className="w-4 h-4" />
-                        Generate From AI
+                        {aiLoading ? (
+                            <LoaderCircle className="w-4 h-4 animate-spin" />
+                        ) : (
+                            <Brain className="w-4 h-4" />
+                        )}
+                        {aiLoading ? "Generating..." : "Generate From AI"}
                     </Button>
                 </div>
                 <Textarea
