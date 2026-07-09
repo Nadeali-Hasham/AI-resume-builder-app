@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ResumeInfoContext } from "@/context/ResumeInfoContext";
-import { Brain, LoaderCircle } from "lucide-react";
+import { Brain, LoaderCircle, Save } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -130,13 +130,23 @@ const Summary = ({enableNextButton}) => {
                     value={summary}
                     onChange={(e) => setSummary(e.target.value)}
                 />
-                <div className="flex flex-col gap-2 col-span-2">
+                <div className="flex flex-col gap-2 col-span-2 my-5">
                     <Button 
                         type="submit"
-                        className="mt-4 text-white bg-teal-500 cursor-pointer hover:bg-teal-600"
+                        className="flex items-center justify-center gap-2 w-full px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 shadow-md hover:shadow-lg transition-all duration-200 rounded-xl disabled:opacity-60 disabled:cursor-not-allowed"
                         disabled={loading}
                     >
-                        {loading ? <LoaderCircle className="animate-spin" /> : "Save"}
+                        {loading ? (
+                            <>
+                                <LoaderCircle className="w-4 h-4 animate-spin" />
+                                Saving...
+                            </>
+                        ) : (
+                            <>
+                                <Save className="w-4 h-4" />
+                                Save Changes
+                            </>
+                        )}
                     </Button>
                 </div>
             </form>
