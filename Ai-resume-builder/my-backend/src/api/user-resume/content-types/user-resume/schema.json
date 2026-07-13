@@ -44,6 +44,16 @@
     },
     "summary": {
       "type": "text"
+    },
+    "Experience": {
+      "type": "component",
+      "component": "experience.experience",
+      "repeatable": true
+    },
+    "Education": {
+      "type": "component",
+      "component": "education.education",
+      "repeatable": true
     }
   }
 }

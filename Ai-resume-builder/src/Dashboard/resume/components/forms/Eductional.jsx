@@ -1,98 +1,86 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { LoaderCircle, MinusIcon, PlusIcon, Save } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import RichTextEditor from "../RichTextEditor";
 import { ResumeInfoContext } from "@/context/ResumeInfoContext";
 import { useParams } from "react-router-dom";
 import GlobalApi from "./../../../../../Service/GlobalApi";
 import { toast } from "sonner";
 
 const formField = {
-    title: "",
-    companyName: "",
-    city: "",
-    state: "",
+    universityName: "",
+    degree: "",
+    major: "",
     startDate: "",
     endDate: "",
-    workSummary: ""
+    description: ""
 };
 
-function Experiences({ enableNextButton }) {
+function Education({ enableNextButton }) {
     const params = useParams();
     const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
-    const [experiences, setExperiences] = useState([]);
+    const [educationList, setEducationList] = useState([]);
     const [loading, setLoading] = useState(false);
 
     // ====== LOAD EXISTING DATA ======
     useEffect(() => {
-        if (resumeInfo?.experience && resumeInfo.experience.length > 0) {
-            setExperiences(resumeInfo.experience);
+        if (resumeInfo?.education && resumeInfo.education.length > 0) {
+            setEducationList(resumeInfo.education);
         } else {
-            setExperiences([{ ...formField }]);
+            setEducationList([{ ...formField }]);
         }
-    }, [resumeInfo?.experience]);
+    }, [resumeInfo?.education]);
 
     // ====== HANDLE INPUT CHANGE ======
-    const handleInputChange = (e, index, field) => {
-        const newExperiences = [...experiences];
-        newExperiences[index][field] = e.target.value;
-        setExperiences(newExperiences);
+    const handleChange = (e, index) => {
+        const newEducationList = [...educationList];
+        const { name, value } = e.target;
+        newEducationList[index][name] = value;
+        setEducationList(newEducationList);
         // ✅ Update resumeInfo bhi karo
         setResumeInfo({
             ...resumeInfo,
-            experience: newExperiences
+            education: newEducationList
         });
     };
 
-    // ====== HANDLE RICH TEXT EDITOR CHANGE ======
-    const handleRichTextEditor = (value, index, field) => {
-        const newExperiences = [...experiences];
-        newExperiences[index][field] = value;
-        setExperiences(newExperiences);
+    // ====== ADD EDUCATION ======
+    const addEducation = () => {
+        const newEducationList = [...educationList, { ...formField }];
+        setEducationList(newEducationList);
         // ✅ Update resumeInfo bhi karo
         setResumeInfo({
             ...resumeInfo,
-            experience: newExperiences
+            education: newEducationList
         });
     };
 
-    // ====== ADD EXPERIENCE ======
-    const addExperience = () => {
-        const newExperiences = [...experiences, { ...formField }];
-        setExperiences(newExperiences);
+    // ====== REMOVE SPECIFIC EDUCATION ======
+    const removeEducation = (indexToRemove) => {
+        if (educationList.length <= 1) return;
+        const newEducationList = educationList.filter((_, index) => index !== indexToRemove);
+        setEducationList(newEducationList);
         // ✅ Update resumeInfo bhi karo
         setResumeInfo({
             ...resumeInfo,
-            experience: newExperiences
+            education: newEducationList
         });
     };
 
-    // ====== REMOVE SPECIFIC EXPERIENCE ======
-    const removeExperience = (indexToRemove) => {
-        if (experiences.length <= 1) return;
-        const newExperiences = experiences.filter((_, index) => index !== indexToRemove);
-        setExperiences(newExperiences);
+    // ====== REMOVE LAST EDUCATION ======
+    const removeLastEducation = () => {
+        if (educationList.length <= 1) return;
+        const newEducationList = educationList.slice(0, -1);
+        setEducationList(newEducationList);
         // ✅ Update resumeInfo bhi karo
         setResumeInfo({
             ...resumeInfo,
-            experience: newExperiences
+            education: newEducationList
         });
     };
 
-    // ====== REMOVE LAST EXPERIENCE ======
-    const removeLastExperience = () => {
-        if (experiences.length <= 1) return;
-        const newExperiences = experiences.slice(0, -1);
-        setExperiences(newExperiences);
-        // ✅ Update resumeInfo bhi karo
-        setResumeInfo({
-            ...resumeInfo,
-            experience: newExperiences
-        });
-    };
-
-    // ====== SAVE EXPERIENCES ======
+    // ====== SAVE EDUCATION ======
     const onSave = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -100,114 +88,113 @@ function Experiences({ enableNextButton }) {
         try {
             const data = {
                 data: {
-                    Experience: experiences.map(({ id, currentlyWorking, ...rest }) => rest)
+                    Education: educationList.map(({ id, ...rest }) => rest)
                 }
             };
             
             await GlobalApi.updateResumeDetail(params.resumeId, data);
             
-            console.log("Experiences saved successfully");
+            console.log("Education saved successfully");
             setLoading(false);
             enableNextButton(true);
-            toast.success("Experiences updated successfully");
+            toast.success("Education updated successfully");
         } catch (error) {
-            console.error("Error saving experiences:", error);
+            console.error("Error saving education:", error);
             setLoading(false);
-            toast.error("Failed to save experiences");
+            toast.error("Failed to save education");
         }
     };
 
     return (
         <div className="p-6 shadow-lg rounded-xl border-t-4 border-t-teal-500 bg-white max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold mb-2 text-gray-800">Work Experience</h2>
-            <p className="text-gray-500 mb-6">Provide details about your work experience</p>
+            <h2 className="text-2xl font-bold mb-2 text-gray-800">Education</h2>
+            <p className="text-gray-500 mb-6">Add your qualification details.</p>
 
             <form onSubmit={onSave}>
                 <div className="space-y-4">
-                    {experiences.map((item, index) => (
+                    {educationList.map((item, index) => (
                         <div 
                             key={index} 
-                            className="border border-gray-200 p-5 rounded-xl bg-gray-50/50 hover:border-teal-200 transition-colors duration-200"
+                            className="border border-gray-200 p-5 rounded-xl bg-gray-50/50 hover:border-teal-200 transition-colors duration-200 mb-4"
                         >
                             {/* Header with Remove Button */}
                             <div className="flex items-center justify-between mb-3">
                                 <h3 className="text-sm font-semibold text-gray-700">
-                                    Experience #{index + 1}
+                                    Education #{index + 1}
                                 </h3>
-                                {experiences.length > 1 && (
+                                {educationList.length > 1 && (
                                     <Button
                                         type="button"
                                         variant="ghost"
                                         size="sm"
                                         className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 px-3"
-                                        onClick={() => removeExperience(index)}
+                                        onClick={() => removeEducation(index)}
                                     >
                                         <MinusIcon className="w-4 h-4" />
                                     </Button>
                                 )}
                             </div>
-                            
+
                             {/* Form Fields */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1.5">
-                                    <label className="text-sm font-medium text-gray-700">Position Title</label>
+                                <div className="space-y-1.5 md:col-span-2">
+                                    <label className="text-sm font-medium text-gray-700">University Name</label>
                                     <Input 
-                                        value={item.title || ""} 
-                                        onChange={(e) => handleInputChange(e, index, "title")} 
-                                        placeholder="e.g. Senior Developer"
+                                        name="universityName"
+                                        value={item.universityName || ""} 
+                                        onChange={(e) => handleChange(e, index)} 
+                                        placeholder="e.g. Stanford University"
                                         className="w-full"
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-sm font-medium text-gray-700">Company Name</label>
+                                    <label className="text-sm font-medium text-gray-700">Degree</label>
                                     <Input 
-                                        value={item.companyName || ""} 
-                                        onChange={(e) => handleInputChange(e, index, "companyName")} 
-                                        placeholder="e.g. Google"
+                                        name="degree"
+                                        value={item.degree || ""} 
+                                        onChange={(e) => handleChange(e, index)} 
+                                        placeholder="e.g. Bachelor of Science"
                                         className="w-full"
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-sm font-medium text-gray-700">City</label>
+                                    <label className="text-sm font-medium text-gray-700">Major</label>
                                     <Input 
-                                        value={item.city || ""} 
-                                        onChange={(e) => handleInputChange(e, index, "city")} 
-                                        placeholder="e.g. San Francisco"
-                                        className="w-full"
-                                    />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-sm font-medium text-gray-700">State</label>
-                                    <Input 
-                                        value={item.state || ""} 
-                                        onChange={(e) => handleInputChange(e, index, "state")} 
-                                        placeholder="e.g. California"
+                                        name="major"
+                                        value={item.major || ""} 
+                                        onChange={(e) => handleChange(e, index)} 
+                                        placeholder="e.g. Computer Science"
                                         className="w-full"
                                     />
                                 </div>
                                 <div className="space-y-1.5">
                                     <label className="text-sm font-medium text-gray-700">Start Date</label>
                                     <Input 
-                                        type="date" 
+                                        type="date"
+                                        name="startDate"
                                         value={item.startDate || ""} 
-                                        onChange={(e) => handleInputChange(e, index, "startDate")} 
+                                        onChange={(e) => handleChange(e, index)} 
                                         className="w-full"
                                     />
-                                </div>
+                                </div> 
                                 <div className="space-y-1.5">
                                     <label className="text-sm font-medium text-gray-700">End Date</label>
                                     <Input 
-                                        type="date" 
+                                        type="date"
+                                        name="endDate"
                                         value={item.endDate || ""} 
-                                        onChange={(e) => handleInputChange(e, index, "endDate")} 
+                                        onChange={(e) => handleChange(e, index)} 
                                         className="w-full"
                                     />
                                 </div>
-                                <div className="col-span-2">
-                                    <label className="text-sm font-medium text-gray-700">Work Summary</label>
-                                    <RichTextEditor 
-                                        value={item.workSummary || ""}
-                                        onRichTextEditorChange={(value) => handleRichTextEditor(value, index, "workSummary")}
+                                <div className="space-y-1.5 md:col-span-2">
+                                    <label className="text-sm font-medium text-gray-700">Description</label>
+                                    <Textarea 
+                                        name="description"
+                                        value={item.description || ""} 
+                                        onChange={(e) => handleChange(e, index)} 
+                                        placeholder="Describe your education experience..."
+                                        className="w-full min-h-[80px] resize-y"
                                     />
                                 </div>
                             </div>
@@ -222,20 +209,20 @@ function Experiences({ enableNextButton }) {
                             type="button"
                             variant="outline"
                             className="flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-red-600 border-2 border-red-200 bg-red-50/80 hover:bg-red-100 hover:text-red-700 hover:border-red-300 transition-all duration-200 rounded-xl shadow-sm hover:shadow"
-                            onClick={removeLastExperience}
-                            disabled={experiences.length === 1}
+                            onClick={removeLastEducation}
+                            disabled={educationList.length === 1}
                         >
                             <MinusIcon className="w-4 h-4" />
-                            Remove Experience
+                            Remove Education
                         </Button>
                         
                         <Button 
                             type="button"
                             className="flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md hover:shadow-lg transition-all duration-200 rounded-xl"
-                            onClick={addExperience}
+                            onClick={addEducation}
                         >
                             <PlusIcon className="w-4 h-4" />
-                            Add Experience
+                            Add Education
                         </Button>
                     </div>
 
@@ -262,4 +249,4 @@ function Experiences({ enableNextButton }) {
     );
 }
 
-export default Experiences;
+export default Education;

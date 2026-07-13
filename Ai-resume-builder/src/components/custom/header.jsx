@@ -18,7 +18,7 @@ const Header = () => {
           </div>
         ) : (
           <Link to={'/auth/sign-in'} className="font-bold text-lg">
-            <Button>Get Started</Button>
+            <Button className="cursor-pointer">Get Started</Button>
           </Link>
         )
       }
