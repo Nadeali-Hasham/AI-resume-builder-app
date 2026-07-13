@@ -137,3 +137,166 @@ body {
 * {
   border-color: hsl(var(--border));
 }
+
+
+/* for bullet styling */
+ /* ====== Rich Text Editor (react-simple-wysiwyg) Styles ====== */
+
+/* Bullet & Numbered Lists */
+.rsw-ce ul {
+  list-style: disc !important;
+  padding-left: 1.5em !important;
+  margin: 0.5em 0 !important;
+}
+
+.rsw-ce ol {
+  list-style: decimal !important;
+  padding-left: 1.5em !important;
+  margin: 0.5em 0 !important;
+}
+
+.rsw-ce ul ul,
+.rsw-ce ol ul {
+  list-style: circle !important;
+}
+
+.rsw-ce ul ul ul,
+.rsw-ce ol ul ul {
+  list-style: square !important;
+}
+
+.rsw-ce ol ol {
+  list-style: lower-alpha !important;
+}
+
+/* List Items */
+.rsw-ce li {
+  margin: 0.2em 0 !important;
+  line-height: 1.6 !important;
+}
+
+/* Paragraph Spacing */
+.rsw-ce p {
+  margin: 0.5em 0 !important;
+  line-height: 1.6 !important;
+}
+
+/* Headings */
+.rsw-ce h1 {
+  font-size: 2em !important;
+  font-weight: bold !important;
+  margin: 0.67em 0 !important;
+}
+
+.rsw-ce h2 {
+  font-size: 1.5em !important;
+  font-weight: bold !important;
+  margin: 0.83em 0 !important;
+}
+
+.rsw-ce h3 {
+  font-size: 1.17em !important;
+  font-weight: bold !important;
+  margin: 1em 0 !important;
+}
+
+/* Blockquote */
+.rsw-ce blockquote {
+  border-left: 4px solid #ddd !important;
+  padding-left: 1em !important;
+  margin: 0.5em 0 !important;
+  color: #666 !important;
+}
+
+/* Links */
+.rsw-ce a {
+  color: #0066cc !important;
+  text-decoration: underline !important;
+}
+
+.rsw-ce a:hover {
+  color: #004499 !important;
+}
+
+/* Code */
+.rsw-ce code {
+  background: #f4f4f4 !important;
+  padding: 0.2em 0.4em !important;
+  border-radius: 3px !important;
+  font-family: monospace !important;
+  font-size: 0.9em !important;
+}
+
+/* Images (if used) */
+.rsw-ce img {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Table (if used) */
+.rsw-ce table {
+  border-collapse: collapse !important;
+  width: 100% !important;
+  margin: 0.5em 0 !important;
+}
+
+.rsw-ce th,
+.rsw-ce td {
+  border: 1px solid #ddd !important;
+  padding: 8px !important;
+  text-align: left !important;
+}
+
+.rsw-ce th {
+  background: #f4f4f4 !important;
+  font-weight: bold !important;
+}
+
+/* Editor Container */
+.rsw-editor {
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.rsw-toolbar {
+  background: #f9fafb !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  padding: 4px !important;
+}
+
+.rsw-ce {
+  min-height: 150px !important;
+  padding: 16px !important;
+  background: #ffffff !important;
+  color: #1f2937 !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
+/* Editor Focus State */
+.rsw-ce:focus {
+  outline: none !important;
+}
+
+/* Toolbar Buttons */
+.rsw-toolbar button {
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  border: none !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+  color: #4b5563 !important;
+  transition: all 0.2s !important;
+}
+
+.rsw-toolbar button:hover {
+  background: #e5e7eb !important;
+  color: #1f2937 !important;
+}
+
+.rsw-toolbar button.active {
+  background: #dbeafe !important;
+  color: #2563eb !important;
+}

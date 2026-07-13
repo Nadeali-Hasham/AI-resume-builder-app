@@ -1,23 +1,45 @@
+const ExperiencePreview = ({ resumeInfo }) => {
+    // ✅ Check if experiences exist
+    if (!resumeInfo?.experience || resumeInfo.experience.length === 0) {
+        return (
+            <div className="mt-6">
+                <h2 style={{ color: resumeInfo?.themeColor }} className="text-center font-bold text-xl">
+                    Professional Experience
+                </h2>
+                <p className="text-center text-gray-400 text-sm mt-2">No experience added yet</p>
+            </div>
+        );
+    }
 
-
-const ExperiencePreview = ({resumeInfo}) => {
-  return (
-    <div className="mt-6">
-      <h2  style={{color: resumeInfo?.themeColor}} className="text-center font-bold text-xl">Professional Experience</h2>
-      {resumeInfo?.experience.map((exp, index) => (
-        <div key={index} className="py-2">
-          <h3 style={{color: resumeInfo?.themeColor}} className="font-semibold">{exp.title}</h3>
-          <p className="text-sm">{exp.companyName}</p>
-          <div className="flex justify-between">
-            <p>{exp.city}, {exp.state}</p>
-          <p className="text-xs">{exp.startDate} - {exp.endDate}</p>
-          </div>
-
-          <p className="text-sm">{exp.workSummary}</p>
+    return (
+        <div className="mt-6">
+            <h2 style={{ color: resumeInfo?.themeColor }} className="text-center font-bold text-xl">
+                Professional Experience
+            </h2>
+            {resumeInfo.experience.map((exp, index) => (
+                <div key={index} className="py-2">
+                    <h3 style={{ color: resumeInfo?.themeColor }} className="font-semibold">
+                        {exp.title || "Untitled"}
+                    </h3>
+                    <p className="text-sm font-medium">{exp.companyName || "Company Name"}</p>
+                    <div className="flex justify-between text-sm">
+                        <p>{exp.city || ""}, {exp.state || ""}</p>
+                        <p className="text-xs">{exp.startDate || ""} To {exp.endDate || ""}</p>
+                    </div>
+                    
+                    {/* ✅ Work Summary with proper HTML rendering */}
+                    {exp.workSummary ? (
+                        <div 
+                            className="text-sm mt-1 prose prose-sm max-w-none"
+                            dangerouslySetInnerHTML={{ __html: exp.workSummary }} 
+                        />
+                    ) : (
+                        <p className="text-sm text-gray-400 mt-1">No summary provided</p>
+                    )}
+                </div>
+            ))}
         </div>
-      ))}
-    </div>
-  )
-}
+    );
+};
 
-export default ExperiencePreview
+export default ExperiencePreview;
