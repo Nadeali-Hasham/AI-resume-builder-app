@@ -5,6 +5,7 @@ import {  useState } from "react";
 import Summary from "./forms/Summary";
 import Experiences from "./forms/Experiences";
 import Eductional from "./forms/Eductional";
+import Skill from "./forms/Skill";
 
 const FormSection = () => {
   const [activeFormIndex, setActiveFormIndex] = useState(1);
@@ -56,6 +57,8 @@ const FormSection = () => {
     {activeFormIndex === 4? <Eductional enableNextButton = {(v) => setEnableNextButton(v)} /> :null}
 
     {/* Skills Form */}
+        {activeFormIndex === 5? <Skill enableNextButton = {(v) => setEnableNextButton(v)} /> :null}
+
    </div>
   )
 }

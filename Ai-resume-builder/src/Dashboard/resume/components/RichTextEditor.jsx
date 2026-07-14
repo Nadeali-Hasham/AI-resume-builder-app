@@ -1,30 +1,49 @@
 import { Button } from "@/components/ui/button";
 import { ResumeInfoContext } from "@/context/ResumeInfoContext";
 import { Brain, LoaderCircle } from "lucide-react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BtnBold, BtnBulletList, BtnItalic, BtnLink, BtnNumberedList, BtnStrikeThrough, BtnUnderline, Editor, EditorProvider, Separator, Toolbar } from "react-simple-wysiwyg";
 import { AIChatSession } from "./../../../../Service/AiModal";
 import { toast } from "sonner";
 
-const RichTextEditor = (onRichTextEditorChange, index) => {
-    const [value, setValue] = useState("");
-    const {resumeInfo, setResumeInfo} = useContext(ResumeInfoContext);
-    const [aiLoading, setAiLoading] = useState(false); // ✅ AI loading state
-    const PROMPT = 'position title: {title}, Depend on position title give me 5 - 7 bullet point for my experience in resume';
+const RichTextEditor = ({ value = "", onRichTextEditorChange, index = 0 }) => {
+    const [editorValue, setEditorValue] = useState(value);
+    const { resumeInfo } = useContext(ResumeInfoContext);
+    const [aiLoading, setAiLoading] = useState(false);
+    const PROMPT = "position title: {title}, Depend on position title give me 5 - 7 bullet point for my experience in resume";
 
-    const generateSummaryFromAI = async () =>{
-        setAiLoading(true)
-        if (resumeInfo.experience[index].title) {
-            toast('Please Add Title Position');
-            return
+    useEffect(() => {
+        setEditorValue(value || "");
+    }, [value]);
+
+    const handleChange = (e) => {
+        const newValue = e.target.value;
+        setEditorValue(newValue);
+        onRichTextEditorChange?.(newValue);
+    };
+
+    const generateSummaryFromAI = async () => {
+        const title = resumeInfo?.experience?.[index]?.title;
+
+        if (!title) {
+            toast.error("Please Add Title Position");
+            return;
         }
-        const prompt = PROMPT.replace('{positionTitle}', resumeInfo.experience[index].title);
-        const result = await AIChatSession.sendMessage(prompt);
-        console.log(result.response.text());
-        const resp = result.response.text();
-        setValue(resp);
-        setAiLoading(false);
-    }
+
+        setAiLoading(true);
+        try {
+            const prompt = PROMPT.replace("{title}", title);
+            const result = await AIChatSession.sendMessage(prompt);
+            const resp = result.response.text();
+            setEditorValue(resp);
+            onRichTextEditorChange?.(resp);
+        } catch (error) {
+            console.error("AI work summary failed:", error);
+            toast.error("Failed to generate work experience");
+        } finally {
+            setAiLoading(false);
+        }
+    };
 
     return (
         <div>
@@ -35,23 +54,23 @@ const RichTextEditor = (onRichTextEditorChange, index) => {
                     size="sm"
                     className="flex gap-2 bg-white text-black cursor-pointer"
                     type="button"
-                    onClick= {generateSummaryFromAI}
+                    onClick={generateSummaryFromAI}
+                    disabled={aiLoading}
                 >
                     {aiLoading ? (
-                    <LoaderCircle className="w-4 h-4 animate-spin" />
-                ) : (
-                    <Brain className="w-4 h-4" />
-                )}
+                        <LoaderCircle className="w-4 h-4 animate-spin" />
+                    ) : (
+                        <Brain className="w-4 h-4" />
+                    )}
                     {aiLoading ? "Generating..." : "Generate From AI"}
                 </Button>
             </div>
             <EditorProvider>
-                <Editor 
-                    value={value} 
-                    onChange={(e) => { 
-                        setValue(e.target.value);
-                        onRichTextEditorChange(e)} }  />
-                    <Toolbar >
+                <Editor
+                    value={editorValue}
+                    onChange={handleChange}
+                >
+                    <Toolbar>
                         <BtnBold />
                         <BtnItalic />
                         <BtnUnderline />
@@ -60,10 +79,11 @@ const RichTextEditor = (onRichTextEditorChange, index) => {
                         <BtnNumberedList />
                         <BtnBulletList />
                         <BtnLink />
-                    </Toolbar>    
+                    </Toolbar>
+                </Editor>
             </EditorProvider>
         </div>
-    )
-}
+    );
+};
 
-export default RichTextEditor
+export default RichTextEditor;

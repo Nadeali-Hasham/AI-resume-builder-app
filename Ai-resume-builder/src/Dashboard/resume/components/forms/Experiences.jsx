@@ -204,8 +204,8 @@ function Experiences({ enableNextButton }) {
                                     />
                                 </div>
                                 <div className="col-span-2">
-                                    <label className="text-sm font-medium text-gray-700">Work Summary</label>
                                     <RichTextEditor 
+                                        index={index}
                                         value={item.workSummary || ""}
                                         onRichTextEditorChange={(value) => handleRichTextEditor(value, index, "workSummary")}
                                     />
