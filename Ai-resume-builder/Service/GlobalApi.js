@@ -24,8 +24,16 @@ export const getUserResumes = (userEmail) => axiosClient.get(`/user-resumes?filt
 
 export const updateResumeDetail = (id, data) => axiosClient.put(`/user-resumes/${id}`, data);
 
+export const getResumeById = (id) =>
+    axiosClient.get(`/user-resumes/${id}`, {
+        params: {
+            populate: '*',
+        },
+    });
+
 export default {
     createNewResume,
     getUserResumes,
-    updateResumeDetail
+    updateResumeDetail,
+    getResumeById,
 };

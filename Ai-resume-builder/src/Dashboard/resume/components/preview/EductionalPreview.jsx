@@ -3,7 +3,7 @@ const EducationalPreview = ({ resumeInfo }) => {
   return (
     <div>
       <h2 className="font-bold text-xl text-center" style={{color: resumeInfo?.themeColor}}>Education</h2>
-      {resumeInfo?.education.map((edu, index) => (
+      {resumeInfo?.education?.map((edu, index) => (
         <div key={index} className=" py-2">
           <h3 style={{color: resumeInfo?.themeColor}} className="font-semibold">{edu.degree} in {edu.major}</h3>
           <div className="flex justify-between">
