@@ -112,6 +112,42 @@ code {
 } */
 @import "tailwindcss";
 
+@media print {
+  #no-print{
+    display: none !important;
+  }
+
+  #print-area{
+    display: block !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  body{
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .skill-rating-track,
+  .skill-rating-fill {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+@page{
+  size: auto;
+  margin: 0mm;
+}
+
 :root {
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
