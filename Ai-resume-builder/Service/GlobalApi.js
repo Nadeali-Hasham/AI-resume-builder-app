@@ -31,9 +31,12 @@ export const getResumeById = (id) =>
         },
     });
 
+export const deleteResume = (id) => axiosClient.delete(`/user-resumes/${id}`);
+
 export default {
     createNewResume,
     getUserResumes,
     updateResumeDetail,
     getResumeById,
+    deleteResume,
 };

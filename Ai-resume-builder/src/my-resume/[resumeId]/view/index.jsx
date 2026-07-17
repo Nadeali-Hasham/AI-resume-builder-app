@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { ResumeInfoContext } from "@/context/ResumeInfoContext"
 import ResumePreview from "@/Dashboard/resume/components/ResumePreview"
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useSearchParams } from "react-router-dom"
 import GlobalApi from "./../../../../Service/GlobalApi"
 import { RWebShare } from "react-web-share"
 import { Share2 } from "lucide-react"
@@ -14,6 +14,8 @@ const ViewResume = () => {
     const [resumeInfo, setResumeInfo] = useState(null)
     const [loading, setLoading] = useState(true)
     const { resumeId } = useParams()
+    const [searchParams] = useSearchParams()
+    const shouldAutoDownload = searchParams.get("download") === "true"
 
     const shareUrl =
         `${(import.meta.env.VITE_BASE_URL || window.location.origin).replace(/\/$/, "")}/my-resume/${resumeId}/view`
@@ -42,6 +44,16 @@ const ViewResume = () => {
                 setLoading(false)
             })
     }, [resumeId])
+
+    useEffect(() => {
+        if (loading || !shouldAutoDownload || !resumeInfo) return
+
+        const timer = setTimeout(() => {
+            window.print()
+        }, 400)
+
+        return () => clearTimeout(timer)
+    }, [loading, shouldAutoDownload, resumeInfo])
 
     const HandleDownloadResume = () => {
         window.print()
