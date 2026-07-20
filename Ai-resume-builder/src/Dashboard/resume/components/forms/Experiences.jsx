@@ -7,6 +7,7 @@ import { ResumeInfoContext } from "@/context/ResumeInfoContext";
 import { useParams } from "react-router-dom";
 import GlobalApi from "./../../../../../Service/GlobalApi";
 import { toast } from "sonner";
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
 
 const formField = {
     title: "",
@@ -65,9 +66,9 @@ function Experiences({ enableNextButton, requireSaveForNext = true }) {
 
     // ====== ADD EXPERIENCE ======
     const addExperience = () => {
+        markUnsaved();
         const newExperiences = [...experiences, { ...formField }];
         setExperiences(newExperiences);
-        // ✅ Update resumeInfo bhi karo
         setResumeInfo({
             ...resumeInfo,
             experience: newExperiences
@@ -77,9 +78,9 @@ function Experiences({ enableNextButton, requireSaveForNext = true }) {
     // ====== REMOVE SPECIFIC EXPERIENCE ======
     const removeExperience = (indexToRemove) => {
         if (experiences.length <= 1) return;
+        markUnsaved();
         const newExperiences = experiences.filter((_, index) => index !== indexToRemove);
         setExperiences(newExperiences);
-        // ✅ Update resumeInfo bhi karo
         setResumeInfo({
             ...resumeInfo,
             experience: newExperiences
@@ -89,9 +90,9 @@ function Experiences({ enableNextButton, requireSaveForNext = true }) {
     // ====== REMOVE LAST EXPERIENCE ======
     const removeLastExperience = () => {
         if (experiences.length <= 1) return;
+        markUnsaved();
         const newExperiences = experiences.slice(0, -1);
         setExperiences(newExperiences);
-        // ✅ Update resumeInfo bhi karo
         setResumeInfo({
             ...resumeInfo,
             experience: newExperiences
@@ -101,18 +102,36 @@ function Experiences({ enableNextButton, requireSaveForNext = true }) {
     // ====== SAVE EXPERIENCES ======
     const onSave = async (e) => {
         e.preventDefault();
+
+        const validExperiences = experiences.filter(
+            (item) => item.title?.trim() || item.companyName?.trim()
+        );
+
+        if (validExperiences.length === 0) {
+            toast.error("Please add at least one experience with title or company");
+            return;
+        }
+
         setLoading(true);
         
         try {
             const data = {
                 data: {
-                    Experience: experiences.map(({ id, currentlyWorking, ...rest }) => rest)
+                    Experience: validExperiences.map(({ id, currentlyWorking, workSummary, ...rest }) => ({
+                        ...rest,
+                        title: rest.title?.trim() || "Untitled",
+                        workSummary: sanitizeHtml(workSummary || ""),
+                    }))
                 }
             };
             
             await GlobalApi.updateResumeDetail(params.resumeId, data);
             
-            console.log("Experiences saved successfully");
+            setExperiences(validExperiences);
+            setResumeInfo({
+                ...resumeInfo,
+                experience: validExperiences,
+            });
             setLoading(false);
             enableNextButton(true);
             toast.success("Experiences updated successfully");

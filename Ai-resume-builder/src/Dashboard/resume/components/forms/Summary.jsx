@@ -39,7 +39,6 @@ const Summary = ({enableNextButton, requireSaveForNext = true}) => {
 
         try {
             const response = await GlobalApi.updateResumeDetail(params.resumeId, data);
-            console.log("Resume updated successfully:", response.data);
             enableNextButton(true);
             toast.success("Summary updated successfully");
             return response;
@@ -62,10 +61,7 @@ const Summary = ({enableNextButton, requireSaveForNext = true}) => {
     setAiLoading(true);
     
     try {
-        console.log("Calling AI with jobTitle:", resumeInfo.jobTitle); // ✅ Debug
-        
         const aiSummary = await generateSummaryFromAI(resumeInfo.jobTitle);
-        console.log("AI Summary received:", aiSummary); // ✅ Debug
         
         if (!aiSummary) {
             throw new Error("No summary generated");

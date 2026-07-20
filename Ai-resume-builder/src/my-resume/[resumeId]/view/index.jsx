@@ -32,7 +32,7 @@ const ViewResume = () => {
         if (!resumeId) return
 
         setLoading(true)
-        GlobalApi.getResumeById(resumeId)
+        GlobalApi.getPublicResumeById(resumeId)
             .then((resp) => {
                 setResumeInfo(mapResumeFromApi(resp?.data?.data))
             })
@@ -46,18 +46,32 @@ const ViewResume = () => {
             })
     }, [resumeId])
 
+    const printResume = () => {
+        const previousTitle = document.title
+        // Blank title so print dialog does not stamp "AI Resume Builder" if headers leak through
+        document.title = " "
+        const restoreTitle = () => {
+            document.title = previousTitle
+            window.removeEventListener("afterprint", restoreTitle)
+        }
+        window.addEventListener("afterprint", restoreTitle)
+        window.print()
+        // Fallback if afterprint does not fire (some browsers)
+        setTimeout(restoreTitle, 1000)
+    }
+
     useEffect(() => {
         if (loading || !shouldAutoDownload || !resumeInfo) return
 
         const timer = setTimeout(() => {
-            window.print()
+            printResume()
         }, 400)
 
         return () => clearTimeout(timer)
     }, [loading, shouldAutoDownload, resumeInfo])
 
     const HandleDownloadResume = () => {
-        window.print()
+        printResume()
     }
 
     if (loading) {

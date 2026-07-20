@@ -49,6 +49,8 @@ const ThemeColor = () => {
   const debounceTimerRef = useRef(null);
   const lastPreviewAtRef = useRef(0);
 
+  const pendingSaveColorRef = useRef(null);
+
   useEffect(() => {
     latestColorRef.current = resumeInfo?.themeColor || "#ff6666";
   }, [resumeInfo?.themeColor]);
@@ -57,10 +59,20 @@ const ThemeColor = () => {
     return () => {
       clearTimeout(previewTimerRef.current);
       clearTimeout(debounceTimerRef.current);
+      // Flush pending theme save on unmount so color isn't lost
+      const pending = pendingSaveColorRef.current;
+      if (pending && resumeId) {
+        GlobalApi.updateResumeDetail(resumeId, {
+          data: { themeColor: pending },
+        }).catch((error) => {
+          console.error("Failed to flush theme color:", error);
+        });
+      }
     };
-  }, []);
+  }, [resumeId]);
 
   const saveThemeColor = async (color) => {
+    pendingSaveColorRef.current = null;
     if (!resumeId) {
       toast.success("Theme color updated");
       return;
@@ -81,6 +93,7 @@ const ThemeColor = () => {
   };
 
   const scheduleSaveAndToast = (color) => {
+    pendingSaveColorRef.current = color;
     clearTimeout(debounceTimerRef.current);
     debounceTimerRef.current = setTimeout(() => {
       saveThemeColor(color);

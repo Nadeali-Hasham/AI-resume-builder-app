@@ -49,9 +49,11 @@ function Education({ enableNextButton, requireSaveForNext = true }) {
 
     // ====== ADD EDUCATION ======
     const addEducation = () => {
+        if (requireSaveForNext) {
+            enableNextButton?.(false);
+        }
         const newEducationList = [...educationList, { ...formField }];
         setEducationList(newEducationList);
-        // ✅ Update resumeInfo bhi karo
         setResumeInfo({
             ...resumeInfo,
             education: newEducationList
@@ -61,9 +63,11 @@ function Education({ enableNextButton, requireSaveForNext = true }) {
     // ====== REMOVE SPECIFIC EDUCATION ======
     const removeEducation = (indexToRemove) => {
         if (educationList.length <= 1) return;
+        if (requireSaveForNext) {
+            enableNextButton?.(false);
+        }
         const newEducationList = educationList.filter((_, index) => index !== indexToRemove);
         setEducationList(newEducationList);
-        // ✅ Update resumeInfo bhi karo
         setResumeInfo({
             ...resumeInfo,
             education: newEducationList
@@ -73,9 +77,11 @@ function Education({ enableNextButton, requireSaveForNext = true }) {
     // ====== REMOVE LAST EDUCATION ======
     const removeLastEducation = () => {
         if (educationList.length <= 1) return;
+        if (requireSaveForNext) {
+            enableNextButton?.(false);
+        }
         const newEducationList = educationList.slice(0, -1);
         setEducationList(newEducationList);
-        // ✅ Update resumeInfo bhi karo
         setResumeInfo({
             ...resumeInfo,
             education: newEducationList
@@ -85,18 +91,38 @@ function Education({ enableNextButton, requireSaveForNext = true }) {
     // ====== SAVE EDUCATION ======
     const onSave = async (e) => {
         e.preventDefault();
+
+        const validEducation = educationList.filter(
+            (item) => item.universityName?.trim() || item.degree?.trim()
+        );
+
+        if (validEducation.length === 0) {
+            toast.error("Please add at least one education entry");
+            return;
+        }
+
         setLoading(true);
         
         try {
             const data = {
                 data: {
-                    Education: educationList.map(({ id, ...rest }) => rest)
+                    Education: validEducation.map(({ id, ...rest }) => ({
+                        ...rest,
+                        universityName: rest.universityName?.trim() || "",
+                        degree: rest.degree?.trim() || "",
+                        major: rest.major?.trim() || "",
+                        description: rest.description?.trim() || "",
+                    }))
                 }
             };
             
             await GlobalApi.updateResumeDetail(params.resumeId, data);
             
-            console.log("Education saved successfully");
+            setEducationList(validEducation);
+            setResumeInfo({
+                ...resumeInfo,
+                education: validEducation,
+            });
             setLoading(false);
             enableNextButton(true);
             toast.success("Education updated successfully");

@@ -1,4 +1,3 @@
-'use client'
 import { Loader2, Plus } from "lucide-react"
 import {
   Dialog,
@@ -10,8 +9,7 @@ import {
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { v4 as uuidv4 } from 'uuid'
-import GlobalApi from "../../../Service/GlobalApi";
+import GlobalApi, { setApiUserEmail } from "../../../Service/GlobalApi";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -29,13 +27,18 @@ const AddResume = () => {
             return;
         }
 
+        const userEmail = user?.primaryEmailAddress?.emailAddress;
+        if (!userEmail) {
+            toast.error("Please sign in again");
+            return;
+        }
+
+        setApiUserEmail(userEmail);
         setLoading(true);
-        const uuid = uuidv4();
+
         const data = {
             data: {
                 title: resumeTitle.trim(),
-                resumeId: uuid,
-                userEmail: user?.primaryEmailAddress?.emailAddress,
                 userName: user?.fullName,
                 themeColor: "#0d9488",
             }

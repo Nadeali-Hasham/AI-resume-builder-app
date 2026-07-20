@@ -169,9 +169,10 @@ code {
   }
 }
 
+/* margin: 0 hides browser-injected print header/footer (date, title, URL, page #) */
 @page {
   size: A4;
-  margin: 10mm;
+  margin: 0;
 }
 
 :root {

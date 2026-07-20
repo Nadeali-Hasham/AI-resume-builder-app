@@ -159,7 +159,7 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
               onClick={handleDownload}
             >
               <Download className="w-4 h-4" />
-              Download PDF
+                                Download PDF
             </DropdownMenuItem>
 
             <DropdownMenuItem

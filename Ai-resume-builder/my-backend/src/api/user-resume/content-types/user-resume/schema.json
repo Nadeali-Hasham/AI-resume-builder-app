@@ -40,7 +40,7 @@
       "type": "string"
     },
     "email": {
-      "type": "string"
+      "type": "email"
     },
     "summary": {
       "type": "text"

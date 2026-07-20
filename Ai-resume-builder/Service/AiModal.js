@@ -1,66 +1,43 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import GlobalApi from './GlobalApi';
 
-const apiKey = import.meta.env.VITE_GOOGLE_AI_API_KEY;
-const modelName = import.meta.env.VITE_GOOGLE_AI_MODEL || "gemini-3.5-flash";
-
-if (!apiKey) {
-  console.error("Google AI API key is missing. Add VITE_GOOGLE_AI_API_KEY to .env.local");
-}
-
-const genAI = new GoogleGenerativeAI(apiKey || "");
-
-const model = genAI.getGenerativeModel({
-  model: modelName,
-});
-
-const generationConfig = {
-  temperature: 0.8,
-  topP: 0.95,
-  topK: 64,
-  maxOutputTokens: 512,
-  responseMimeType: "text/plain",
-};
-
-export const AIChatSession = model.startChat({
-  generationConfig,
-  history: [
-    {
-      role: "user",
-      parts: [{ text: "You are a professional resume writer with 10 years of experience." }],
-    },
-    {
-      role: "model",
-      parts: [{ text: "I am an expert resume writer. I will help you create professional, ATS-friendly resumes." }],
-    },
-  ],
-});
+/**
+ * AI helpers now call the Strapi backend so the Google key stays server-side.
+ * A fresh request is made each time (no shared chat history).
+ */
 
 export const generateSummaryFromAI = async (jobTitle) => {
-  if (!apiKey) {
-    throw new Error("Google AI API key is missing");
-  }
-
-  const cleanJobTitle = String(jobTitle || "").trim();
+  const cleanJobTitle = String(jobTitle || '').trim();
   if (!cleanJobTitle) {
-    throw new Error("Job title is required");
+    throw new Error('Job title is required');
   }
 
-  try {
-    const prompt = `
-      Generate a professional resume summary for a ${cleanJobTitle} position.
-      Keep it concise (3-4 sentences), professional, and impactful.
-      Return only the summary text without any additional formatting.
-    `;
-
-    const result = await AIChatSession.sendMessage(prompt);
-    return result.response.text().trim();
-  } catch (error) {
-    console.error("Google AI summary generation failed:", error);
-    throw error;
+  const response = await GlobalApi.generateSummaryFromAI(cleanJobTitle);
+  const summary = response?.data?.summary?.trim();
+  if (!summary) {
+    throw new Error('No summary generated');
   }
+  return summary;
+};
+
+export const generateExperienceBulletsFromAI = async (title) => {
+  const cleanTitle = String(title || '').trim();
+  if (!cleanTitle) {
+    throw new Error('Position title is required');
+  }
+
+  const response = await GlobalApi.generateExperienceFromAI(cleanTitle);
+  let html = response?.data?.html?.trim() || '';
+
+  // Strip markdown fences if model wraps HTML
+  html = html.replace(/^```html\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '');
+
+  if (!html) {
+    throw new Error('No experience bullets generated');
+  }
+  return html;
 };
 
 export default {
-  AIChatSession,
   generateSummaryFromAI,
+  generateExperienceBulletsFromAI,
 };

@@ -74,6 +74,9 @@ const Skill = ({ enableNextButton, requireSaveForNext = true }) => {
 
     // Add new skill
     const addSkill = () => {
+        if (requireSaveForNext) {
+            enableNextButton?.(false);
+        }
         const updatedSkills = [
             ...skillsList,
             { ...emptySkill }
@@ -93,6 +96,10 @@ const Skill = ({ enableNextButton, requireSaveForNext = true }) => {
             return;
         }
 
+        if (requireSaveForNext) {
+            enableNextButton?.(false);
+        }
+
         const updatedSkills = skillsList.filter(
             (_, index) => index !== indexToRemove
         );
@@ -109,6 +116,10 @@ const Skill = ({ enableNextButton, requireSaveForNext = true }) => {
     const removeLastSkill = () => {
         if (skillsList.length <= 1) {
             return;
+        }
+
+        if (requireSaveForNext) {
+            enableNextButton?.(false);
         }
 
         const updatedSkills = skillsList.slice(0, -1);

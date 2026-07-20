@@ -1,4 +1,3 @@
-'use client'
 import { SignIn } from "@clerk/clerk-react"
 import Header from "@/components/custom/header"
 
@@ -9,7 +8,11 @@ const SignInPage = () => {
         <Header />
       </div>
       <div className="mt-16 rounded-2xl border border-slate-200 bg-white/90 p-2 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.45)]">
-        <SignIn />
+        <SignIn
+          forceRedirectUrl="/dashboard"
+          fallbackRedirectUrl="/dashboard"
+          signUpForceRedirectUrl="/dashboard"
+        />
       </div>
     </div>
   )

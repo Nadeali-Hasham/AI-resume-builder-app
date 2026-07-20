@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import FormSection from "../../components/FormSection";
 import ResumePreview from "../../components/ResumePreview";
 import { ResumeInfoContext } from "@/context/ResumeInfoContext";
 import GlobalApi from "./../../../../../Service/GlobalApi";
 import { emptyResumeInfo, mapResumeFromApi } from "@/lib/mapResumeFromApi";
+import { Button } from "@/components/ui/button";
 
 const EditResume = () => {
   const params = useParams();
   const [resumeInfo, setResumeInfo] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     if (!params.resumeId) return;
 
     setLoading(true);
+    setLoadError(false);
     GlobalApi.getResumeById(params.resumeId)
       .then((response) => {
         const apiData = response?.data?.data;
@@ -22,7 +25,8 @@ const EditResume = () => {
       })
       .catch((error) => {
         console.error("Error loading resume:", error);
-        setResumeInfo(emptyResumeInfo);
+        setLoadError(true);
+        setResumeInfo(null);
       })
       .finally(() => {
         setLoading(false);
@@ -33,6 +37,17 @@ const EditResume = () => {
     return (
       <div className="app-page flex items-center justify-center p-10 app-subtitle">
         Loading resume...
+      </div>
+    );
+  }
+
+  if (loadError || !resumeInfo) {
+    return (
+      <div className="app-page flex flex-col items-center justify-center gap-4 p-10">
+        <p className="app-subtitle">Failed to load this resume.</p>
+        <Link to="/dashboard">
+          <Button className="app-btn-dark cursor-pointer">Back to Dashboard</Button>
+        </Link>
       </div>
     );
   }
