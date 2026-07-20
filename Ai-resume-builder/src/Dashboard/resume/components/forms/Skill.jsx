@@ -20,7 +20,7 @@ const emptySkill = {
     rating: 1
 };
 
-const Skill = ({ enableNextButton }) => {
+const Skill = ({ enableNextButton, requireSaveForNext = true }) => {
     const params = useParams();
 
     const {
@@ -49,6 +49,10 @@ const Skill = ({ enableNextButton }) => {
 
     // Update skill name or rating
     const handleChange = (index, field, value) => {
+        if (requireSaveForNext) {
+            enableNextButton?.(false);
+        }
+
         const updatedSkills = skillsList.map((skill, skillIndex) => {
             if (skillIndex === index) {
                 return {
@@ -166,12 +170,12 @@ const Skill = ({ enableNextButton }) => {
     };
 
     return (
-        <div className="p-6 shadow-lg rounded-xl border-t-4 border-t-teal-500 bg-white max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold mb-2 text-gray-800">
+        <div className="app-form-panel max-w-4xl mx-auto">
+            <h2 className="app-form-title text-2xl">
                 Skills
             </h2>
 
-            <p className="text-gray-500 mb-6">
+            <p className="app-form-desc">
                 Add your professional skills and proficiency level.
             </p>
 

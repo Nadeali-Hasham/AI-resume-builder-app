@@ -6,9 +6,10 @@ import { useEffect, useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import GlobalApi from "./../../../../Service/GlobalApi"
 import { RWebShare } from "react-web-share"
-import { Share2 } from "lucide-react"
+import { Download, Share2 } from "lucide-react"
 import { emptyResumeInfo, mapResumeFromApi } from "@/lib/mapResumeFromApi"
 import { toast, Toaster } from "sonner"
+import "./view-resume.css"
 
 const ViewResume = () => {
     const [resumeInfo, setResumeInfo] = useState(null)
@@ -61,7 +62,7 @@ const ViewResume = () => {
 
     if (loading) {
         return (
-            <div className="p-10 text-center text-gray-500">
+            <div className="view-resume-page flex items-center justify-center p-10 app-subtitle">
                 Loading resume...
             </div>
         )
@@ -70,57 +71,64 @@ const ViewResume = () => {
     return (
         <ResumeInfoContext.Provider value={{ resumeInfo, setResumeInfo }}>
             <Toaster />
-            <div id="no-print">
-                <Header />
-                <div className="p-10 mx-10 md:mx-20 lg:mx-36">
-                    <h2 className="text-center text-2xl font-semibold text-slate-800">
-                        Your resume is ready
-                    </h2>
-                    <p className="text-gray-500 text-center mt-2 max-w-xl mx-auto">
-                        Download a polished PDF copy or share your professional profile with recruiters and your network.
-                    </p>
-                    <div className="flex justify-end gap-3 m-5">
-                        <Button
-                            size="sm"
-                            variant="secondary"
-                            className="flex gap-2 bg-teal-500 text-white cursor-pointer"
-                            onClick={HandleDownloadResume}
-                        >
-                            Download
-                        </Button>
-                        <RWebShare
-                            data={{
-                                text: "Hello everyone, please take a look at my professional resume.",
-                                url: shareUrl,
-                                title: shareTitle,
-                            }}
-                            sites={[
-                                "facebook",
-                                "twitter",
-                                "whatsapp",
-                                "reddit",
-                                "telegram",
-                                "linkedin",
-                                "mail",
-                                "copy",
-                            ]}
-                            disableNative={true}
-                            closeText="Close"
-                            onClick={() => toast.success("Shared successfully")}
-                        >
+            <div className="view-resume-page">
+                <div id="no-print">
+                    <Header />
+                    <div className="view-resume-actions">
+                        <div className="view-resume-actions__text">
+                            <h2 className="app-title text-2xl md:text-3xl">
+                                Your resume is ready
+                            </h2>
+                            <p className="app-subtitle mt-1 text-sm md:text-base">
+                                Download a polished PDF or share it with recruiters.
+                            </p>
+                        </div>
+                        <div className="view-resume-actions__buttons">
                             <Button
-                                type="button"
-                                className="flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white cursor-pointer"
+                                size="sm"
+                                className="flex gap-2 app-btn-accent cursor-pointer"
+                                onClick={HandleDownloadResume}
                             >
-                                <Share2 className="w-4 h-4" />
-                                Share Resume
+                                <Download className="w-4 h-4" />
+                                Download
                             </Button>
-                        </RWebShare>
+                            <RWebShare
+                                data={{
+                                    text: "Hello everyone, please take a look at my professional resume.",
+                                    url: shareUrl,
+                                    title: shareTitle,
+                                }}
+                                sites={[
+                                    "facebook",
+                                    "twitter",
+                                    "whatsapp",
+                                    "reddit",
+                                    "telegram",
+                                    "linkedin",
+                                    "mail",
+                                    "copy",
+                                ]}
+                                disableNative={true}
+                                closeText="Close"
+                                onClick={() => toast.success("Shared successfully")}
+                            >
+                                <Button
+                                    type="button"
+                                    className="flex items-center gap-2 app-btn-dark cursor-pointer"
+                                >
+                                    <Share2 className="w-4 h-4" />
+                                    Share Resume
+                                </Button>
+                            </RWebShare>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div id="print-area" className="mx-10 md:mx-20 lg:mx-36">
-                <ResumePreview />
+
+                <div id="print-area" className="view-resume-print">
+                    <div className="view-resume-sheet">
+                        <ResumePreview />
+                    </div>
+                </div>
             </div>
         </ResumeInfoContext.Provider>
     )

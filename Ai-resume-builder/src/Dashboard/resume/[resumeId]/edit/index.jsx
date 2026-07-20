@@ -31,7 +31,7 @@ const EditResume = () => {
 
   if (loading) {
     return (
-      <div className="p-10 text-center text-gray-500">
+      <div className="app-page flex items-center justify-center p-10 app-subtitle">
         Loading resume...
       </div>
     );
@@ -39,9 +39,22 @@ const EditResume = () => {
 
   return (
     <ResumeInfoContext.Provider value={{ resumeInfo, setResumeInfo }}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-10">
-        <FormSection />
-        <ResumePreview />
+      <div className="app-page">
+        <div className="app-shell max-w-[1400px]">
+          <div className="mb-6">
+            <h1 className="app-title text-2xl md:text-3xl">Edit Resume</h1>
+            <p className="app-subtitle mt-1 text-sm">
+              Update your details on the left and review the live preview on the right.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
+            <FormSection />
+            <div className="app-preview-frame sticky top-24">
+              <ResumePreview />
+            </div>
+          </div>
+        </div>
       </div>
     </ResumeInfoContext.Provider>
   );

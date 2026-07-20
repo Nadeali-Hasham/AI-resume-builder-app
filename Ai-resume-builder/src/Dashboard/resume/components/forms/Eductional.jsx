@@ -17,7 +17,7 @@ const formField = {
     description: ""
 };
 
-function Education({ enableNextButton }) {
+function Education({ enableNextButton, requireSaveForNext = true }) {
     const params = useParams();
     const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
     const [educationList, setEducationList] = useState([]);
@@ -34,11 +34,13 @@ function Education({ enableNextButton }) {
 
     // ====== HANDLE INPUT CHANGE ======
     const handleChange = (e, index) => {
+        if (requireSaveForNext) {
+            enableNextButton?.(false);
+        }
         const newEducationList = [...educationList];
         const { name, value } = e.target;
         newEducationList[index][name] = value;
         setEducationList(newEducationList);
-        // ✅ Update resumeInfo bhi karo
         setResumeInfo({
             ...resumeInfo,
             education: newEducationList
@@ -106,9 +108,9 @@ function Education({ enableNextButton }) {
     };
 
     return (
-        <div className="p-6 shadow-lg rounded-xl border-t-4 border-t-teal-500 bg-white max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold mb-2 text-gray-800">Education</h2>
-            <p className="text-gray-500 mb-6">Add your qualification details.</p>
+        <div className="app-form-panel max-w-4xl mx-auto">
+            <h2 className="app-form-title text-2xl">Education</h2>
+            <p className="app-form-desc">Add your qualification details.</p>
 
             <form onSubmit={onSave}>
                 <div className="space-y-4">

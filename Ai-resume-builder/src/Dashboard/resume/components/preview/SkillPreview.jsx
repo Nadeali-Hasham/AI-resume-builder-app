@@ -1,16 +1,18 @@
 const SkillPreview = ({ resumeInfo }) => {
   const themeColor = resumeInfo?.themeColor || "#ff6666";
 
+  if (!resumeInfo?.skills?.length) return null;
+
   return (
-    <div>
+    <div className="mt-5">
       <h2
         className="font-bold text-xl text-center"
         style={{ color: themeColor }}
       >
         Skills
       </h2>
-      <div className="grid grid-cols-2 gap-x-5 mt-4">
-        {resumeInfo?.skills?.map((skill, index) => {
+      <div className="grid grid-cols-2 gap-x-5 mt-3">
+        {resumeInfo.skills.map((skill, index) => {
           const rating = Math.max(1, Math.min(5, Number(skill.rating) || 1));
           const widthPercent = rating * 20;
 

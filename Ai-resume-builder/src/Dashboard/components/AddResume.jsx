@@ -1,5 +1,5 @@
 'use client'
-import { Loader2, PlusSquare } from "lucide-react"
+import { Loader2, Plus } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid'
 import GlobalApi from "../../../Service/GlobalApi";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const AddResume = () => {
     const [openDialog, setOpenDialog] = useState(false);
@@ -23,8 +24,8 @@ const AddResume = () => {
     const navigate = useNavigate();
 
     const onCreateResume = async () => {
-        if (!resumeTitle) {
-            alert("Please enter a resume title");
+        if (!resumeTitle.trim()) {
+            toast.error("Please enter a resume title");
             return;
         }
 
@@ -32,71 +33,97 @@ const AddResume = () => {
         const uuid = uuidv4();
         const data = {
             data: {
-                title: resumeTitle,
+                title: resumeTitle.trim(),
                 resumeId: uuid,
                 userEmail: user?.primaryEmailAddress?.emailAddress,
-                userName: user?.fullName
+                userName: user?.fullName,
+                themeColor: "#0d9488",
             }
         };
 
         try {
             const response = await GlobalApi.createNewResume(data);
-            console.log("Resume created:", response.data.data.documentId);
             setLoading(false);
             navigate(`/dashboard/resume/${response.data.data.documentId}/edit`);
             setOpenDialog(false);
-            setResumeTitle(""); // Reset form
-            // Optional: Refresh resumes list
-            // window.location.reload();
+            setResumeTitle("");
         } catch (error) {
             console.error("Error creating resume:", error);
             setLoading(false);
-            alert("Failed to create resume. Check console for details.");
+            toast.error("Failed to create resume");
         }
     };
 
     return (
         <>
-            <div 
-                className="border border-dashed rounded-xl h-72 border-gray-300 p-14 py-24 bg-secondary bg-pink-100 flex items-center justify-center hover:scale-105 transition-transform hover:shadow-lg cursor-pointer"
+            <button
+                type="button"
                 onClick={() => setOpenDialog(true)}
+                className="group relative flex h-full min-h-[280px] w-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-teal-300/80 bg-gradient-to-br from-teal-50 via-white to-slate-50 p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:border-teal-500 hover:shadow-[0_20px_40px_-24px_rgba(13,148,136,0.55)] cursor-pointer"
+                style={{ fontFamily: '"DM Sans", sans-serif' }}
             >
-                <PlusSquare className="h-8 w-8" />
-            </div>
+                <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-teal-200/30 blur-2xl transition-opacity group-hover:opacity-80" />
+                <div className="absolute -bottom-10 -left-6 h-24 w-24 rounded-full bg-slate-300/20 blur-2xl" />
+
+                <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg transition-transform duration-300 group-hover:scale-105">
+                    <Plus className="h-6 w-6" strokeWidth={2.25} />
+                </div>
+                <p
+                    className="relative z-10 mt-5 text-lg font-semibold text-slate-900"
+                    style={{ fontFamily: '"Fraunces", serif' }}
+                >
+                    Create New
+                </p>
+                <p className="relative z-10 mt-1 max-w-[11rem] text-center text-sm text-slate-500">
+                    Start a fresh resume with AI assistance
+                </p>
+            </button>
+
             <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-                <DialogContent className="bg-white">
+                <DialogContent className="bg-white sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle>Create New Resume</DialogTitle>
-                        <DialogDescription>
-                            <p>Add the title for your new resume.</p>
-                            <Input 
-                                className="mt-2" 
-                                placeholder="Ex. Full stack developer"
-                                value={resumeTitle}
-                                onChange={(e) => setResumeTitle(e.target.value)} 
-                            />
+                        <DialogTitle
+                            className="text-xl text-slate-900"
+                            style={{ fontFamily: '"Fraunces", serif' }}
+                        >
+                            Create New Resume
+                        </DialogTitle>
+                        <DialogDescription className="text-slate-500">
+                            Give your resume a clear role-focused title.
                         </DialogDescription>
-                        <div className="flex items-center justify-end mt-4 gap-5">
-                            <Button 
+                    </DialogHeader>
+
+                    <div className="mt-2 space-y-4" style={{ fontFamily: '"DM Sans", sans-serif' }}>
+                        <Input
+                            className="h-11"
+                            placeholder="Ex. Full Stack Developer"
+                            value={resumeTitle}
+                            onChange={(e) => setResumeTitle(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") onCreateResume();
+                            }}
+                        />
+                        <div className="flex items-center justify-end gap-3">
+                            <Button
                                 variant="outline"
-                                className="cursor-pointer border hover:bg-gray-100" 
+                                className="cursor-pointer"
                                 onClick={() => setOpenDialog(false)}
                             >
                                 Cancel
                             </Button>
-                            <Button 
-                                disabled={!resumeTitle || loading} 
-                                className="cursor-pointer bg-blue-500 text-white hover:bg-blue-600" 
+                            <Button
+                                disabled={!resumeTitle.trim() || loading}
+                                className="cursor-pointer bg-teal-600 text-white hover:bg-teal-700"
                                 onClick={onCreateResume}
                             >
                                 {loading ? (
                                     <Loader2 className="animate-spin h-4 w-4" />
                                 ) : (
-                                    "Confirm"
+                                    "Create Resume"
                                 )}
                             </Button>
                         </div>
-                    </DialogHeader>
+                    </div>
                 </DialogContent>
             </Dialog>
         </>

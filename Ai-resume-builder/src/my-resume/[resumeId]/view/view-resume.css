@@ -1,0 +1,75 @@
+.view-resume-page {
+  background:
+    radial-gradient(ellipse 70% 40% at 0% 0%, rgba(15, 118, 110, 0.08), transparent 55%),
+    linear-gradient(180deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%);
+  min-height: 100vh;
+}
+
+.view-resume-actions {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+}
+
+.view-resume-actions__text {
+  flex: 1 1 240px;
+}
+
+.view-resume-actions__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.view-resume-print {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 0.5rem 1rem 2rem;
+}
+
+.view-resume-sheet {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.85rem;
+  overflow: hidden;
+  height: auto;
+  box-shadow: 0 16px 36px -28px rgba(15, 23, 42, 0.45);
+}
+
+.view-resume-sheet .resume-preview-root {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+@media print {
+  .view-resume-page {
+    background: #fff !important;
+    min-height: 0 !important;
+  }
+
+  .view-resume-print {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .view-resume-sheet {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .resume-preview-root {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 18mm 16mm !important;
+    box-shadow: none !important;
+  }
+}

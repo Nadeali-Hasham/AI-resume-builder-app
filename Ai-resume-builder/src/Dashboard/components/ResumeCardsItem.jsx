@@ -1,4 +1,4 @@
-import { Download, Edit, Eye, MoreVertical, Share2, Trash2 } from "lucide-react";
+import { Download, Edit, MoreVertical, Share2, Trash2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -29,6 +29,15 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
   const resumeData = resume?.attributes || resume;
   const resumeId = resume.documentId || resumeData.documentId || resume.id;
   const resumeTitle = resumeData?.title || "Untitled Resume";
+  const themeColor = resumeData?.themeColor || "#0d9488";
+  const jobTitle = resumeData?.jobTitle;
+  const updatedLabel = resumeData?.updatedAt
+    ? new Date(resumeData.updatedAt).toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : null;
 
   const shareUrl =
     `${(import.meta.env.VITE_BASE_URL || window.location.origin).replace(/\/$/, "")}/my-resume/${resumeId}/view`;
@@ -61,44 +70,76 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
   };
 
   return (
-    <div className="group relative bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
-      <Link to={`/dashboard/resume/${resumeId}/edit`}>
+    <div
+      className="group relative flex min-h-[280px] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-20px_rgba(15,23,42,0.4)]"
+      style={{ fontFamily: '"DM Sans", sans-serif' }}
+    >
+      <div className="h-1.5 w-full" style={{ backgroundColor: themeColor }} />
+
+      <Link
+        to={`/dashboard/resume/${resumeId}/edit`}
+        className="relative flex flex-1 flex-col px-4 pt-5 pb-3"
+      >
         <div
-          className="p-14 bg-gradient-to-br from-gray-50 via-purple-100/30 to-gray-200/50 flex items-center justify-center h-[240px] border-t-4 group-hover:scale-105 transition-all duration-300"
-          style={{
-            borderColor: resumeData?.themeColor || "#14b8a6",
-          }}
+          className="relative mx-auto w-full max-w-[150px] flex-1 rounded-lg border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-3 shadow-inner transition-transform duration-300 group-hover:scale-[1.02]"
         >
-          <img
-            src="/cv.png"
-            width={80}
-            height={80}
-            alt="Resume"
-            className="opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+          <div
+            className="mb-2 h-2 w-2/3 rounded-full"
+            style={{ backgroundColor: themeColor, width: "65%" }}
           />
+          <div className="mb-3 h-1.5 w-1/2 rounded-full bg-slate-200" />
+          <div className="space-y-1.5">
+            <div className="h-1 rounded-full bg-slate-100" />
+            <div className="h-1 w-5/6 rounded-full bg-slate-100" />
+            <div className="h-1 w-4/6 rounded-full bg-slate-100" />
+          </div>
+          <div className="mt-3 space-y-1.5">
+            <div
+              className="h-1.5 w-1/3 rounded-full"
+              style={{ backgroundColor: `${themeColor}99` }}
+            />
+            <div className="h-1 rounded-full bg-slate-100" />
+            <div className="h-1 w-4/5 rounded-full bg-slate-100" />
+          </div>
+          <div
+            className="absolute -right-1 bottom-2 h-8 w-1.5 rounded-full opacity-80"
+            style={{ backgroundColor: themeColor }}
+          />
+        </div>
+
+        <div className="mt-4 min-w-0">
+          <h3
+            className="truncate text-[15px] font-semibold text-slate-900"
+            style={{ fontFamily: '"Fraunces", serif' }}
+            title={resumeTitle}
+          >
+            {resumeTitle}
+          </h3>
+          <p className="mt-0.5 truncate text-xs text-slate-500">
+            {jobTitle || "Open to edit details"}
+          </p>
+          {updatedLabel && (
+            <p className="mt-1 text-[11px] text-slate-400">Updated {updatedLabel}</p>
+          )}
         </div>
       </Link>
 
-      <div
-        className="flex items-center justify-between px-4 py-3 border-t border-gray-100"
-        style={{
-          backgroundColor: resumeData?.themeColor
-            ? `${resumeData.themeColor}15`
-            : "#f8fafc",
-        }}
-      >
-        <h1 className="text-sm font-medium text-gray-700 truncate flex-1 mr-2">
-          {resumeTitle}
-        </h1>
+      <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/80 px-3 py-2.5">
+        <Link
+          to={`/my-resume/${resumeId}/view`}
+          className="text-xs font-medium text-teal-700 hover:text-teal-800 cursor-pointer"
+        >
+          Preview
+        </Link>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="p-1.5 rounded-full hover:bg-gray-200/70 transition-colors duration-200 cursor-pointer"
+              className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-white hover:text-slate-800 cursor-pointer"
               onClick={(e) => e.stopPropagation()}
             >
-              <MoreVertical className="h-4 w-4 text-gray-500 hover:text-gray-700" />
+              <MoreVertical className="h-4 w-4" />
             </button>
           </DropdownMenuTrigger>
 
@@ -110,16 +151,6 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
               >
                 <Edit className="w-4 h-4" />
                 Edit
-              </Link>
-            </DropdownMenuItem>
-
-            <DropdownMenuItem asChild className="cursor-pointer">
-              <Link
-                to={`/my-resume/${resumeId}/view`}
-                className="flex items-center gap-2 w-full"
-              >
-                <Eye className="w-4 h-4" />
-                Preview
               </Link>
             </DropdownMenuItem>
 

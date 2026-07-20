@@ -18,7 +18,7 @@ const formField = {
     workSummary: ""
 };
 
-function Experiences({ enableNextButton }) {
+function Experiences({ enableNextButton, requireSaveForNext = true }) {
     const params = useParams();
     const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
     const [experiences, setExperiences] = useState([]);
@@ -33,12 +33,18 @@ function Experiences({ enableNextButton }) {
         }
     }, [resumeInfo?.experience]);
 
+    const markUnsaved = () => {
+        if (requireSaveForNext) {
+            enableNextButton?.(false);
+        }
+    };
+
     // ====== HANDLE INPUT CHANGE ======
     const handleInputChange = (e, index, field) => {
+        markUnsaved();
         const newExperiences = [...experiences];
         newExperiences[index][field] = e.target.value;
         setExperiences(newExperiences);
-        // ✅ Update resumeInfo bhi karo
         setResumeInfo({
             ...resumeInfo,
             experience: newExperiences
@@ -47,10 +53,10 @@ function Experiences({ enableNextButton }) {
 
     // ====== HANDLE RICH TEXT EDITOR CHANGE ======
     const handleRichTextEditor = (value, index, field) => {
+        markUnsaved();
         const newExperiences = [...experiences];
         newExperiences[index][field] = value;
         setExperiences(newExperiences);
-        // ✅ Update resumeInfo bhi karo
         setResumeInfo({
             ...resumeInfo,
             experience: newExperiences
@@ -118,9 +124,9 @@ function Experiences({ enableNextButton }) {
     };
 
     return (
-        <div className="p-6 shadow-lg rounded-xl border-t-4 border-t-teal-500 bg-white max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold mb-2 text-gray-800">Work Experience</h2>
-            <p className="text-gray-500 mb-6">Provide details about your work experience</p>
+        <div className="app-form-panel max-w-4xl mx-auto">
+            <h2 className="app-form-title text-2xl">Work Experience</h2>
+            <p className="app-form-desc">Provide details about your work experience</p>
 
             <form onSubmit={onSave}>
                 <div className="space-y-4">

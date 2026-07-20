@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import GlobalApi from "./../../../../../Service/GlobalApi";
 import { generateSummaryFromAI } from "./../../../../../Service/AiModal";
 
-const Summary = ({enableNextButton}) => {
+const Summary = ({enableNextButton, requireSaveForNext = true}) => {
     const params = useParams();
     const {resumeInfo, setResumeInfo} = useContext(ResumeInfoContext);
     const [summary, setSummary] = useState(resumeInfo?.summary || "");
@@ -19,6 +19,13 @@ const Summary = ({enableNextButton}) => {
     useEffect(() => {
         setResumeInfo((prev) => ({ ...prev, summary: summary }));
     }, [summary, setResumeInfo]);
+
+    const handleSummaryChange = (value) => {
+        if (requireSaveForNext) {
+            enableNextButton(false);
+        }
+        setSummary(value);
+    };
 
     // ✅ Save function (reusable)
     const saveSummary = async (summaryText) => {
@@ -100,9 +107,9 @@ const Summary = ({enableNextButton}) => {
     };
 
     return (
-        <div className="p-5 shadow-lg rounded-lg border-t-4 border-t-teal-500">
-            <h2 className="text-lg font-bold mb-2">Summary</h2>
-            <p>Add a brief summary of your qualifications and experience.</p>
+        <div className="app-form-panel">
+            <h2 className="app-form-title">Summary</h2>
+            <p className="app-form-desc">Add a brief summary of your qualifications and experience.</p>
 
             <form onSubmit={onSave} className="mt-4">
                 <div className="flex justify-between items-end">
@@ -128,7 +135,7 @@ const Summary = ({enableNextButton}) => {
                     className="mt-6"
                     required
                     value={summary}
-                    onChange={(e) => setSummary(e.target.value)}
+                    onChange={(e) => handleSummaryChange(e.target.value)}
                 />
                 <div className="flex flex-col gap-2 col-span-2 my-5">
                     <Button 

@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import GlobalApi from "./../../../../../Service/GlobalApi";
 import { toast } from "sonner";
 
-const PersonalDetail = ({enableNextButton}) => {
+const PersonalDetail = ({enableNextButton, requireSaveForNext = true}) => {
     const params = useParams();
     const {resumeInfo, setResumeInfo} = useContext(ResumeInfoContext);
     const [formData, setFormData] = useState();
@@ -18,7 +18,9 @@ const PersonalDetail = ({enableNextButton}) => {
     }, []);
 
     const handleInputChange = (e) => {
-        enableNextButton(false);
+        if (requireSaveForNext) {
+            enableNextButton(false);
+        }
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
         setResumeInfo((prev) => ({ ...prev, [name]: value }));
@@ -44,9 +46,9 @@ const PersonalDetail = ({enableNextButton}) => {
     };
 
     return (
-        <div className="p-5 shadow-lg rounded-lg border-t-4 border-t-teal-500">
-            <h2 className="text-lg font-bold mb-2">Personal Information</h2>
-            <p>Get started with basic information</p>
+        <div className="app-form-panel">
+            <h2 className="app-form-title">Personal Information</h2>
+            <p className="app-form-desc">Get started with basic information</p>
 
             <form onSubmit={onSave}>
                 <div className="grid grid-cols-2 gap-4 mt-4">
@@ -77,7 +79,7 @@ const PersonalDetail = ({enableNextButton}) => {
                     <div className="flex flex-col gap-2 col-span-2">
                        <Button 
                             type="submit"
-                            className="flex items-center justify-center gap-2 w-full px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 shadow-md hover:shadow-lg transition-all duration-200 rounded-xl disabled:opacity-60 disabled:cursor-not-allowed"
+                            className="flex items-center justify-center gap-2 w-full px-6 py-3 text-sm font-semibold text-white app-btn-accent shadow-md hover:shadow-lg transition-all duration-200 rounded-xl disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
                             disabled={loading}
                         >
                             {loading ? (

@@ -1,8 +1,7 @@
 const ExperiencePreview = ({ resumeInfo }) => {
-    // ✅ Check if experiences exist
     if (!resumeInfo?.experience || resumeInfo.experience.length === 0) {
         return (
-            <div className="mt-6">
+            <div className="mt-5">
                 <h2 style={{ color: resumeInfo?.themeColor }} className="text-center font-bold text-xl">
                     Professional Experience
                 </h2>
@@ -12,7 +11,7 @@ const ExperiencePreview = ({ resumeInfo }) => {
     }
 
     return (
-        <div className="mt-6">
+        <div className="mt-5">
             <h2 style={{ color: resumeInfo?.themeColor }} className="text-center font-bold text-xl">
                 Professional Experience
             </h2>
@@ -26,12 +25,11 @@ const ExperiencePreview = ({ resumeInfo }) => {
                         <p>{exp.city || ""}, {exp.state || ""}</p>
                         <p className="text-xs">{exp.startDate || ""} To {exp.endDate || ""}</p>
                     </div>
-                    
-                    {/* ✅ Work Summary with proper HTML rendering */}
+
                     {exp.workSummary ? (
-                        <div 
-                            className="text-sm mt-1 prose prose-sm max-w-none"
-                            dangerouslySetInnerHTML={{ __html: exp.workSummary }} 
+                        <div
+                            className="resume-html-content text-sm mt-1"
+                            dangerouslySetInnerHTML={{ __html: exp.workSummary }}
                         />
                     ) : (
                         <p className="text-sm text-gray-400 mt-1">No summary provided</p>

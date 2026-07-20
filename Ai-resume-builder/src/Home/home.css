@@ -1,0 +1,338 @@
+.home-page {
+  --home-ink: #0f172a;
+  --home-muted: #475569;
+  --home-accent: #0f766e;
+  --home-accent-soft: #ccfbf1;
+  --home-paper: #ffffff;
+  --home-line: #e2e8f0;
+  min-height: 100vh;
+  background: #f8fafc;
+  color: var(--home-ink);
+  font-family: "DM Sans", sans-serif;
+}
+
+.home-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 2.5rem;
+  align-items: center;
+  min-height: calc(100vh - 72px);
+  padding: 3.5rem 6vw 4rem;
+  overflow: hidden;
+}
+
+.home-hero__atmosphere {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 55% at 0% 0%, rgba(15, 118, 110, 0.14), transparent 58%),
+    radial-gradient(ellipse 55% 45% at 100% 20%, rgba(15, 23, 42, 0.07), transparent 55%),
+    linear-gradient(180deg, #f8fafc 0%, #ffffff 48%, #f1f5f9 100%);
+  animation: home-atmosphere 10s ease-in-out infinite alternate;
+}
+
+@keyframes home-atmosphere {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.03);
+    opacity: 0.92;
+  }
+}
+
+.home-hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 34rem;
+  animation: home-rise 700ms ease-out both;
+}
+
+.home-hero__brand {
+  font-family: "Fraunces", serif;
+  font-size: clamp(2rem, 4vw, 2.85rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--home-ink);
+  margin: 0 0 1.25rem;
+}
+
+.home-hero__headline {
+  font-family: "DM Sans", sans-serif;
+  font-size: clamp(1.2rem, 2.2vw, 1.55rem);
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--home-muted);
+  margin: 0 0 1rem;
+}
+
+.home-hero__support {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: #64748b;
+  margin: 0 0 1.75rem;
+  max-width: 30rem;
+}
+
+.home-hero__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.home-hero__btn-primary {
+  background: var(--home-ink) !important;
+  color: #fff !important;
+  height: 2.75rem;
+  padding-inline: 1.25rem;
+  border-radius: 0.65rem;
+  transition: transform 200ms ease, background-color 200ms ease;
+}
+
+.home-hero__btn-primary:hover {
+  background: #1e293b !important;
+  transform: translateY(-1px);
+}
+
+.home-hero__btn-secondary {
+  height: 2.75rem;
+  padding-inline: 1.15rem;
+  border-radius: 0.65rem;
+  border-color: var(--home-line) !important;
+  background: #fff !important;
+  color: var(--home-ink) !important;
+}
+
+.home-hero__visual {
+  position: relative;
+  z-index: 1;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: home-rise 900ms ease-out 120ms both;
+}
+
+.home-resume-sheet {
+  width: min(100%, 340px);
+  background: var(--home-paper);
+  border: 1px solid var(--home-line);
+  border-radius: 0.75rem;
+  padding: 1.5rem 1.4rem 1.6rem;
+  box-shadow: 0 24px 50px -28px rgba(15, 23, 42, 0.45);
+}
+
+.home-resume-sheet--main {
+  position: relative;
+  z-index: 2;
+  animation: home-float 5.5s ease-in-out infinite;
+}
+
+.home-resume-sheet--back {
+  position: absolute;
+  width: min(88%, 300px);
+  right: 4%;
+  top: 8%;
+  z-index: 1;
+  opacity: 0.55;
+  transform: rotate(6deg) translate(18px, -8px);
+  filter: saturate(0.85);
+}
+
+.home-resume-sheet__accent {
+  height: 4px;
+  width: 42%;
+  border-radius: 999px;
+  background: var(--home-accent);
+  margin-bottom: 1.1rem;
+}
+
+.home-resume-sheet__name {
+  font-family: "Fraunces", serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--home-accent);
+  line-height: 1.2;
+}
+
+.home-resume-sheet__name.faint {
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+.home-resume-sheet__role {
+  margin-top: 0.25rem;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--home-ink);
+}
+
+.home-resume-sheet__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.65rem;
+  font-size: 0.68rem;
+  color: #64748b;
+}
+
+.home-resume-sheet__divider {
+  height: 1px;
+  background: var(--home-accent);
+  opacity: 0.35;
+  margin: 0.9rem 0 0.85rem;
+}
+
+.home-resume-sheet__section {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--home-accent);
+  margin: 0.85rem 0 0.4rem;
+}
+
+.home-resume-sheet__lines {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.home-resume-sheet__lines span {
+  display: block;
+  height: 7px;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.home-resume-sheet__lines span.mid {
+  width: 78%;
+}
+
+.home-resume-sheet__lines span.short {
+  width: 58%;
+}
+
+.home-resume-sheet__job {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-bottom: 0.35rem;
+}
+
+.home-resume-sheet__job strong {
+  font-size: 0.82rem;
+  color: var(--home-ink);
+}
+
+.home-resume-sheet__job em {
+  font-style: normal;
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+.home-resume-sheet__skills {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.home-resume-sheet__skills i {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--home-accent), var(--home-accent-soft));
+}
+
+.faint-lines span {
+  background: #cbd5e1;
+}
+
+@keyframes home-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes home-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.home-next {
+  border-top: 1px solid var(--home-line);
+  background: #fff;
+  padding: 3.5rem 6vw 4.5rem;
+}
+
+.home-next__inner {
+  max-width: 40rem;
+  margin: 0 auto;
+  text-align: center;
+  animation: home-rise 800ms ease-out both;
+}
+
+.home-next__title {
+  font-family: "Fraunces", serif;
+  font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+  font-weight: 700;
+  color: var(--home-ink);
+  margin: 0 0 0.75rem;
+}
+
+.home-next__text {
+  margin: 0;
+  color: var(--home-muted);
+  line-height: 1.65;
+  font-size: 1rem;
+}
+
+@media (max-width: 900px) {
+  .home-hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 2.5rem 5vw 3rem;
+    gap: 2rem;
+  }
+
+  .home-hero__content {
+    max-width: none;
+    text-align: left;
+  }
+
+  .home-hero__visual {
+    min-height: 360px;
+    order: -1;
+  }
+
+  .home-resume-sheet--back {
+    right: 8%;
+    top: 4%;
+  }
+}
+
+@media (max-width: 520px) {
+  .home-hero__visual {
+    min-height: 300px;
+  }
+
+  .home-resume-sheet--main {
+    width: 100%;
+  }
+
+  .home-resume-sheet--back {
+    display: none;
+  }
+}
