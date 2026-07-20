@@ -45,6 +45,10 @@
     "summary": {
       "type": "text"
     },
+    "themeColor": {
+      "type": "string",
+      "default": "#ff6666"
+    },
     "Experience": {
       "type": "component",
       "component": "experience.experience",

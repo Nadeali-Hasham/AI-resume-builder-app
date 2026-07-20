@@ -7,9 +7,14 @@ import EducationalPreview from "./preview/EductionalPreview";
 import SkillPreview from "./preview/SkillPreview";
 
 const ResumePreview = () => {
-    const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
+    const { resumeInfo } = useContext(ResumeInfoContext);
+    const themeColor = resumeInfo?.themeColor || "#ff6666";
+
   return (
-    <div style={{borderColor:resumeInfo?.themeColor}} className="shadow-lg p-14 h-full border-t-16">
+    <div
+      className="shadow-lg p-14 h-full border-t-[16px]"
+      style={{ borderTopColor: themeColor }}
+    >
       {/* Personal Detail */}
       <PersonalPreviewDetail resumeInfo={resumeInfo} />
 
