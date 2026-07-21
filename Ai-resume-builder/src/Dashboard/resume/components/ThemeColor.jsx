@@ -35,7 +35,7 @@ const colors = [
 ];
 
 const COLOR_PREVIEW_MS = 300;
-const TOAST_DEBOUNCE_MS = 3000;
+const TOAST_DEBOUNCE_MS = 1000;
 
 const ThemeColor = () => {
   const { resumeId } = useParams();
