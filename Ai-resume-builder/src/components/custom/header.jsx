@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom"
-import { Button } from "../ui/button"
+import { Link } from "react-router-dom";
+import { Button } from "../ui/button";
 import { UserButton, useUser } from "@clerk/clerk-react";
 
 const Header = () => {
@@ -14,11 +14,11 @@ const Header = () => {
         <img
           src="/logo.svg"
           alt="AI Resume Builder Logo"
-          className="h-9 w-9 shrink-0 sm:h-12 sm:w-12"
-          height={48}
-          width={48}
+          className="h-9 w-9 shrink-0 sm:h-11 sm:w-11"
+          height={44}
+          width={44}
         />
-        <div className="min-w-0 max-w-[42vw] xs:max-w-none">
+        <div className="min-w-0">
           <p
             className="truncate text-sm font-semibold text-slate-900 leading-none"
             style={{ fontFamily: '"Fraunces", serif' }}
@@ -38,8 +38,7 @@ const Header = () => {
               size="sm"
               className="bg-slate-900 text-white hover:bg-slate-800 cursor-pointer px-3 sm:px-4"
             >
-              <span className="sm:hidden">Dash</span>
-              <span className="hidden sm:inline">Dashboard</span>
+              Dashboard
             </Button>
           </Link>
           <UserButton afterSignOutUrl="/" />
@@ -50,8 +49,7 @@ const Header = () => {
             size="sm"
             className="cursor-pointer bg-teal-600 text-white hover:bg-teal-700 px-3 sm:px-4"
           >
-            <span className="sm:hidden">Start</span>
-            <span className="hidden sm:inline">Get Started</span>
+            Get Started
           </Button>
         </Link>
       )}

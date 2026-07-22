@@ -118,7 +118,7 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
 
       let email = emailFromPayload(payload);
 
-      // Optional: enrich email via Backend API when secret is configured
+      // Enrich email via Clerk Backend API only — never trust client X-User-Email
       if (!email && clerkClient) {
         try {
           const user = await clerkClient.users.getUser(String(payload.sub));
@@ -131,7 +131,8 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
         }
       }
 
-      // Fallback: client-provided email header (only after JWT verified)
+      // After JWT is verified: use client email only to reclaim the user's own rows
+      // when the session token has no email claim and CLERK_SECRET_KEY is unset.
       if (!email) {
         const headerEmail = ctx.request.header['x-user-email'];
         if (typeof headerEmail === 'string' && headerEmail.trim()) {

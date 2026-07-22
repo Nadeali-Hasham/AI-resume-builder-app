@@ -5,11 +5,12 @@ WORKDIR /opt/app
 RUN apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips-dev python3
 
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN npm ci || npm install
 
 COPY . .
 
-ENV NODE_ENV=development
-EXPOSE 1337
+ENV NODE_ENV=production
+RUN npm run build
 
-CMD ["npm", "run", "develop"]
+EXPOSE 1337
+CMD ["npm", "run", "start"]

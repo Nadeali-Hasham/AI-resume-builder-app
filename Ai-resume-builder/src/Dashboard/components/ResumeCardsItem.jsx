@@ -53,7 +53,7 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
   const resumeTitle = resumeData?.title || "Untitled Resume";
   const themeColor = resumeData?.themeColor || "#0d9488";
   const jobTitle = resumeData?.jobTitle;
-  const shareToken = resumeData?.shareToken || resumeId;
+  const shareToken = resumeData?.shareToken;
   const personName = [resumeData?.firstName, resumeData?.lastName].filter(Boolean).join(" ");
   const templateLabel = (resumeData?.template || "classic").toUpperCase();
   const updatedLabel = resumeData?.updatedAt
@@ -64,10 +64,26 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
       })
     : null;
 
-  const shareUrl = `${(import.meta.env.VITE_BASE_URL || window.location.origin).replace(/\/$/, "")}/my-resume/${shareToken}/view`;
+  const shareUrl = shareToken
+    ? `${(import.meta.env.VITE_BASE_URL || window.location.origin).replace(/\/$/, "")}/my-resume/${shareToken}/view`
+    : "";
 
-  const handleDownload = () => {
-    navigate(`/my-resume/${shareToken}/view?download=true`);
+  const ensureShareToken = async () => {
+    if (shareToken) return shareToken;
+    const res = await GlobalApi.rotateShareToken(resumeId);
+    const token = res?.data?.data?.shareToken;
+    if (!token) throw new Error("No share token");
+    refreshData?.();
+    return token;
+  };
+
+  const handleDownload = async () => {
+    try {
+      const token = await ensureShareToken();
+      navigate(`/my-resume/${token}/view?download=true`);
+    } catch {
+      toast.error("Could not prepare share link");
+    }
   };
 
   const handleDelete = async () => {
@@ -129,7 +145,9 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
 
   const copyShareLink = async () => {
     try {
-      await navigator.clipboard.writeText(shareUrl);
+      const token = await ensureShareToken();
+      const url = `${(import.meta.env.VITE_BASE_URL || window.location.origin).replace(/\/$/, "")}/my-resume/${token}/view`;
+      await navigator.clipboard.writeText(url);
       toast.success("Share link copied");
     } catch {
       toast.error("Could not copy link");

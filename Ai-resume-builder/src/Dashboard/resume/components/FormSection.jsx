@@ -230,8 +230,15 @@ const FormSection = () => {
           requireSaveForNext={requireSaveForNext}
         />
       )}
-      {activeFormIndex === 9 && (
-        <Navigate to={`/my-resume/${resumeInfo?.shareToken || resumeId}/view`} />
+      {activeFormIndex === 9 && resumeInfo?.shareToken && (
+        <Navigate to={`/my-resume/${resumeInfo.shareToken}/view`} />
+      )}
+      {activeFormIndex === 9 && !resumeInfo?.shareToken && (
+        <div className="app-form-panel">
+          <p className="app-subtitle text-sm">
+            Preparing your share link… open View from the dashboard if this stays.
+          </p>
+        </div>
       )}
     </div>
   );

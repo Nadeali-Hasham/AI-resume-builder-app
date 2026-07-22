@@ -3,13 +3,17 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: strapi
-      POSTGRES_PASSWORD: strapi
-      POSTGRES_DB: resume_builder
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: ${POSTGRES_USER:-strapi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-resume_builder}
+    # Do not publish 5432 to the host in production — only expose to the compose network
     volumes:
       - strapi_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-strapi}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   strapi:
     build:
@@ -17,35 +21,34 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     ports:
-      - "1337:1337"
+      - "${STRAPI_PORT:-1337}:1337"
     environment:
       HOST: 0.0.0.0
       PORT: 1337
+      NODE_ENV: production
       DATABASE_CLIENT: postgres
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
-      DATABASE_NAME: resume_builder
-      DATABASE_USERNAME: strapi
-      DATABASE_PASSWORD: strapi
+      DATABASE_NAME: ${POSTGRES_DB:-resume_builder}
+      DATABASE_USERNAME: ${POSTGRES_USER:-strapi}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
       DATABASE_SSL: "false"
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      FRONTEND_URL: ${FRONTEND_URL:?Set FRONTEND_URL to your live site origin}
       CLERK_SECRET_KEY: ${CLERK_SECRET_KEY}
-      CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY}
+      CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY:?Set CLERK_PUBLISHABLE_KEY}
       GOOGLE_AI_API_KEY: ${GOOGLE_AI_API_KEY}
       GOOGLE_AI_MODEL: ${GOOGLE_AI_MODEL:-gemini-2.0-flash}
-      FREE_RESUME_LIMIT: ${FREE_RESUME_LIMIT:-3}
+      FREE_RESUME_LIMIT: ${FREE_RESUME_LIMIT:-5}
       AI_DAILY_LIMIT: ${AI_DAILY_LIMIT:-20}
-      APP_KEYS: ${APP_KEYS}
-      API_TOKEN_SALT: ${API_TOKEN_SALT}
-      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
-      TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT}
-      JWT_SECRET: ${JWT_SECRET}
-      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
-    volumes:
-      - ./my-backend:/opt/app
-      - /opt/app/node_modules
+      APP_KEYS: ${APP_KEYS:?Set APP_KEYS}
+      API_TOKEN_SALT: ${API_TOKEN_SALT:?Set API_TOKEN_SALT}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET:?Set ADMIN_JWT_SECRET}
+      TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT:?Set TRANSFER_TOKEN_SALT}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?Set ENCRYPTION_KEY}
 
 volumes:
   strapi_pg_data:

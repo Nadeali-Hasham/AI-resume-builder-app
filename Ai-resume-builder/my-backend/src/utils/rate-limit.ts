@@ -36,4 +36,4 @@ export const getAiDailyLimit = () =>
   Math.max(1, parseInt(process.env.AI_DAILY_LIMIT || '20', 10) || 20);
 
 export const getFreeResumeLimit = () =>
-  Math.max(1, parseInt(process.env.FREE_RESUME_LIMIT || '3', 10) || 3);
+  Math.max(1, parseInt(process.env.FREE_RESUME_LIMIT || '5', 10) || 5);

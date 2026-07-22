@@ -7,7 +7,7 @@ import { useParams, useSearchParams } from "react-router-dom"
 import GlobalApi from "./../../../../Service/GlobalApi"
 import { RWebShare } from "react-web-share"
 import { Download, LoaderCircle, Share2 } from "lucide-react"
-import { emptyResumeInfo, mapResumeFromApi } from "@/lib/mapResumeFromApi"
+import { mapResumeFromApi } from "@/lib/mapResumeFromApi"
 import { downloadResumePdf } from "@/lib/downloadResumePdf"
 import { toast, Toaster } from "sonner"
 import "./view-resume.css"
@@ -15,6 +15,7 @@ import "./view-resume.css"
 const ViewResume = () => {
     const [resumeInfo, setResumeInfo] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [loadError, setLoadError] = useState(false)
     const [downloading, setDownloading] = useState(false)
     const { resumeId } = useParams()
     const [searchParams] = useSearchParams()
@@ -34,14 +35,15 @@ const ViewResume = () => {
         if (!resumeId) return
 
         setLoading(true)
+        setLoadError(false)
         GlobalApi.getPublicResumeById(resumeId)
             .then((resp) => {
                 setResumeInfo(mapResumeFromApi(resp?.data?.data))
             })
             .catch((error) => {
                 console.error("Error loading resume:", error)
-                setResumeInfo(emptyResumeInfo)
-                toast.error("Couldn’t load resume")
+                setResumeInfo(null)
+                setLoadError(true)
             })
             .finally(() => {
                 setLoading(false)
@@ -65,7 +67,7 @@ const ViewResume = () => {
     }
 
     useEffect(() => {
-        if (loading || !shouldAutoDownload || !resumeInfo) return
+        if (loading || loadError || !shouldAutoDownload || !resumeInfo) return
 
         const timer = setTimeout(() => {
             HandleDownloadResume()
@@ -73,13 +75,28 @@ const ViewResume = () => {
 
         return () => clearTimeout(timer)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loading, shouldAutoDownload, resumeInfo])
+    }, [loading, loadError, shouldAutoDownload, resumeInfo])
 
     if (loading) {
         return (
             <div className="view-resume-page flex flex-col items-center justify-center gap-4 p-10">
                 <div className="view-resume-skeleton" />
                 <p className="app-subtitle text-sm">Loading resume…</p>
+            </div>
+        )
+    }
+
+    if (loadError || !resumeInfo) {
+        return (
+            <div className="view-resume-page flex flex-col items-center justify-center gap-4 p-10">
+                <Header />
+                <h1 className="app-title text-2xl">Resume not found</h1>
+                <p className="app-subtitle text-center text-sm max-w-md">
+                    This share link is invalid or was rotated. Ask the owner for a new link.
+                </p>
+                <a href="/" className="text-sm font-medium text-teal-700 underline">
+                    Go home
+                </a>
             </div>
         )
     }

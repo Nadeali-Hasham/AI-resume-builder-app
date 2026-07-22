@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import GlobalApi from "./../../../../../Service/GlobalApi";
 import { generateSummaryFromAI } from "./../../../../../Service/AiModal";
 import EmptySectionHint from "../EmptySectionHint";
+import { AI_DAILY_LIMIT, AI_JD_MAX_CHARS, apiErrorMessage } from "@/lib/planLimits";
 
 const Summary = ({ enableNextButton, requireSaveForNext = true }) => {
     const params = useParams();
@@ -54,7 +55,7 @@ const Summary = ({ enableNextButton, requireSaveForNext = true }) => {
         try {
             const result = await generateSummaryFromAI({
                 jobTitle: resumeInfo?.jobTitle || "",
-                jobDescription,
+                jobDescription: jobDescription.slice(0, AI_JD_MAX_CHARS),
                 currentSummary: summary,
             });
             setAiOptions(result.options || []);
@@ -66,11 +67,7 @@ const Summary = ({ enableNextButton, requireSaveForNext = true }) => {
             toast.success("AI summary ready — pick another option below if you like");
         } catch (error) {
             console.error("Error in generateAISummary:", error);
-            const msg =
-                error?.response?.data?.error?.message ||
-                error?.message ||
-                "Failed to generate AI summary";
-            toast.error(msg);
+            toast.error(apiErrorMessage(error, "Failed to generate AI summary"));
         } finally {
             setAiLoading(false);
         }
@@ -89,7 +86,8 @@ const Summary = ({ enableNextButton, requireSaveForNext = true }) => {
         <div className="app-form-panel">
             <h2 className="app-form-title">Summary</h2>
             <p className="app-form-desc">
-                Write a short pitch — or tailor it to a job description with AI.
+                Write a short pitch — or tailor it to a job description with AI
+                (about {AI_DAILY_LIMIT} AI uses / day on the free plan).
             </p>
             {!summary?.trim() && (
                 <EmptySectionHint
@@ -105,8 +103,12 @@ const Summary = ({ enableNextButton, requireSaveForNext = true }) => {
                         placeholder="Paste a JD to tailor the summary..."
                         className="mt-2 min-h-[90px]"
                         value={jobDescription}
+                        maxLength={AI_JD_MAX_CHARS}
                         onChange={(e) => setJobDescription(e.target.value)}
                     />
+                    <p className="mt-1 text-[11px] text-slate-400">
+                        {jobDescription.length}/{AI_JD_MAX_CHARS}
+                    </p>
                 </div>
 
                 <div className="flex justify-between items-end gap-2">

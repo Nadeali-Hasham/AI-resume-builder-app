@@ -13,8 +13,9 @@ import GlobalApi from "../../../Service/GlobalApi";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { FREE_RESUME_LIMIT, apiErrorMessage } from "@/lib/planLimits";
 
-const AddResume = () => {
+const AddResume = ({ disabled = false, atLimit = false }) => {
     const [openDialog, setOpenDialog] = useState(false);
     const [resumeTitle, setResumeTitle] = useState("");
     const { user } = useUser();
@@ -22,6 +23,10 @@ const AddResume = () => {
     const navigate = useNavigate();
 
     const onCreateResume = async () => {
+        if (atLimit) {
+            toast.error(`Free plan allows up to ${FREE_RESUME_LIMIT} resumes`);
+            return;
+        }
         if (!resumeTitle.trim()) {
             toast.error("Please enter a resume title");
             return;
@@ -52,11 +57,7 @@ const AddResume = () => {
         } catch (error) {
             console.error("Error creating resume:", error);
             setLoading(false);
-            const msg =
-                error?.response?.data?.error?.message ||
-                error?.response?.data?.message ||
-                "Failed to create resume";
-            toast.error(msg);
+            toast.error(apiErrorMessage(error, "Failed to create resume"));
         }
     };
 
@@ -64,8 +65,21 @@ const AddResume = () => {
         <>
             <button
                 type="button"
-                onClick={() => setOpenDialog(true)}
-                className="group relative flex h-full min-h-[220px] w-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-teal-300/80 bg-gradient-to-br from-teal-50 via-white to-slate-50 p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:border-teal-500 hover:shadow-[0_20px_40px_-24px_rgba(13,148,136,0.55)] cursor-pointer sm:min-h-[280px] sm:p-6"
+                disabled={disabled}
+                onClick={() => {
+                    if (atLimit) {
+                        toast.error(
+                            `Free plan: max ${FREE_RESUME_LIMIT} resumes. Delete one to create another.`
+                        );
+                        return;
+                    }
+                    setOpenDialog(true);
+                }}
+                className={`group relative flex h-full min-h-[220px] w-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed p-5 text-left transition-all duration-300 sm:min-h-[280px] sm:p-6 ${
+                    disabled
+                        ? "cursor-not-allowed border-slate-200 bg-slate-50 opacity-70"
+                        : "cursor-pointer border-teal-300/80 bg-gradient-to-br from-teal-50 via-white to-slate-50 hover:-translate-y-1 hover:border-teal-500 hover:shadow-[0_20px_40px_-24px_rgba(13,148,136,0.55)]"
+                }`}
                 style={{ fontFamily: '"DM Sans", sans-serif' }}
             >
                 <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-teal-200/30 blur-2xl transition-opacity group-hover:opacity-80" />
@@ -81,7 +95,9 @@ const AddResume = () => {
                     Create New
                 </p>
                 <p className="relative z-10 mt-1 max-w-[11rem] text-center text-sm text-slate-500">
-                    Start a fresh resume with AI assistance
+                    {atLimit
+                        ? `Limit reached (${FREE_RESUME_LIMIT})`
+                        : "Start a fresh resume with AI assistance"}
                 </p>
             </button>
 
@@ -95,7 +111,8 @@ const AddResume = () => {
                             Create New Resume
                         </DialogTitle>
                         <DialogDescription className="text-slate-500">
-                            Give your resume a clear role-focused title.
+                            Give your resume a clear role-focused title. Free plan: up to{" "}
+                            {FREE_RESUME_LIMIT} resumes.
                         </DialogDescription>
                     </DialogHeader>
 

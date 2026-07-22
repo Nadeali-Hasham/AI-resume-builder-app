@@ -4,7 +4,8 @@ import GlobalApi from "./../../Service/GlobalApi";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ResumeCardsItem from "./components/ResumeCardsItem";
 import { FileText, Search, Sparkles } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Input } from "../components/ui/input";
+import { FREE_RESUME_LIMIT, apiErrorMessage } from "../lib/planLimits";
 import { toast } from "sonner";
 
 const Dashboard = () => {
@@ -24,11 +25,7 @@ const Dashboard = () => {
       })
       .catch((error) => {
         console.error("Error fetching user resumes:", error);
-        const msg =
-          error?.response?.data?.error?.message ||
-          error?.response?.data?.message ||
-          "Failed to load resumes";
-        toast.error(msg);
+        toast.error(apiErrorMessage(error, "Failed to load resumes"));
       })
       .finally(() => {
         setLoading(false);
@@ -99,8 +96,9 @@ const Dashboard = () => {
               className="mt-2 max-w-xl text-sm leading-relaxed text-slate-600 sm:mt-3 sm:text-[15px]"
               style={{ fontFamily: '"DM Sans", sans-serif' }}
             >
-              Build polished, AI-assisted resumes and keep every version ready
-              for your next opportunity.
+              Build polished, AI-assisted resumes (free plan: up to{" "}
+              {FREE_RESUME_LIMIT}). Keep every version ready for your next
+              opportunity.
             </p>
           </div>
 
@@ -116,8 +114,9 @@ const Dashboard = () => {
                 Total resumes
               </p>
               <p className="text-lg font-semibold text-slate-900">
-                {loading ? "—" : resumeList.length}
+                {loading ? "—" : `${resumeList.length} / ${FREE_RESUME_LIMIT}`}
               </p>
+              <p className="text-[11px] text-slate-400">Free plan limit</p>
             </div>
             <div className="ml-2 hidden sm:flex items-center gap-1 rounded-full bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-white">
               <Sparkles className="h-3 w-3 text-teal-300" />
@@ -156,8 +155,19 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:gap-5">
-          <AddResume />
-          {filtered.length > 0 &&
+          <AddResume
+            disabled={!loading && resumeList.length >= FREE_RESUME_LIMIT}
+            atLimit={!loading && resumeList.length >= FREE_RESUME_LIMIT}
+          />
+          {loading &&
+            Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={`sk-${i}`}
+                className="min-h-[220px] animate-pulse rounded-2xl border border-slate-200 bg-slate-100/80 sm:min-h-[280px]"
+              />
+            ))}
+          {!loading &&
+            filtered.length > 0 &&
             filtered.map((resume, index) => (
               <ResumeCardsItem
                 resume={resume}
@@ -166,6 +176,12 @@ const Dashboard = () => {
               />
             ))}
         </div>
+
+        {!loading && resumeList.length >= FREE_RESUME_LIMIT && (
+          <p className="mt-4 text-center text-xs text-slate-500">
+            Free plan: up to {FREE_RESUME_LIMIT} resumes. Delete one to create another.
+          </p>
+        )}
 
         {!loading && resumeList.length === 0 && (
           <p

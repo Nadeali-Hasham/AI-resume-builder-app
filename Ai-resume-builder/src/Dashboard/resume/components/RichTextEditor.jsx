@@ -19,6 +19,7 @@ import {
 import { generateExperienceBulletsFromAI } from "./../../../../Service/AiModal";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { toast } from "sonner";
+import { AI_JD_MAX_CHARS, apiErrorMessage } from "@/lib/planLimits";
 
 const RichTextEditor = ({ value = "", onRichTextEditorChange, index = 0 }) => {
   const [editorValue, setEditorValue] = useState(value);
@@ -55,7 +56,7 @@ const RichTextEditor = ({ value = "", onRichTextEditorChange, index = 0 }) => {
       const result = await generateExperienceBulletsFromAI({
         title: title || "",
         companyName,
-        jobDescription,
+        jobDescription: jobDescription.slice(0, AI_JD_MAX_CHARS),
         currentHtml: editorValue,
       });
       setAiOptions(result.options || []);
@@ -63,11 +64,7 @@ const RichTextEditor = ({ value = "", onRichTextEditorChange, index = 0 }) => {
       toast.success("AI bullets generated");
     } catch (error) {
       console.error("AI work summary failed:", error);
-      const msg =
-        error?.response?.data?.error?.message ||
-        error?.message ||
-        "Failed to generate work experience";
-      toast.error(msg);
+      toast.error(apiErrorMessage(error, "Failed to generate work experience"));
     } finally {
       setAiLoading(false);
     }
@@ -83,8 +80,12 @@ const RichTextEditor = ({ value = "", onRichTextEditorChange, index = 0 }) => {
           className="mt-1 min-h-[72px] text-sm"
           placeholder="Paste JD to tailor bullets..."
           value={jobDescription}
+          maxLength={AI_JD_MAX_CHARS}
           onChange={(e) => setJobDescription(e.target.value)}
         />
+        <p className="mt-1 text-[11px] text-slate-400">
+          {jobDescription.length}/{AI_JD_MAX_CHARS}
+        </p>
       </div>
       <div className="flex justify-between my-2 items-center gap-2">
         <label>Work Experience</label>

@@ -10,48 +10,66 @@ import { ClerkProvider } from '@clerk/clerk-react'
 import SignInPage from './auth/sign-in'
 import EditResume from './Dashboard/resume/[resumeId]/edit'
 import ViewResume from './my-resume/[resumeId]/view'
-
+import NotFound from './pages/NotFound'
+import ErrorBoundary from './components/ErrorBoundary'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || ''
 
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key")
 }
 
+if (import.meta.env.PROD && /localhost|127\.0\.0\.1/.test(STRAPI_URL)) {
+  console.error(
+    '[config] VITE_STRAPI_URL still points at localhost in a production build. Redeploy with your live API URL.'
+  )
+}
+
 const router = createBrowserRouter([
   {
-    
     element: <App />,
+    errorElement: <NotFound />,
     children: [
-      
       {
         path: '/dashboard',
         element: <Dashboard />,
+        errorElement: <NotFound />,
       },
       {
         path: '/dashboard/resume/:resumeId/edit',
         element: <EditResume />,
-      }
-    ]
+        errorElement: <NotFound />,
+      },
+    ],
   },
   {
     path: '/',
     element: <Homepage />,
+    errorElement: <NotFound />,
   },
   {
     path: '/auth/sign-in',
     element: <SignInPage />,
+    errorElement: <NotFound />,
   },
   {
     path: '/my-resume/:resumeId/view',
     element: <ViewResume />,
+    errorElement: <NotFound />,
+  },
+  {
+    path: '*',
+    element: <NotFound />,
   },
 ])
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-      <RouterProvider router={router} />
-    </ClerkProvider>
+    <ErrorBoundary>
+      <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+        <RouterProvider router={router} />
+      </ClerkProvider>
+    </ErrorBoundary>
   </StrictMode>,
 )

@@ -143,7 +143,7 @@ const Homepage = () => {
         </div>
       </section>
 
-      <section className="home-next">
+      <section id="how-it-works" className="home-next">
         <div className="home-next__inner">
           <h2 className="home-next__title">How it works</h2>
           <p className="home-next__text">
@@ -166,7 +166,7 @@ const Homepage = () => {
         </div>
       </section>
 
-      <section className="home-templates">
+      <section id="templates" className="home-templates">
         <div className="home-templates__inner">
           <h2 className="home-next__title">Layouts that fit the role</h2>
           <p className="home-next__text">
