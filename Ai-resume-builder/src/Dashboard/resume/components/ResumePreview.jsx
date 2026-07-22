@@ -36,7 +36,7 @@ const ResumePreview = () => {
         style={{ ["--resume-theme"]: themeColor }}
       >
         <div className="resume-modern-rail" aria-hidden="true" />
-        <div className="resume-modern-body p-8 md:p-10">{body}</div>
+        <div className="resume-modern-body p-4 sm:p-8 md:p-10">{body}</div>
       </div>
     );
   }
@@ -45,7 +45,7 @@ const ResumePreview = () => {
     return (
       <div
         id="resume-pdf-root"
-        className="resume-preview-root resume-template-ats p-8 md:p-10 bg-white border-t-0"
+        className="resume-preview-root resume-template-ats p-4 sm:p-8 md:p-10 bg-white border-t-0"
       >
         {body}
       </div>
@@ -55,7 +55,7 @@ const ResumePreview = () => {
   return (
     <div
       id="resume-pdf-root"
-      className="resume-preview-root resume-template-classic p-8 md:p-10 bg-white"
+      className="resume-preview-root resume-template-classic p-4 sm:p-8 md:p-10 bg-white"
       style={{ borderTop: `16px solid ${themeColor}` }}
     >
       {body}

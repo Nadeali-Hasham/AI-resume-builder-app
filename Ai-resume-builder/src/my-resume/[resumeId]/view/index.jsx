@@ -94,10 +94,10 @@ const ViewResume = () => {
                         <div className="view-resume-actions">
                             <div className="view-resume-actions__text">
                                 <p className="view-resume-kicker">Ready to send</p>
-                                <h2 className="app-title text-2xl md:text-3xl">
+                                <h2 className="app-title text-xl sm:text-2xl md:text-3xl">
                                     {personName}&apos;s resume
                                 </h2>
-                                <p className="app-subtitle mt-1 text-sm md:text-base">
+                                <p className="app-subtitle mt-1 text-xs sm:text-sm md:text-base">
                                     Download a polished PDF or share a private link.
                                 </p>
                             </div>

@@ -161,7 +161,7 @@ const ThemeColor = () => {
             disabled={saving}
           >
             <LayoutGrid className="w-4 h-4 text-black" />
-            <span className="text-black">Theme</span>
+            <span className="hidden text-black xs:inline">Theme</span>
             {resumeInfo?.themeColor && (
               <span
                 className="w-3.5 h-3.5 rounded-full border border-gray-400"

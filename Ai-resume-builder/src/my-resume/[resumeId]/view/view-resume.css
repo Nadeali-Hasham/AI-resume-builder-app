@@ -4,12 +4,20 @@
     linear-gradient(180deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%);
   min-height: 100vh;
   padding-bottom: 4.5rem;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .view-resume-hero {
   max-width: 850px;
   margin: 0 auto;
-  padding: 1rem 1rem 0.25rem;
+  padding: 0.75rem 0.85rem 0.25rem;
+}
+
+@media (min-width: 640px) {
+  .view-resume-hero {
+    padding: 1rem 1rem 0.25rem;
+  }
 }
 
 .view-resume-kicker {
@@ -27,7 +35,7 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 0.75rem 1rem;
-  padding: 1rem 1.1rem;
+  padding: 0.85rem 0.9rem;
   border: 1px solid #e2e8f0;
   border-radius: 1rem;
   background: rgba(255, 255, 255, 0.9);
@@ -36,30 +44,74 @@
 }
 
 .view-resume-actions__text {
-  flex: 1 1 240px;
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+@media (min-width: 480px) {
+  .view-resume-actions__text {
+    flex: 1 1 240px;
+  }
+}
+
+@media (min-width: 640px) {
+  .view-resume-actions {
+    padding: 1rem 1.1rem;
+  }
 }
 
 .view-resume-actions__buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
+  width: 100%;
+}
+
+@media (min-width: 480px) {
+  .view-resume-actions__buttons {
+    width: auto;
+  }
+}
+
+.view-resume-actions__buttons > * {
+  flex: 1 1 auto;
+}
+
+@media (min-width: 480px) {
+  .view-resume-actions__buttons > * {
+    flex: 0 0 auto;
+  }
 }
 
 .view-resume-print {
   max-width: 850px;
   margin: 0 auto;
-  padding: 1rem 1rem 2rem;
+  padding: 0.75rem 0.85rem 2rem;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .view-resume-print {
+    padding: 1rem 1rem 2rem;
+  }
 }
 
 .view-resume-sheet {
   background: #fff;
   border: 1px solid #cbd5e1;
-  border-radius: 0.85rem;
+  border-radius: 0.65rem;
   overflow: hidden;
   height: auto;
+  width: 100%;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.8) inset,
     0 22px 48px -28px rgba(15, 23, 42, 0.5);
+}
+
+@media (min-width: 640px) {
+  .view-resume-sheet {
+    border-radius: 0.85rem;
+  }
 }
 
 .view-resume-sheet .resume-preview-root {
@@ -86,18 +138,24 @@
 }
 
 .view-pdf-banner {
-  max-width: 850px;
+  max-width: min(850px, calc(100% - 1.5rem));
   margin: 0.5rem auto 0;
   padding: 0.55rem 0.9rem;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: 999px;
+  border-radius: 0.75rem;
   background: #0f172a;
   color: #fff;
   font-size: 0.8rem;
   font-weight: 500;
+}
+
+@media (min-width: 480px) {
+  .view-pdf-banner {
+    border-radius: 999px;
+  }
 }
 
 .view-resume-mobile-bar {

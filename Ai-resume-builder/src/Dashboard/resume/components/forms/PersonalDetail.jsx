@@ -105,7 +105,7 @@ const PersonalDetail = ({ enableNextButton, requireSaveForNext = true }) => {
       </p>
 
       <form onSubmit={onSave}>
-        <div className="grid grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-2">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium">First Name</label>
             <Input name="firstName" value={formData.firstName} required onChange={handleInputChange} />
@@ -114,11 +114,11 @@ const PersonalDetail = ({ enableNextButton, requireSaveForNext = true }) => {
             <label className="text-sm font-medium">Last Name</label>
             <Input name="lastName" value={formData.lastName} required onChange={handleInputChange} />
           </div>
-          <div className="flex flex-col gap-2 col-span-2">
+          <div className="flex flex-col gap-2 sm:col-span-2">
             <label className="text-sm font-medium">Job Title</label>
             <Input name="jobTitle" value={formData.jobTitle} required onChange={handleInputChange} />
           </div>
-          <div className="flex flex-col gap-2 col-span-2">
+          <div className="flex flex-col gap-2 sm:col-span-2">
             <label className="text-sm font-medium">Address</label>
             <Input name="address" value={formData.address} required onChange={handleInputChange} />
           </div>
@@ -130,7 +130,7 @@ const PersonalDetail = ({ enableNextButton, requireSaveForNext = true }) => {
             <label className="text-sm font-medium">Email</label>
             <Input name="email" type="email" value={formData.email} required onChange={handleInputChange} />
           </div>
-          <div className="flex flex-col gap-2 col-span-2">
+          <div className="flex flex-col gap-2 sm:col-span-2">
             <label className="text-sm font-medium">
               LinkedIn <span className="font-normal text-slate-400">(optional)</span>
             </label>
@@ -166,7 +166,7 @@ const PersonalDetail = ({ enableNextButton, requireSaveForNext = true }) => {
               onChange={handleInputChange}
             />
           </div>
-          <div className="flex flex-col gap-2 col-span-2">
+          <div className="flex flex-col gap-2 sm:col-span-2">
             <Button
               type="submit"
               className="flex items-center justify-center gap-2 w-full px-6 py-3 text-sm font-semibold text-white app-btn-accent shadow-md hover:shadow-lg transition-all duration-200 rounded-xl disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"

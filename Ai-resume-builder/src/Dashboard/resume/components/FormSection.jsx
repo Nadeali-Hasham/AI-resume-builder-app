@@ -96,16 +96,17 @@ const FormSection = () => {
           <SaveStatusBadge status={saveStatus} />
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex w-full gap-2 sm:w-auto">
           {activeFormIndex > 1 && (
             <Button
               size="sm"
               type="button"
-              className="flex gap-2 app-btn-accent cursor-pointer"
+              className="flex flex-1 gap-2 app-btn-accent cursor-pointer sm:flex-none"
               onClick={() => setActiveFormIndex(activeFormIndex - 1)}
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Previous</span>
+              <span className="sm:hidden">Prev</span>
+              <span className="hidden sm:inline">Previous</span>
             </Button>
           )}
 
@@ -113,7 +114,7 @@ const FormSection = () => {
             size="sm"
             type="button"
             disabled={!enableNextButton}
-            className="flex gap-2 app-btn-accent cursor-pointer disabled:opacity-50"
+            className="flex flex-1 gap-2 app-btn-accent cursor-pointer disabled:opacity-50 sm:flex-none"
             onClick={() => setActiveFormIndex(activeFormIndex + 1)}
           >
             <ArrowRight className="w-4 h-4" />

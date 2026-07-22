@@ -6,6 +6,9 @@
   --home-paper: #ffffff;
   --home-line: #e2e8f0;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
   background: #f8fafc;
   color: var(--home-ink);
   font-family: "DM Sans", sans-serif;
@@ -20,6 +23,7 @@
   min-height: calc(100vh - 72px);
   padding: 3.5rem 6vw 4rem;
   overflow: hidden;
+  width: 100%;
 }
 
 .home-hero__atmosphere {
@@ -565,21 +569,11 @@
 }
 
 @media (max-width: 900px) {
-  .home-templates__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .home-tpl-stage {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 900px) {
   .home-hero {
     grid-template-columns: 1fr;
     min-height: auto;
-    padding: 2.5rem 5vw 3rem;
-    gap: 2rem;
+    padding: 2rem 5vw 2.5rem;
+    gap: 1.5rem;
   }
 
   .home-hero__content {
@@ -588,26 +582,94 @@
   }
 
   .home-hero__visual {
-    min-height: 360px;
+    min-height: 300px;
+    width: 100%;
     order: -1;
   }
 
   .home-resume-sheet--back {
-    right: 8%;
+    right: 6%;
     top: 4%;
+    width: min(58%, 220px);
+  }
+
+  .home-templates__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-tpl-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .home-tpl-tabs {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .home-tpl-tab {
+    flex: 1 0 auto;
+  }
+  .home-next {
+    padding: 2.5rem 5vw 3rem;
+  }
+
+  .home-templates {
+    padding: 0.5rem 5vw 3.5rem;
   }
 }
 
 @media (max-width: 520px) {
+  .home-hero {
+    padding: 1.5rem 4vw 2rem;
+  }
+
+  .home-hero__brand {
+    font-size: clamp(1.65rem, 8vw, 2.1rem);
+    margin-bottom: 0.85rem;
+  }
+
+  .home-hero__headline {
+    font-size: clamp(1.05rem, 4.5vw, 1.25rem);
+  }
+
+  .home-hero__support {
+    font-size: 0.92rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .home-hero__cta {
+    width: 100%;
+  }
+
+  .home-hero__cta a,
+  .home-hero__cta .home-hero__btn-primary,
+  .home-hero__cta .home-hero__btn-secondary {
+    width: 100%;
+  }
+
   .home-hero__visual {
-    min-height: 300px;
+    min-height: 260px;
   }
 
   .home-resume-sheet--main {
     width: 100%;
+    max-width: 100%;
   }
 
   .home-resume-sheet--back {
     display: none;
+  }
+
+  .home-next,
+  .home-templates {
+    padding-left: 4vw;
+    padding-right: 4vw;
+  }
+
+  .home-steps li {
+    padding: 0.85rem 0.95rem;
   }
 }

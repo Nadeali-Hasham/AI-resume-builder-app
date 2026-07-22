@@ -40,7 +40,7 @@ const TemplatePicker = () => {
       <PopoverTrigger asChild>
         <Button size="sm" type="button" className="flex gap-2 app-btn-dark cursor-pointer">
           <LayoutTemplate className="h-4 w-4" />
-          Template
+          <span className="hidden xs:inline">Template</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-64 bg-white p-3" align="start">

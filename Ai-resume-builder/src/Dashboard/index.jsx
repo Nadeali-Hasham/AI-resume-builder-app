@@ -71,7 +71,7 @@ const Dashboard = () => {
   const firstName = user?.firstName || user?.fullName?.split(" ")[0] || "there";
 
   return (
-    <div className="relative min-h-[calc(100vh-90px)] overflow-hidden">
+    <div className="relative min-h-[calc(100vh-90px)] overflow-x-hidden">
       <div
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
@@ -80,23 +80,23 @@ const Dashboard = () => {
         }}
       />
 
-      <div className="px-6 py-8 md:px-16 lg:px-28 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
-          <div>
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 md:px-10 lg:px-16 xl:px-28 md:py-8">
+        <div className="mb-6 flex flex-col gap-4 sm:mb-8 md:mb-10 md:flex-row md:items-end md:justify-between md:gap-6">
+          <div className="min-w-0">
             <p
-              className="text-sm font-medium tracking-wide text-teal-700 mb-2"
+              className="mb-2 text-sm font-medium tracking-wide text-teal-700"
               style={{ fontFamily: '"DM Sans", sans-serif' }}
             >
               Welcome back, {firstName}
             </p>
             <h1
-              className="text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight"
+              className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl md:text-4xl"
               style={{ fontFamily: '"Fraunces", serif' }}
             >
               My Resumes
             </h1>
             <p
-              className="mt-3 max-w-xl text-slate-600 text-[15px] leading-relaxed"
+              className="mt-2 max-w-xl text-sm leading-relaxed text-slate-600 sm:mt-3 sm:text-[15px]"
               style={{ fontFamily: '"DM Sans", sans-serif' }}
             >
               Build polished, AI-assisted resumes and keep every version ready
@@ -105,7 +105,7 @@ const Dashboard = () => {
           </div>
 
           <div
-            className="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-sm"
+            className="flex w-full items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/80 px-3 py-3 shadow-sm backdrop-blur-sm sm:w-auto sm:px-4"
             style={{ fontFamily: '"DM Sans", sans-serif' }}
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
@@ -133,20 +133,20 @@ const Dashboard = () => {
           >
             Your workspace
           </h2>
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <div className="relative">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+            <div className="relative w-full sm:w-64">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search title, role, template…"
-                className="h-10 w-full sm:w-64 pl-9 bg-white"
+                className="h-10 w-full bg-white pl-9"
               />
             </div>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-700 cursor-pointer"
+              className="h-10 w-full cursor-pointer rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-700 sm:w-auto"
             >
               <option value="updated">Sort: Updated</option>
               <option value="created">Sort: Created</option>
@@ -155,7 +155,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+        <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:gap-5">
           <AddResume />
           {filtered.length > 0 &&
             filtered.map((resume, index) => (
