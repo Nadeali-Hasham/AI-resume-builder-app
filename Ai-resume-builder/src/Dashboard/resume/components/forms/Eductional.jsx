@@ -7,6 +7,7 @@ import { ResumeInfoContext } from "@/context/ResumeInfoContext";
 import { useParams } from "react-router-dom";
 import GlobalApi from "./../../../../../Service/GlobalApi";
 import { toast } from "sonner";
+import EmptySectionHint from "../EmptySectionHint";
 
 const formField = {
     universityName: "",
@@ -137,6 +138,12 @@ function Education({ enableNextButton, requireSaveForNext = true }) {
         <div className="app-form-panel max-w-4xl mx-auto">
             <h2 className="app-form-title text-2xl">Education</h2>
             <p className="app-form-desc">Add your qualification details.</p>
+            {!educationList.some((e) => e.universityName?.trim() || e.degree?.trim()) && (
+                <EmptySectionHint
+                    title="Tip: keep education scannable"
+                    tip="Degree, major, school, and dates. Add a short line only if it strengthens the story."
+                />
+            )}
 
             <form onSubmit={onSave}>
                 <div className="space-y-4">

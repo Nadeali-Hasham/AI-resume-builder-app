@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import GlobalApi from "./../../../../../Service/GlobalApi";
 import { generateSummaryFromAI } from "./../../../../../Service/AiModal";
+import EmptySectionHint from "../EmptySectionHint";
 
 const Summary = ({ enableNextButton, requireSaveForNext = true }) => {
     const params = useParams();
@@ -90,6 +91,12 @@ const Summary = ({ enableNextButton, requireSaveForNext = true }) => {
             <p className="app-form-desc">
                 Write a short pitch — or tailor it to a job description with AI.
             </p>
+            {!summary?.trim() && (
+                <EmptySectionHint
+                    title="Tip: strong summaries sell you in 3 lines"
+                    tip='Example: "MERN developer with 2+ years building production apps — React, Node, and MongoDB. Led features that cut load time 30%."'
+                />
+            )}
 
             <form onSubmit={onSave} className="mt-4 space-y-4">
                 <div>
@@ -138,7 +145,7 @@ const Summary = ({ enableNextButton, requireSaveForNext = true }) => {
                             <button
                                 key={i}
                                 type="button"
-                                className="w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-left text-sm hover:border-teal-500 cursor-pointer"
+                                className="app-ai-option"
                                 onClick={() => {
                                     handleSummaryChange(opt);
                                     if (requireSaveForNext) enableNextButton(false);

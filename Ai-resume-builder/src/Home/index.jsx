@@ -3,11 +3,53 @@ import Header from "@/components/custom/header"
 import { Button } from "@/components/ui/button"
 import { useUser } from "@clerk/clerk-react"
 import { ArrowRight } from "lucide-react"
+import { useEffect, useState } from "react"
 import "./home.css"
+
+const TEMPLATES = [
+  {
+    id: "classic",
+    label: "Classic",
+    desc: "Centered and polished for most applications.",
+  },
+  {
+    id: "modern",
+    label: "Modern",
+    desc: "Sidebar accent for a sharper product look.",
+  },
+  {
+    id: "ats",
+    label: "ATS",
+    desc: "Plain structure that parses cleanly in applicant systems.",
+  },
+]
 
 const Homepage = () => {
   const { isSignedIn } = useUser()
   const primaryPath = isSignedIn ? "/dashboard" : "/auth/sign-in"
+  const [activeTpl, setActiveTpl] = useState(0)
+  const [typed, setTyped] = useState("")
+
+  useEffect(() => {
+    const full = "MERN Stack Developer"
+    let i = 0
+    setTyped("")
+    const id = setInterval(() => {
+      i += 1
+      setTyped(full.slice(0, i))
+      if (i >= full.length) clearInterval(id)
+    }, 55)
+    return () => clearInterval(id)
+  }, [activeTpl])
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setActiveTpl((n) => (n + 1) % TEMPLATES.length)
+    }, 4200)
+    return () => clearInterval(id)
+  }, [])
+
+  const tpl = TEMPLATES[activeTpl]
 
   return (
     <div className="home-page">
@@ -49,10 +91,16 @@ const Homepage = () => {
         </div>
 
         <div className="home-hero__visual" aria-hidden="true">
-          <div className="home-resume-sheet home-resume-sheet--main">
+          <div
+            className={`home-resume-sheet home-resume-sheet--main home-resume-sheet--${tpl.id}`}
+            key={tpl.id}
+          >
             <div className="home-resume-sheet__accent" />
             <div className="home-resume-sheet__name">Alex Morgan</div>
-            <div className="home-resume-sheet__role">Product Engineer</div>
+            <div className="home-resume-sheet__role home-demo-type">
+              {typed}
+              <span className="home-demo-caret" />
+            </div>
             <div className="home-resume-sheet__meta">
               <span>alex@email.com</span>
               <span>San Francisco, CA</span>
@@ -124,22 +172,28 @@ const Homepage = () => {
           <p className="home-next__text">
             Switch between Classic, Modern, and ATS-friendly templates without rebuilding.
           </p>
-          <div className="home-templates__grid">
-            <article className="home-tpl">
-              <div className="home-tpl__preview home-tpl__preview--classic" />
-              <h3>Classic</h3>
-              <p>Centered and polished for most applications.</p>
-            </article>
-            <article className="home-tpl">
-              <div className="home-tpl__preview home-tpl__preview--modern" />
-              <h3>Modern</h3>
-              <p>Sidebar accent for a sharper product look.</p>
-            </article>
-            <article className="home-tpl">
-              <div className="home-tpl__preview home-tpl__preview--ats" />
-              <h3>ATS</h3>
-              <p>Plain structure that parses cleanly in applicant systems.</p>
-            </article>
+
+          <div className="home-tpl-tabs" role="tablist">
+            {TEMPLATES.map((t, i) => (
+              <button
+                key={t.id}
+                type="button"
+                role="tab"
+                aria-selected={i === activeTpl}
+                className={`home-tpl-tab ${i === activeTpl ? "is-active" : ""}`}
+                onClick={() => setActiveTpl(i)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="home-tpl-stage">
+            <div className={`home-tpl-stage__preview home-tpl-stage__preview--${tpl.id}`} />
+            <div className="home-tpl-stage__copy">
+              <h3>{tpl.label}</h3>
+              <p>{tpl.desc}</p>
+            </div>
           </div>
         </div>
       </section>

@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { ResumeInfoContext } from "@/context/ResumeInfoContext";
 import GlobalApi from "./../../../../../Service/GlobalApi";
+import EmptySectionHint from "../EmptySectionHint";
 
 const LEVELS = [
   { value: 1, label: "Beginner" },
@@ -85,6 +86,12 @@ const Skill = ({ enableNextButton, requireSaveForNext = true }) => {
       <p className="app-form-desc">
         Add each skill and set how strong you are (Beginner → Expert).
       </p>
+      {!skillsList.some((s) => s.name?.trim()) && (
+        <EmptySectionHint
+          title="Tip: mix core + supporting skills"
+          tip="Example: React (Expert), TypeScript (Advanced), MS Office (Familiar) — ratings show depth at a glance."
+        />
+      )}
 
       <form onSubmit={onSave} className="mt-4 space-y-5">
         {skillsList.map((skill, index) => (

@@ -5,9 +5,9 @@ const BASE_URL = (import.meta.env.VITE_STRAPI_URL || 'http://localhost:1337/api'
   ''
 );
 
-/** Async getter for Clerk session JWT — set from App via useAuth().getToken */
 let getAuthToken = async () => null;
 let currentUserEmail = '';
+let saveStatusListener = null;
 
 export const setAuthTokenGetter = (fn) => {
   getAuthToken = typeof fn === 'function' ? fn : async () => null;
@@ -15,6 +15,19 @@ export const setAuthTokenGetter = (fn) => {
 
 export const setApiUserEmail = (email) => {
   currentUserEmail = (email || '').trim().toLowerCase();
+};
+
+/** 'idle' | 'saving' | 'saved' | 'error' */
+export const setSaveStatusListener = (fn) => {
+  saveStatusListener = typeof fn === 'function' ? fn : null;
+};
+
+const notifySave = (status) => {
+  try {
+    saveStatusListener?.(status);
+  } catch {
+    /* ignore */
+  }
 };
 
 const axiosClient = axios.create({
@@ -47,14 +60,23 @@ export const getUserResumes = () =>
     },
   });
 
-export const updateResumeDetail = (id, data) => axiosClient.put(`/user-resumes/${id}`, data);
+export const updateResumeDetail = async (id, data) => {
+  notifySave('saving');
+  try {
+    const res = await axiosClient.put(`/user-resumes/${id}`, data);
+    notifySave('saved');
+    return res;
+  } catch (err) {
+    notifySave('error');
+    throw err;
+  }
+};
 
 export const getResumeById = (id) =>
   axiosClient.get(`/user-resumes/${id}`, {
     params: { populate: '*' },
   });
 
-/** Public share view by opaque shareToken (or legacy documentId) */
 export const getPublicResumeById = (shareToken) =>
   axiosClient.get(`/user-resumes/public/${shareToken}`);
 
@@ -99,4 +121,5 @@ export default {
   generateExperienceFromAI,
   setAuthTokenGetter,
   setApiUserEmail,
+  setSaveStatusListener,
 };

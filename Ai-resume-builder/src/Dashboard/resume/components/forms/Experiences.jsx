@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import GlobalApi from "./../../../../../Service/GlobalApi";
 import { toast } from "sonner";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
+import EmptySectionHint from "../EmptySectionHint";
 
 const formField = {
     title: "",
@@ -146,6 +147,12 @@ function Experiences({ enableNextButton, requireSaveForNext = true }) {
         <div className="app-form-panel max-w-4xl mx-auto">
             <h2 className="app-form-title text-2xl">Work Experience</h2>
             <p className="app-form-desc">Provide details about your work experience</p>
+            {!experiences.some((e) => e.title?.trim() || e.companyName?.trim()) && (
+                <EmptySectionHint
+                    title="Tip: lead with impact"
+                    tip="Role + company + 4–6 bullets with numbers (users, %, time saved). Use AI if you need a starting draft."
+                />
+            )}
 
             <form onSubmit={onSave}>
                 <div className="space-y-4">

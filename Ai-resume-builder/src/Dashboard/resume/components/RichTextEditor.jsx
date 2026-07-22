@@ -128,7 +128,7 @@ const RichTextEditor = ({ value = "", onRichTextEditorChange, index = 0 }) => {
             <button
               key={i}
               type="button"
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 p-2 text-left text-xs hover:border-teal-500 cursor-pointer resume-html-content"
+          className={`w-full rounded-lg border border-slate-200 bg-slate-50 p-2 text-left text-xs hover:border-teal-500 cursor-pointer resume-html-content app-ai-option`}
               onClick={() => applyHtml(opt)}
               dangerouslySetInnerHTML={{ __html: sanitizeHtml(opt) }}
             />

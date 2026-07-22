@@ -67,6 +67,21 @@ body {
   box-shadow: 0 14px 34px -28px rgba(15, 23, 42, 0.45);
 }
 
+.app-form-panel label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #334155;
+  letter-spacing: 0.01em;
+}
+
+.app-form-panel input:focus,
+.app-form-panel textarea:focus,
+.app-form-panel select:focus {
+  outline: none;
+  border-color: var(--app-accent);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+}
+
 .app-form-panel h2,
 .app-form-panel .app-form-title {
   font-family: var(--font-display);
@@ -81,6 +96,25 @@ body {
   color: var(--app-muted);
   font-size: 0.925rem;
   margin: 0 0 1rem;
+}
+
+.app-ai-option {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--app-border);
+  background: #f8fafc;
+  padding: 0.75rem 0.9rem;
+  text-align: left;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.app-ai-option:hover {
+  border-color: var(--app-accent);
+  background: #f0fdfa;
+  transform: translateY(-1px);
 }
 
 .app-toolbar {
@@ -115,12 +149,54 @@ body {
   background: var(--app-accent-hover) !important;
 }
 
+.app-btn-outline {
+  background: #fff !important;
+  color: var(--app-ink) !important;
+  border: 1px solid var(--app-border) !important;
+}
+
+.app-btn-outline:hover {
+  background: #f8fafc !important;
+}
+
+.app-btn-danger {
+  background: var(--app-danger) !important;
+  color: #fff !important;
+}
+
 .app-preview-frame {
   background: #fff;
   border: 1px solid var(--app-border);
   border-radius: 1rem;
   overflow: hidden;
   box-shadow: 0 18px 40px -28px rgba(15, 23, 42, 0.5);
+}
+
+.app-preview-paper {
+  border-radius: 1rem;
+  border: 1px solid #cbd5e1;
+  background:
+    linear-gradient(145deg, #e2e8f0 0%, #f1f5f9 40%, #dbe3ee 100%);
+  padding: 1rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 22px 48px -28px rgba(15, 23, 42, 0.55);
+}
+
+.app-preview-scale-wrap {
+  overflow: auto;
+  max-height: min(78vh, 920px);
+  border-radius: 0.65rem;
+}
+
+.app-preview-scale-inner {
+  transform: scale(var(--preview-zoom, 0.72));
+  transform-origin: top center;
+  width: calc(100% / var(--preview-zoom, 0.72));
+  margin: 0 auto;
+  background: #fff;
+  box-shadow: 0 12px 40px -20px rgba(15, 23, 42, 0.45);
+  border-radius: 0.35rem;
 }
 
 .app-auth-page {

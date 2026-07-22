@@ -4,8 +4,14 @@ import FormSection from "../../components/FormSection";
 import ResumePreview from "../../components/ResumePreview";
 import { ResumeInfoContext } from "@/context/ResumeInfoContext";
 import GlobalApi from "./../../../../../Service/GlobalApi";
-import { emptyResumeInfo, mapResumeFromApi } from "@/lib/mapResumeFromApi";
+import { mapResumeFromApi } from "@/lib/mapResumeFromApi";
 import { Button } from "@/components/ui/button";
+
+const ZOOM_OPTIONS = [
+  { label: "Fit", value: 0.72 },
+  { label: "100%", value: 1 },
+  { label: "125%", value: 1.15 },
+];
 
 const EditResume = () => {
   const params = useParams();
@@ -13,6 +19,7 @@ const EditResume = () => {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [mobileTab, setMobileTab] = useState("form");
+  const [zoom, setZoom] = useState(0.72);
 
   useEffect(() => {
     if (!params.resumeId) return;
@@ -24,7 +31,6 @@ const EditResume = () => {
         const apiData = response?.data?.data;
         const mapped = mapResumeFromApi(apiData);
         setResumeInfo(mapped);
-        // Backfill share token if missing (legacy rows)
         if (apiData?.documentId && !apiData?.shareToken) {
           GlobalApi.rotateShareToken(apiData.documentId)
             .then((r) => {
@@ -100,11 +106,41 @@ const EditResume = () => {
               <FormSection />
             </div>
             <div
-              className={`app-preview-frame lg:sticky lg:top-24 ${
+              className={`lg:sticky lg:top-24 ${
                 mobileTab === "preview" ? "block" : "hidden lg:block"
               }`}
             >
-              <ResumePreview />
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Live preview
+                </p>
+                <div className="flex gap-1 rounded-lg border border-slate-200 bg-white p-0.5">
+                  {ZOOM_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.label}
+                      type="button"
+                      onClick={() => setZoom(opt.value)}
+                      className={`cursor-pointer rounded-md px-2.5 py-1 text-[11px] font-medium transition ${
+                        zoom === opt.value
+                          ? "bg-slate-900 text-white"
+                          : "text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="app-preview-paper">
+                <div
+                  className="app-preview-scale-wrap"
+                  style={{ ["--preview-zoom"]: zoom }}
+                >
+                  <div className="app-preview-scale-inner">
+                    <ResumePreview />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

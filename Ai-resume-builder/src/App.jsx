@@ -51,7 +51,7 @@ function App() {
     <>
       <Header />
       <Outlet />
-      <Toaster />
+      <Toaster position="bottom-right" richColors closeButton />
     </>
   );
 }

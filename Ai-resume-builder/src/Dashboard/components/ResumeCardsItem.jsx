@@ -2,6 +2,7 @@ import {
   Copy,
   Download,
   Edit,
+  FileText as FileTextIcon,
   MoreVertical,
   Pencil,
   Share2,
@@ -53,6 +54,8 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
   const themeColor = resumeData?.themeColor || "#0d9488";
   const jobTitle = resumeData?.jobTitle;
   const shareToken = resumeData?.shareToken || resumeId;
+  const personName = [resumeData?.firstName, resumeData?.lastName].filter(Boolean).join(" ");
+  const templateLabel = (resumeData?.template || "classic").toUpperCase();
   const updatedLabel = resumeData?.updatedAt
     ? new Date(resumeData.updatedAt).toLocaleDateString(undefined, {
         month: "short",
@@ -157,16 +160,42 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
         to={`/dashboard/resume/${resumeId}/edit`}
         className="relative flex flex-1 flex-col px-4 pt-5 pb-3"
       >
-        <div className="relative mx-auto w-full max-w-[150px] flex-1 rounded-lg border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-3 shadow-inner transition-transform duration-300 group-hover:scale-[1.02]">
+        <div className="relative mx-auto w-full max-w-[160px] flex-1 overflow-hidden rounded-lg border border-slate-200 bg-white p-3 shadow-inner transition-transform duration-300 group-hover:scale-[1.02]">
           <div
-            className="mb-2 h-2 rounded-full"
-            style={{ backgroundColor: themeColor, width: "65%" }}
+            className="absolute left-0 top-0 h-full w-1.5"
+            style={{ backgroundColor: themeColor }}
           />
-          <div className="mb-3 h-1.5 w-1/2 rounded-full bg-slate-200" />
-          <div className="space-y-1.5">
+          <p
+            className="truncate text-[11px] font-bold leading-tight"
+            style={{ color: themeColor, fontFamily: '"Fraunces", serif' }}
+          >
+            {personName || resumeTitle}
+          </p>
+          <p className="mt-0.5 truncate text-[9px] text-slate-500">
+            {jobTitle || "Role title"}
+          </p>
+          <div className="mt-2 space-y-1">
             <div className="h-1 rounded-full bg-slate-100" />
             <div className="h-1 w-5/6 rounded-full bg-slate-100" />
             <div className="h-1 w-4/6 rounded-full bg-slate-100" />
+          </div>
+          <div className="mt-2 flex gap-1">
+            <span
+              className="rounded px-1 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-white"
+              style={{ backgroundColor: themeColor }}
+            >
+              {templateLabel}
+            </span>
+          </div>
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 flex translate-y-2 items-center justify-center gap-2 bg-gradient-to-t from-white via-white/95 to-transparent px-2 pb-2 pt-8 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100"
+          >
+            <span className="rounded-md bg-slate-900 px-2 py-1 text-[10px] font-medium text-white">
+              Edit
+            </span>
+            <span className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-medium text-slate-700">
+              Open
+            </span>
           </div>
         </div>
 
@@ -187,13 +216,36 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
         </div>
       </Link>
 
-      <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/80 px-3 py-2.5">
-        <Link
-          to={`/my-resume/${shareToken}/view`}
-          className="text-xs font-medium text-teal-700 hover:text-teal-800 cursor-pointer"
-        >
-          Preview
-        </Link>
+      <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/80 px-2 py-2">
+        <div className="flex items-center gap-0.5">
+          <Link
+            to={`/dashboard/resume/${resumeId}/edit`}
+            className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-white hover:text-teal-700"
+            title="Edit"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Edit className="h-3.5 w-3.5" />
+          </Link>
+          <Link
+            to={`/my-resume/${shareToken}/view`}
+            className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-white hover:text-teal-700"
+            title="Preview"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <FileTextIcon className="h-3.5 w-3.5" />
+          </Link>
+          <button
+            type="button"
+            className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-white hover:text-teal-700 cursor-pointer"
+            title="Download PDF"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDownload();
+            }}
+          >
+            <Download className="h-3.5 w-3.5" />
+          </button>
+        </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

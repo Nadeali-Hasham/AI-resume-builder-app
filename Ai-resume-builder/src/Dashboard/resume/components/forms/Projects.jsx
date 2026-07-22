@@ -7,6 +7,7 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import GlobalApi from "./../../../../../Service/GlobalApi";
+import EmptySectionHint from "../EmptySectionHint";
 
 const emptyProject = {
   name: "",
@@ -64,6 +65,12 @@ const Projects = ({ enableNextButton, requireSaveForNext = true }) => {
     <div className="app-form-panel">
       <h2 className="app-form-title">Projects</h2>
       <p className="app-form-desc">Highlight work that shows impact.</p>
+      {!list.some((p) => p.name?.trim()) && (
+        <EmptySectionHint
+          title="Tip: ship proof beats buzzwords"
+          tip="Name the project, stack, and one measurable outcome. Add a live link when you can."
+        />
+      )}
       <form onSubmit={onSave} className="mt-4 space-y-6">
         {list.map((item, index) => (
           <div key={index} className="space-y-3 rounded-xl border border-slate-200 p-4">

@@ -1,15 +1,18 @@
 import { useUser } from "@clerk/clerk-react";
 import AddResume from "./components/AddResume";
 import GlobalApi from "./../../Service/GlobalApi";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ResumeCardsItem from "./components/ResumeCardsItem";
-import { FileText, Sparkles } from "lucide-react";
+import { FileText, Search, Sparkles } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 const Dashboard = () => {
   const { user, isLoaded } = useUser();
   const [resumeList, setResumeList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+  const [sortBy, setSortBy] = useState("updated");
 
   const GetResumesList = useCallback(() => {
     if (!user) return;
@@ -38,6 +41,33 @@ const Dashboard = () => {
     }
   }, [isLoaded, user, GetResumesList]);
 
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    let list = [...resumeList];
+    if (q) {
+      list = list.filter((r) => {
+        const d = r?.attributes || r;
+        return (
+          (d.title || "").toLowerCase().includes(q) ||
+          (d.jobTitle || "").toLowerCase().includes(q) ||
+          (d.template || "").toLowerCase().includes(q)
+        );
+      });
+    }
+    list.sort((a, b) => {
+      const da = a?.attributes || a;
+      const db = b?.attributes || b;
+      if (sortBy === "title") {
+        return String(da.title || "").localeCompare(String(db.title || ""));
+      }
+      if (sortBy === "created") {
+        return new Date(db.createdAt || 0) - new Date(da.createdAt || 0);
+      }
+      return new Date(db.updatedAt || 0) - new Date(da.updatedAt || 0);
+    });
+    return list;
+  }, [resumeList, query, sortBy]);
+
   const firstName = user?.firstName || user?.fullName?.split(" ")[0] || "there";
 
   return (
@@ -51,7 +81,7 @@ const Dashboard = () => {
       />
 
       <div className="px-6 py-8 md:px-16 lg:px-28 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
           <div>
             <p
               className="text-sm font-medium tracking-wide text-teal-700 mb-2"
@@ -96,19 +126,39 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h2
             className="text-sm font-semibold uppercase tracking-[0.14em] text-slate-500"
             style={{ fontFamily: '"DM Sans", sans-serif' }}
           >
             Your workspace
           </h2>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search title, role, template…"
+                className="h-10 w-full sm:w-64 pl-9 bg-white"
+              />
+            </div>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-700 cursor-pointer"
+            >
+              <option value="updated">Sort: Updated</option>
+              <option value="created">Sort: Created</option>
+              <option value="title">Sort: Title</option>
+            </select>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
           <AddResume />
-          {resumeList.length > 0 &&
-            resumeList.map((resume, index) => (
+          {filtered.length > 0 &&
+            filtered.map((resume, index) => (
               <ResumeCardsItem
                 resume={resume}
                 key={resume.documentId || resume.id || index}
@@ -123,6 +173,12 @@ const Dashboard = () => {
             style={{ fontFamily: '"DM Sans", sans-serif' }}
           >
             No resumes yet — create your first one to get started.
+          </p>
+        )}
+
+        {!loading && resumeList.length > 0 && filtered.length === 0 && (
+          <p className="mt-8 text-center text-sm text-slate-500">
+            No resumes match “{query}”.
           </p>
         )}
       </div>
