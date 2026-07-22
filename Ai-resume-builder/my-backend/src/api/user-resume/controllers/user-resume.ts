@@ -1,31 +1,89 @@
 /**
- * user-resume controller with ownership checks
+ * user-resume controller — Clerk ownership, share tokens, AI + limits
  */
 
 import { factories } from '@strapi/strapi';
+import {
+  checkRateLimit,
+  getAiDailyLimit,
+  getFreeResumeLimit,
+} from '../../../utils/rate-limit';
+import { createShareToken } from '../../../utils/share-token';
 
-const getUserEmail = (ctx: any) => {
-  const headerEmail = ctx.request.header['x-user-email'];
-  if (typeof headerEmail === 'string' && headerEmail.trim()) {
-    return headerEmail.trim().toLowerCase();
+const POPULATE: any = [
+  'Experience',
+  'Education',
+  'skills',
+  'projects',
+  'certifications',
+  'languages',
+];
+
+type AuthUser = { userId: string; email: string | null };
+
+const requireAuth = (ctx: any): AuthUser | null => {
+  const userId = ctx.state?.authUserId ? String(ctx.state.authUserId) : '';
+  const email = ctx.state?.authEmail
+    ? String(ctx.state.authEmail).trim().toLowerCase()
+    : null;
+
+  if (!userId) {
+    ctx.unauthorized('Sign in required. Missing or invalid Clerk session token.');
+    return null;
   }
-  return null;
+
+  return { userId, email };
 };
+
+const ownsResume = (entity: any, auth: AuthUser) => {
+  if (entity?.clerkUserId && entity.clerkUserId === auth.userId) {
+    return true;
+  }
+  // Legacy rows before clerkUserId existed
+  if (
+    auth.email &&
+    (entity?.userEmail || '').toLowerCase() === auth.email &&
+    !entity?.clerkUserId
+  ) {
+    return true;
+  }
+  return false;
+};
+
+const ownerFilters = (auth: AuthUser) => {
+  const parts: any[] = [{ clerkUserId: { $eq: auth.userId } }];
+  if (auth.email) {
+    parts.push({
+      $and: [
+        { userEmail: { $eq: auth.email } },
+        {
+          $or: [{ clerkUserId: { $null: true } }, { clerkUserId: { $eq: '' } }],
+        },
+      ],
+    });
+  }
+  return { $or: parts };
+};
+
+const toPublic = (entity: any) => {
+  const { userEmail, userName, clerkUserId, ...rest } = entity;
+  return rest;
+};
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 export default factories.createCoreController(
   'api::user-resume.user-resume',
   ({ strapi }) => ({
     async find(ctx) {
-      const userEmail = getUserEmail(ctx);
-      if (!userEmail) {
-        return ctx.unauthorized('Missing X-User-Email header');
-      }
+      const auth = requireAuth(ctx);
+      if (!auth) return;
 
       ctx.query = {
         ...ctx.query,
         filters: {
           ...(typeof ctx.query.filters === 'object' ? ctx.query.filters : {}),
-          userEmail: { $eq: userEmail },
+          ...ownerFilters(auth),
         },
       };
 
@@ -33,23 +91,34 @@ export default factories.createCoreController(
     },
 
     async findOne(ctx) {
-      const userEmail = getUserEmail(ctx);
-      if (!userEmail) {
-        return ctx.unauthorized('Missing X-User-Email header');
-      }
+      const auth = requireAuth(ctx);
+      if (!auth) return;
 
       const { id } = ctx.params;
-      const entity = await strapi.documents('api::user-resume.user-resume').findOne({
+      const entity: any = await strapi.documents('api::user-resume.user-resume').findOne({
         documentId: id,
-        populate: ['Experience', 'Education', 'skills'],
+        populate: POPULATE,
       });
 
       if (!entity) {
         return ctx.notFound('Resume not found');
       }
 
-      if ((entity.userEmail || '').toLowerCase() !== userEmail) {
+      if (!ownsResume(entity, auth)) {
         return ctx.forbidden('You do not own this resume');
+      }
+
+      // Backfill clerkUserId on legacy rows
+      if (!entity.clerkUserId) {
+        try {
+          await strapi.documents('api::user-resume.user-resume').update({
+            documentId: id,
+            data: { clerkUserId: auth.userId } as any,
+          });
+          entity.clerkUserId = auth.userId;
+        } catch {
+          /* ignore */
+        }
       }
 
       ctx.body = { data: entity };
@@ -57,17 +126,38 @@ export default factories.createCoreController(
     },
 
     async create(ctx) {
-      const userEmail = getUserEmail(ctx);
-      if (!userEmail) {
-        return ctx.unauthorized('Missing X-User-Email header');
+      const auth = requireAuth(ctx);
+      if (!auth) return;
+
+      const existing = await strapi.documents('api::user-resume.user-resume').findMany({
+        filters: ownerFilters(auth) as any,
+        limit: 100,
+      });
+
+      const limit = getFreeResumeLimit();
+      if (existing.length >= limit) {
+        return ctx.tooManyRequests(
+          `Free plan allows up to ${limit} resumes. Delete one to create another.`
+        );
       }
 
       const bodyData = ctx.request.body?.data || {};
+      const userEmail =
+        auth.email ||
+        (typeof bodyData.userEmail === 'string'
+          ? bodyData.userEmail.trim().toLowerCase()
+          : '') ||
+        `user-${auth.userId.slice(0, 8)}@clerk.local`;
+
       ctx.request.body = {
         ...ctx.request.body,
         data: {
           ...bodyData,
           userEmail,
+          clerkUserId: auth.userId,
+          shareToken: bodyData.shareToken || createShareToken(),
+          template: bodyData.template || 'classic',
+          themeColor: bodyData.themeColor || '#0f766e',
           publishedAt: new Date(),
         },
       };
@@ -76,13 +166,11 @@ export default factories.createCoreController(
     },
 
     async update(ctx) {
-      const userEmail = getUserEmail(ctx);
-      if (!userEmail) {
-        return ctx.unauthorized('Missing X-User-Email header');
-      }
+      const auth = requireAuth(ctx);
+      if (!auth) return;
 
       const { id } = ctx.params;
-      const existing = await strapi.documents('api::user-resume.user-resume').findOne({
+      const existing: any = await strapi.documents('api::user-resume.user-resume').findOne({
         documentId: id,
       });
 
@@ -90,13 +178,17 @@ export default factories.createCoreController(
         return ctx.notFound('Resume not found');
       }
 
-      if ((existing.userEmail || '').toLowerCase() !== userEmail) {
+      if (!ownsResume(existing, auth)) {
         return ctx.forbidden('You do not own this resume');
       }
 
-      // Prevent client from changing ownership
       if (ctx.request.body?.data) {
         ctx.request.body.data.userEmail = existing.userEmail;
+        ctx.request.body.data.clerkUserId = existing.clerkUserId || auth.userId;
+        ctx.request.body.data.shareToken =
+          ctx.request.body.data.shareToken ||
+          existing.shareToken ||
+          createShareToken();
         ctx.request.body.data.publishedAt =
           ctx.request.body.data.publishedAt || existing.publishedAt || new Date();
       }
@@ -105,13 +197,11 @@ export default factories.createCoreController(
     },
 
     async delete(ctx) {
-      const userEmail = getUserEmail(ctx);
-      if (!userEmail) {
-        return ctx.unauthorized('Missing X-User-Email header');
-      }
+      const auth = requireAuth(ctx);
+      if (!auth) return;
 
       const { id } = ctx.params;
-      const existing = await strapi.documents('api::user-resume.user-resume').findOne({
+      const existing: any = await strapi.documents('api::user-resume.user-resume').findOne({
         documentId: id,
       });
 
@@ -119,43 +209,155 @@ export default factories.createCoreController(
         return ctx.notFound('Resume not found');
       }
 
-      if ((existing.userEmail || '').toLowerCase() !== userEmail) {
+      if (!ownsResume(existing, auth)) {
         return ctx.forbidden('You do not own this resume');
       }
 
       return await super.delete(ctx);
     },
 
-    /** Public read for share links — no private owner fields */
+    /** Public read by opaque shareToken */
     async publicFind(ctx) {
       const { id } = ctx.params;
-      const entity = await strapi.documents('api::user-resume.user-resume').findOne({
-        documentId: id,
-        populate: ['Experience', 'Education', 'skills'],
-        status: 'published',
-      });
-
-      if (!entity) {
-        // Fallback: try without status filter for drafts created earlier
-        const draft = await strapi.documents('api::user-resume.user-resume').findOne({
-          documentId: id,
-          populate: ['Experience', 'Education', 'skills'],
-        });
-        if (!draft) {
-          return ctx.notFound('Resume not found');
-        }
-        const { userEmail, userName, ...publicDraft } = draft as any;
-        return { data: publicDraft };
+      const token = String(id || '').trim();
+      if (!token) {
+        return ctx.badRequest('share token required');
       }
 
-      const { userEmail, userName, ...publicData } = entity as any;
-      return { data: publicData };
+      const matches: any[] = await strapi.documents('api::user-resume.user-resume').findMany({
+        filters: { shareToken: { $eq: token } } as any,
+        populate: POPULATE,
+        limit: 1,
+      });
+
+      let entity: any = matches[0];
+
+      // Legacy fallback: allow documentId for old links during migration
+      if (!entity) {
+        entity = await strapi.documents('api::user-resume.user-resume').findOne({
+          documentId: token,
+          populate: POPULATE,
+        });
+      }
+
+      if (!entity) {
+        return ctx.notFound('Resume not found');
+      }
+
+      return { data: toPublic(entity) };
+    },
+
+    async rotateShareToken(ctx) {
+      const auth = requireAuth(ctx);
+      if (!auth) return;
+
+      const { id } = ctx.params;
+      const existing: any = await strapi.documents('api::user-resume.user-resume').findOne({
+        documentId: id,
+      });
+
+      if (!existing) {
+        return ctx.notFound('Resume not found');
+      }
+      if (!ownsResume(existing, auth)) {
+        return ctx.forbidden('You do not own this resume');
+      }
+
+      const shareToken = createShareToken();
+      const updated: any = await strapi.documents('api::user-resume.user-resume').update({
+        documentId: id,
+        data: { shareToken } as any,
+      });
+
+      ctx.body = { data: { shareToken: updated?.shareToken || shareToken } };
+      return ctx.body;
+    },
+
+    async duplicate(ctx) {
+      const auth = requireAuth(ctx);
+      if (!auth) return;
+
+      const limit = getFreeResumeLimit();
+      const existingCount = await strapi.documents('api::user-resume.user-resume').findMany({
+        filters: ownerFilters(auth) as any,
+        limit: 100,
+      });
+      if (existingCount.length >= limit) {
+        return ctx.tooManyRequests(
+          `Free plan allows up to ${limit} resumes. Delete one to duplicate.`
+        );
+      }
+
+      const { id } = ctx.params;
+      const source: any = await strapi.documents('api::user-resume.user-resume').findOne({
+        documentId: id,
+        populate: POPULATE,
+      });
+
+      if (!source) {
+        return ctx.notFound('Resume not found');
+      }
+      if (!ownsResume(source, auth)) {
+        return ctx.forbidden('You do not own this resume');
+      }
+
+      const stripIds = (items: any[] | undefined) =>
+        (items || []).map(({ id: _id, ...rest }) => rest);
+
+      const newResumeId =
+        String(ctx.request.body?.resumeId || '').trim() ||
+        `dup-${Date.now().toString(36)}`;
+
+      const userEmail =
+        auth.email || source.userEmail || `user-${auth.userId.slice(0, 8)}@clerk.local`;
+
+      const created = await strapi.documents('api::user-resume.user-resume').create({
+        data: {
+          title: `${source.title || 'Resume'} (Copy)`,
+          resumeId: newResumeId,
+          shareToken: createShareToken(),
+          clerkUserId: auth.userId,
+          userEmail,
+          userName: source.userName,
+          firstName: source.firstName,
+          lastName: source.lastName,
+          jobTitle: source.jobTitle,
+          address: source.address,
+          phone: source.phone,
+          email: source.email,
+          linkedin: source.linkedin,
+          github: source.github,
+          portfolio: source.portfolio,
+          summary: source.summary,
+          themeColor: source.themeColor || '#0f766e',
+          template: source.template || 'classic',
+          Experience: stripIds(source.Experience),
+          Education: stripIds(source.Education),
+          skills: stripIds(source.skills),
+          projects: stripIds(source.projects),
+          certifications: stripIds(source.certifications),
+          languages: stripIds(source.languages),
+          publishedAt: new Date(),
+        } as any,
+      });
+
+      ctx.body = { data: created };
+      return ctx.body;
     },
 
     async generateSummary(ctx) {
-      const userEmail = getUserEmail(ctx);
-      if (!userEmail) {
-        return ctx.unauthorized('Missing X-User-Email header');
+      const auth = requireAuth(ctx);
+      if (!auth) return;
+
+      const aiLimit = getAiDailyLimit();
+      const ip = ctx.request.ip || 'unknown';
+      const rateKey = `ai:${auth.userId}:${ip}`;
+      const limited = checkRateLimit(rateKey, aiLimit, DAY_MS);
+      if (!limited.allowed) {
+        ctx.set('Retry-After', String(limited.retryAfterSec));
+        return ctx.tooManyRequests(
+          `AI daily limit (${aiLimit}) reached. Try again in ${limited.retryAfterSec}s.`
+        );
       }
 
       try {
@@ -166,19 +368,39 @@ export default factories.createCoreController(
         }
 
         const jobTitle = String(ctx.request.body?.jobTitle || '').trim();
-        if (!jobTitle) {
-          return ctx.badRequest('jobTitle is required');
+        const jobDescription = String(ctx.request.body?.jobDescription || '').trim();
+        const currentSummary = String(ctx.request.body?.currentSummary || '').trim();
+
+        if (!jobTitle && !jobDescription) {
+          return ctx.badRequest('jobTitle or jobDescription is required');
         }
 
         const modelName = process.env.GOOGLE_AI_MODEL || 'gemini-2.0-flash';
         const model = new GoogleGenerativeAI(apiKey).getGenerativeModel({ model: modelName });
         const prompt = `
-          Generate a professional resume summary for a ${jobTitle} position.
-          Keep it concise (3-4 sentences), professional, and impactful.
-          Return only the summary text without any additional formatting.
-        `;
+You write professional resume summaries.
+Target role: ${jobTitle || 'the role in the job description'}.
+${jobDescription ? `Job description to tailor toward:\n${jobDescription}\n` : ''}
+${currentSummary ? `Existing summary to improve (keep truthful):\n${currentSummary}\n` : ''}
+Return EXACTLY 3 alternative summaries as a JSON array of strings.
+Each summary: 3-4 sentences, impactful, no markdown, no labels.
+Example: ["summary one","summary two","summary three"]
+`;
         const result = await model.generateContent(prompt);
-        ctx.body = { summary: result.response.text().trim() };
+        const raw = result.response.text().trim();
+        let options: string[] = [];
+        try {
+          const parsed = JSON.parse(raw.replace(/^```json\s*/i, '').replace(/\s*```$/i, ''));
+          if (Array.isArray(parsed)) {
+            options = parsed.map((s) => String(s).trim()).filter(Boolean).slice(0, 3);
+          }
+        } catch {
+          options = [raw];
+        }
+        if (!options.length) {
+          options = [raw];
+        }
+        ctx.body = { summary: options[0], options, remaining: limited.remaining };
       } catch (error: any) {
         strapi.log.error('AI summary failed', error);
         ctx.status = 500;
@@ -187,9 +409,17 @@ export default factories.createCoreController(
     },
 
     async generateExperience(ctx) {
-      const userEmail = getUserEmail(ctx);
-      if (!userEmail) {
-        return ctx.unauthorized('Missing X-User-Email header');
+      const auth = requireAuth(ctx);
+      if (!auth) return;
+
+      const aiLimit = getAiDailyLimit();
+      const ip = ctx.request.ip || 'unknown';
+      const limited = checkRateLimit(`ai:${auth.userId}:${ip}`, aiLimit, DAY_MS);
+      if (!limited.allowed) {
+        ctx.set('Retry-After', String(limited.retryAfterSec));
+        return ctx.tooManyRequests(
+          `AI daily limit (${aiLimit}) reached. Try again in ${limited.retryAfterSec}s.`
+        );
       }
 
       try {
@@ -200,21 +430,41 @@ export default factories.createCoreController(
         }
 
         const title = String(ctx.request.body?.title || '').trim();
-        if (!title) {
-          return ctx.badRequest('title is required');
+        const jobDescription = String(ctx.request.body?.jobDescription || '').trim();
+        const currentHtml = String(ctx.request.body?.currentHtml || '').trim();
+        const companyName = String(ctx.request.body?.companyName || '').trim();
+
+        if (!title && !jobDescription) {
+          return ctx.badRequest('title or jobDescription is required');
         }
 
         const modelName = process.env.GOOGLE_AI_MODEL || 'gemini-2.0-flash';
         const model = new GoogleGenerativeAI(apiKey).getGenerativeModel({ model: modelName });
         const prompt = `
-          Position title: ${title}.
-          Give 5-7 professional resume bullet points for this role.
-          Return ONLY valid HTML using a <ul> with <li> items. No markdown.
-        `;
+Write resume bullet points for position: ${title || 'role'}.
+${companyName ? `Company: ${companyName}.` : ''}
+${jobDescription ? `Tailor toward this job description:\n${jobDescription}\n` : ''}
+${currentHtml ? `Improve these existing bullets (keep truthful):\n${currentHtml}\n` : ''}
+Return EXACTLY 3 alternative versions as a JSON array of strings.
+Each string must be ONLY valid HTML: a <ul> with 5-7 <li> items. No markdown fences.
+Example: ["<ul><li>a</li></ul>","<ul><li>b</li></ul>","<ul><li>c</li></ul>"]
+`;
         const result = await model.generateContent(prompt);
-        let html = result.response.text().trim();
-        html = html.replace(/^```html\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '');
-        ctx.body = { html };
+        let raw = result.response.text().trim();
+        raw = raw.replace(/^```json\s*/i, '').replace(/^```html\s*/i, '').replace(/\s*```$/i, '');
+        let options: string[] = [];
+        try {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            options = parsed.map((s) => String(s).trim()).filter(Boolean).slice(0, 3);
+          }
+        } catch {
+          options = [raw];
+        }
+        if (!options.length) {
+          options = [raw];
+        }
+        ctx.body = { html: options[0], options, remaining: limited.remaining };
       } catch (error: any) {
         strapi.log.error('AI experience failed', error);
         ctx.status = 500;

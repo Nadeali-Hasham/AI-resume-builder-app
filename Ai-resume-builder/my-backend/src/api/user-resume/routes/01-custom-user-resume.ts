@@ -1,5 +1,5 @@
 /**
- * Custom routes: public view + AI (server-side key)
+ * Custom routes: public share, AI, duplicate, rotate share token
  */
 
 export default {
@@ -8,6 +8,26 @@ export default {
       method: 'GET',
       path: '/user-resumes/public/:id',
       handler: 'user-resume.publicFind',
+      config: {
+        auth: false,
+        policies: [],
+        middlewares: [],
+      },
+    },
+    {
+      method: 'POST',
+      path: '/user-resumes/:id/duplicate',
+      handler: 'user-resume.duplicate',
+      config: {
+        auth: false,
+        policies: [],
+        middlewares: [],
+      },
+    },
+    {
+      method: 'POST',
+      path: '/user-resumes/:id/rotate-share',
+      handler: 'user-resume.rotateShareToken',
       config: {
         auth: false,
         policies: [],

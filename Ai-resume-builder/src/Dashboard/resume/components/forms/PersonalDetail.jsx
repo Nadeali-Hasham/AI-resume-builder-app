@@ -14,6 +14,9 @@ const emptyPersonal = {
   address: "",
   phone: "",
   email: "",
+  linkedin: "",
+  github: "",
+  portfolio: "",
 };
 
 const PersonalDetail = ({ enableNextButton, requireSaveForNext = true }) => {
@@ -21,12 +24,9 @@ const PersonalDetail = ({ enableNextButton, requireSaveForNext = true }) => {
   const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
   const [formData, setFormData] = useState({
     ...emptyPersonal,
-    firstName: resumeInfo?.firstName || "",
-    lastName: resumeInfo?.lastName || "",
-    jobTitle: resumeInfo?.jobTitle || "",
-    address: resumeInfo?.address || "",
-    phone: resumeInfo?.phone || "",
-    email: resumeInfo?.email || "",
+    ...Object.fromEntries(
+      Object.keys(emptyPersonal).map((k) => [k, resumeInfo?.[k] || ""])
+    ),
   });
   const [loading, setLoading] = useState(false);
 
@@ -38,6 +38,9 @@ const PersonalDetail = ({ enableNextButton, requireSaveForNext = true }) => {
       address: resumeInfo?.address || "",
       phone: resumeInfo?.phone || "",
       email: resumeInfo?.email || "",
+      linkedin: resumeInfo?.linkedin || "",
+      github: resumeInfo?.github || "",
+      portfolio: resumeInfo?.portfolio || "",
     });
   }, [
     resumeInfo?.firstName,
@@ -46,6 +49,9 @@ const PersonalDetail = ({ enableNextButton, requireSaveForNext = true }) => {
     resumeInfo?.address,
     resumeInfo?.phone,
     resumeInfo?.email,
+    resumeInfo?.linkedin,
+    resumeInfo?.github,
+    resumeInfo?.portfolio,
   ]);
 
   const handleInputChange = (e) => {
@@ -67,6 +73,9 @@ const PersonalDetail = ({ enableNextButton, requireSaveForNext = true }) => {
       address: formData.address?.trim(),
       phone: formData.phone?.trim(),
       email: formData.email?.trim(),
+      linkedin: formData.linkedin?.trim(),
+      github: formData.github?.trim(),
+      portfolio: formData.portfolio?.trim(),
     };
 
     if (!payload.firstName || !payload.lastName || !payload.jobTitle) {
@@ -91,74 +100,69 @@ const PersonalDetail = ({ enableNextButton, requireSaveForNext = true }) => {
   return (
     <div className="app-form-panel">
       <h2 className="app-form-title">Personal Information</h2>
-      <p className="app-form-desc">Get started with basic information</p>
+      <p className="app-form-desc">
+        Basic info is required. LinkedIn, GitHub, and Portfolio are optional — leave blank if you prefer.
+      </p>
 
       <form onSubmit={onSave}>
         <div className="grid grid-cols-2 gap-4 mt-4">
           <div className="flex flex-col gap-2">
-            <label htmlFor="firstName" className="text-sm font-medium">
-              First Name
-            </label>
-            <Input
-              name="firstName"
-              value={formData.firstName}
-              required
-              onChange={handleInputChange}
-            />
+            <label className="text-sm font-medium">First Name</label>
+            <Input name="firstName" value={formData.firstName} required onChange={handleInputChange} />
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="lastName" className="text-sm font-medium">
-              Last Name
-            </label>
-            <Input
-              name="lastName"
-              value={formData.lastName}
-              required
-              onChange={handleInputChange}
-            />
+            <label className="text-sm font-medium">Last Name</label>
+            <Input name="lastName" value={formData.lastName} required onChange={handleInputChange} />
           </div>
           <div className="flex flex-col gap-2 col-span-2">
-            <label htmlFor="jobTitle" className="text-sm font-medium">
-              Job Title
-            </label>
-            <Input
-              name="jobTitle"
-              value={formData.jobTitle}
-              required
-              onChange={handleInputChange}
-            />
+            <label className="text-sm font-medium">Job Title</label>
+            <Input name="jobTitle" value={formData.jobTitle} required onChange={handleInputChange} />
           </div>
           <div className="flex flex-col gap-2 col-span-2">
-            <label htmlFor="address" className="text-sm font-medium">
-              Address
+            <label className="text-sm font-medium">Address</label>
+            <Input name="address" value={formData.address} required onChange={handleInputChange} />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Phone</label>
+            <Input name="phone" value={formData.phone} required onChange={handleInputChange} />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Email</label>
+            <Input name="email" type="email" value={formData.email} required onChange={handleInputChange} />
+          </div>
+          <div className="flex flex-col gap-2 col-span-2">
+            <label className="text-sm font-medium">
+              LinkedIn <span className="font-normal text-slate-400">(optional)</span>
             </label>
             <Input
-              name="address"
-              value={formData.address}
-              required
+              name="linkedin"
+              type="text"
+              placeholder="https://linkedin.com/in/username"
+              value={formData.linkedin}
               onChange={handleInputChange}
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="phone" className="text-sm font-medium">
-              Phone
+            <label className="text-sm font-medium">
+              GitHub <span className="font-normal text-slate-400">(optional)</span>
             </label>
             <Input
-              name="phone"
-              value={formData.phone}
-              required
+              name="github"
+              type="text"
+              placeholder="https://github.com/username"
+              value={formData.github}
               onChange={handleInputChange}
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email
+            <label className="text-sm font-medium">
+              Portfolio <span className="font-normal text-slate-400">(optional)</span>
             </label>
             <Input
-              name="email"
-              type="email"
-              value={formData.email}
-              required
+              name="portfolio"
+              type="text"
+              placeholder="https://your-site.com"
+              value={formData.portfolio}
               onChange={handleInputChange}
             />
           </div>

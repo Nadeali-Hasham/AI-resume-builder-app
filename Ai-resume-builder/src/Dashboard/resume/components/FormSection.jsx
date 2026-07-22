@@ -6,9 +6,24 @@ import Summary from "./forms/Summary";
 import Experiences from "./forms/Experiences";
 import Eductional from "./forms/Eductional";
 import Skill from "./forms/Skill";
+import Projects from "./forms/Projects";
+import Certifications from "./forms/Certifications";
+import Languages from "./forms/Languages";
 import { Link, Navigate, useParams } from "react-router-dom";
 import ThemeColor from "./ThemeColor";
+import TemplatePicker from "./TemplatePicker";
 import { ResumeInfoContext } from "@/context/ResumeInfoContext";
+
+const STEPS = [
+  { id: 1, label: "Personal" },
+  { id: 2, label: "Summary" },
+  { id: 3, label: "Experience" },
+  { id: 4, label: "Education" },
+  { id: 5, label: "Skills" },
+  { id: 6, label: "Projects" },
+  { id: 7, label: "Certs" },
+  { id: 8, label: "Languages" },
+];
 
 const FormSection = () => {
   const [activeFormIndex, setActiveFormIndex] = useState(1);
@@ -16,7 +31,6 @@ const FormSection = () => {
   const { resumeId } = useParams();
   const { resumeInfo } = useContext(ResumeInfoContext);
 
-  // Capture once on mount: new resume must save each section; edit can skip
   const [requireSaveForNext] = useState(
     () => !Boolean(resumeInfo?.firstName?.trim())
   );
@@ -25,10 +39,16 @@ const FormSection = () => {
     setEnableNextButton(!requireSaveForNext);
   }, [activeFormIndex, requireSaveForNext]);
 
+  const jumpTo = (stepId) => {
+    if (!requireSaveForNext || stepId <= activeFormIndex || enableNextButton) {
+      setActiveFormIndex(stepId);
+    }
+  };
+
   return (
     <div className="font-[family-name:var(--font-body)]">
       <div className="app-toolbar">
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center flex-wrap">
           <Link to="/dashboard">
             <Button
               size="sm"
@@ -39,6 +59,7 @@ const FormSection = () => {
             </Button>
           </Link>
           <ThemeColor />
+          <TemplatePicker />
         </div>
 
         <div className="flex gap-2">
@@ -67,44 +88,74 @@ const FormSection = () => {
         </div>
       </div>
 
-      {activeFormIndex === 1 ? (
+      <nav className="mb-4 flex flex-wrap gap-1.5" aria-label="Resume sections">
+        {STEPS.map((step) => (
+          <button
+            key={step.id}
+            type="button"
+            onClick={() => jumpTo(step.id)}
+            className={`rounded-full px-2.5 py-1 text-[11px] font-medium cursor-pointer transition ${
+              activeFormIndex === step.id
+                ? "bg-teal-700 text-white"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+            }`}
+          >
+            {step.label}
+          </button>
+        ))}
+      </nav>
+
+      {activeFormIndex === 1 && (
         <PersonalDetail
           enableNextButton={(v) => setEnableNextButton(v)}
           requireSaveForNext={requireSaveForNext}
         />
-      ) : null}
-
-      {activeFormIndex === 2 ? (
+      )}
+      {activeFormIndex === 2 && (
         <Summary
           enableNextButton={(v) => setEnableNextButton(v)}
           requireSaveForNext={requireSaveForNext}
         />
-      ) : null}
-
-      {activeFormIndex === 3 ? (
+      )}
+      {activeFormIndex === 3 && (
         <Experiences
           enableNextButton={(v) => setEnableNextButton(v)}
           requireSaveForNext={requireSaveForNext}
         />
-      ) : null}
-
-      {activeFormIndex === 4 ? (
+      )}
+      {activeFormIndex === 4 && (
         <Eductional
           enableNextButton={(v) => setEnableNextButton(v)}
           requireSaveForNext={requireSaveForNext}
         />
-      ) : null}
-
-      {activeFormIndex === 5 ? (
+      )}
+      {activeFormIndex === 5 && (
         <Skill
           enableNextButton={(v) => setEnableNextButton(v)}
           requireSaveForNext={requireSaveForNext}
         />
-      ) : null}
-
-      {activeFormIndex === 6 ? (
-        <Navigate to={`/my-resume/${resumeId}/view`} />
-      ) : null}
+      )}
+      {activeFormIndex === 6 && (
+        <Projects
+          enableNextButton={(v) => setEnableNextButton(v)}
+          requireSaveForNext={requireSaveForNext}
+        />
+      )}
+      {activeFormIndex === 7 && (
+        <Certifications
+          enableNextButton={(v) => setEnableNextButton(v)}
+          requireSaveForNext={requireSaveForNext}
+        />
+      )}
+      {activeFormIndex === 8 && (
+        <Languages
+          enableNextButton={(v) => setEnableNextButton(v)}
+          requireSaveForNext={requireSaveForNext}
+        />
+      )}
+      {activeFormIndex === 9 && (
+        <Navigate to={`/my-resume/${resumeInfo?.shareToken || resumeId}/view`} />
+      )}
     </div>
   );
 };

@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_certifications_certifications",
+  "info": {
+    "displayName": "certification",
+    "icon": "trophy"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "issuer": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string"
+    },
+    "credentialUrl": {
+      "type": "string"
+    }
+  }
+}

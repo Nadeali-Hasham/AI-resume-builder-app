@@ -1,25 +1,30 @@
-const EducationalPreview = ({ resumeInfo }) => {
+import {
+  sectionHeadingClass,
+  sectionHeadingStyle,
+  subHeadingStyle,
+} from "./sectionHeading";
+
+const EducationalPreview = ({ resumeInfo, variant = "classic" }) => {
   if (!resumeInfo?.education?.length) return null;
+
+  const theme = resumeInfo?.themeColor || "#0f766e";
 
   return (
     <div className="mt-5">
       <h2
-        className="font-bold text-xl text-center"
-        style={{ color: resumeInfo?.themeColor }}
+        className={sectionHeadingClass(variant)}
+        style={sectionHeadingStyle(variant, theme)}
       >
         Education
       </h2>
       {resumeInfo.education.map((edu, index) => (
         <div key={index} className="py-2">
-          <h3
-            style={{ color: resumeInfo?.themeColor }}
-            className="font-semibold"
-          >
+          <h3 className="font-semibold" style={subHeadingStyle(variant, theme)}>
             {edu.degree} in {edu.major}
           </h3>
-          <div className="flex justify-between">
+          <div className="flex justify-between gap-2">
             <p>{edu.universityName}</p>
-            <p className="text-xs">
+            <p className="text-xs shrink-0">
               {edu.startDate} - {edu.endDate}
             </p>
           </div>

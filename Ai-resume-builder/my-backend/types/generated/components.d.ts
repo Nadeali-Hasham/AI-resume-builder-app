@@ -1,5 +1,19 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface CertificationsCertification extends Struct.ComponentSchema {
+  collectionName: 'components_certifications_certifications';
+  info: {
+    displayName: 'certification';
+    icon: 'trophy';
+  };
+  attributes: {
+    credentialUrl: Schema.Attribute.String;
+    date: Schema.Attribute.String;
+    issuer: Schema.Attribute.String;
+    name: Schema.Attribute.String;
+  };
+}
+
 export interface EducationEducation extends Struct.ComponentSchema {
   collectionName: 'components_education_educations';
   info: {
@@ -33,6 +47,32 @@ export interface ExperienceExperience extends Struct.ComponentSchema {
   };
 }
 
+export interface LanguagesLanguage extends Struct.ComponentSchema {
+  collectionName: 'components_languages_languages';
+  info: {
+    displayName: 'language';
+    icon: 'globe';
+  };
+  attributes: {
+    name: Schema.Attribute.String;
+    proficiency: Schema.Attribute.String;
+  };
+}
+
+export interface ProjectsProject extends Struct.ComponentSchema {
+  collectionName: 'components_projects_projects';
+  info: {
+    displayName: 'project';
+    icon: 'briefcase';
+  };
+  attributes: {
+    description: Schema.Attribute.Text;
+    link: Schema.Attribute.String;
+    name: Schema.Attribute.String;
+    technologies: Schema.Attribute.String;
+  };
+}
+
 export interface SkillsSkills extends Struct.ComponentSchema {
   collectionName: 'components_skills_skills';
   info: {
@@ -48,8 +88,11 @@ export interface SkillsSkills extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'certifications.certification': CertificationsCertification;
       'education.education': EducationEducation;
       'experience.experience': ExperienceExperience;
+      'languages.language': LanguagesLanguage;
+      'projects.project': ProjectsProject;
       'skills.skills': SkillsSkills;
     }
   }

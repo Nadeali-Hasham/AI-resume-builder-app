@@ -1,6 +1,6 @@
 import { useUser } from "@clerk/clerk-react";
 import AddResume from "./components/AddResume";
-import GlobalApi, { setApiUserEmail } from "./../../Service/GlobalApi";
+import GlobalApi from "./../../Service/GlobalApi";
 import { useCallback, useEffect, useState } from "react";
 import ResumeCardsItem from "./components/ResumeCardsItem";
 import { FileText, Sparkles } from "lucide-react";
@@ -12,10 +12,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   const GetResumesList = useCallback(() => {
-    const userEmail = user?.primaryEmailAddress?.emailAddress;
-    if (!userEmail) return;
+    if (!user) return;
 
-    setApiUserEmail(userEmail);
     setLoading(true);
     GlobalApi.getUserResumes()
       .then((response) => {
@@ -23,7 +21,11 @@ const Dashboard = () => {
       })
       .catch((error) => {
         console.error("Error fetching user resumes:", error);
-        toast.error("Failed to load resumes");
+        const msg =
+          error?.response?.data?.error?.message ||
+          error?.response?.data?.message ||
+          "Failed to load resumes";
+        toast.error(msg);
       })
       .finally(() => {
         setLoading(false);

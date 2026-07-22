@@ -12,6 +12,7 @@ const EditResume = () => {
   const [resumeInfo, setResumeInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
+  const [mobileTab, setMobileTab] = useState("form");
 
   useEffect(() => {
     if (!params.resumeId) return;
@@ -21,7 +22,19 @@ const EditResume = () => {
     GlobalApi.getResumeById(params.resumeId)
       .then((response) => {
         const apiData = response?.data?.data;
-        setResumeInfo(mapResumeFromApi(apiData));
+        const mapped = mapResumeFromApi(apiData);
+        setResumeInfo(mapped);
+        // Backfill share token if missing (legacy rows)
+        if (apiData?.documentId && !apiData?.shareToken) {
+          GlobalApi.rotateShareToken(apiData.documentId)
+            .then((r) => {
+              const token = r?.data?.data?.shareToken;
+              if (token) {
+                setResumeInfo((prev) => ({ ...prev, shareToken: token }));
+              }
+            })
+            .catch(() => {});
+        }
       })
       .catch((error) => {
         console.error("Error loading resume:", error);
@@ -56,16 +69,41 @@ const EditResume = () => {
     <ResumeInfoContext.Provider value={{ resumeInfo, setResumeInfo }}>
       <div className="app-page">
         <div className="app-shell max-w-[1400px]">
-          <div className="mb-6">
+          <div className="mb-4 md:mb-6">
             <h1 className="app-title text-2xl md:text-3xl">Edit Resume</h1>
             <p className="app-subtitle mt-1 text-sm">
-              Update your details on the left and review the live preview on the right.
+              Update details and review the live preview.
             </p>
           </div>
 
+          <div className="mb-4 flex gap-2 lg:hidden">
+            <Button
+              type="button"
+              size="sm"
+              className={`cursor-pointer flex-1 ${mobileTab === "form" ? "app-btn-accent" : "app-btn-dark"}`}
+              onClick={() => setMobileTab("form")}
+            >
+              Form
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              className={`cursor-pointer flex-1 ${mobileTab === "preview" ? "app-btn-accent" : "app-btn-dark"}`}
+              onClick={() => setMobileTab("preview")}
+            >
+              Preview
+            </Button>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
-            <FormSection />
-            <div className="app-preview-frame sticky top-24">
+            <div className={mobileTab === "form" ? "block" : "hidden lg:block"}>
+              <FormSection />
+            </div>
+            <div
+              className={`app-preview-frame lg:sticky lg:top-24 ${
+                mobileTab === "preview" ? "block" : "hidden lg:block"
+              }`}
+            >
               <ResumePreview />
             </div>
           </div>

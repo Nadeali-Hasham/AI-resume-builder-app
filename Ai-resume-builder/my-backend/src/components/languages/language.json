@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_languages_languages",
+  "info": {
+    "displayName": "language",
+    "icon": "globe"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "proficiency": {
+      "type": "string"
+    }
+  }
+}

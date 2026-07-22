@@ -97,11 +97,50 @@ const Homepage = () => {
 
       <section className="home-next">
         <div className="home-next__inner">
-          <h2 className="home-next__title">From blank page to polished PDF</h2>
+          <h2 className="home-next__title">How it works</h2>
           <p className="home-next__text">
-            Add your details, refine with AI, customize the theme, then download
-            or share — all in one focused workspace.
+            Three focused steps — no clutter, just a resume you can send today.
           </p>
+          <ol className="home-steps">
+            <li>
+              <strong>Fill your story</strong>
+              <span>Personal details, experience, education, projects, and skills.</span>
+            </li>
+            <li>
+              <strong>Refine with AI</strong>
+              <span>Paste a job description and pick from tailored summary or bullet options.</span>
+            </li>
+            <li>
+              <strong>Download & share</strong>
+              <span>Export a real PDF or send a private share link with one click.</span>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section className="home-templates">
+        <div className="home-templates__inner">
+          <h2 className="home-next__title">Layouts that fit the role</h2>
+          <p className="home-next__text">
+            Switch between Classic, Modern, and ATS-friendly templates without rebuilding.
+          </p>
+          <div className="home-templates__grid">
+            <article className="home-tpl">
+              <div className="home-tpl__preview home-tpl__preview--classic" />
+              <h3>Classic</h3>
+              <p>Centered and polished for most applications.</p>
+            </article>
+            <article className="home-tpl">
+              <div className="home-tpl__preview home-tpl__preview--modern" />
+              <h3>Modern</h3>
+              <p>Sidebar accent for a sharper product look.</p>
+            </article>
+            <article className="home-tpl">
+              <div className="home-tpl__preview home-tpl__preview--ats" />
+              <h3>ATS</h3>
+              <p>Plain structure that parses cleanly in applicant systems.</p>
+            </article>
+          </div>
         </div>
       </section>
     </div>

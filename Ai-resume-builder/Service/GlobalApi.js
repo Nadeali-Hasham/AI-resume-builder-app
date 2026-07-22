@@ -1,9 +1,17 @@
 import axios from 'axios';
 
-const API_KEY = import.meta.env.VITE_STRAPI_API_KEY;
-const BASE_URL = (import.meta.env.VITE_STRAPI_URL || 'http://localhost:1337/api').replace(/\/$/, '');
+const BASE_URL = (import.meta.env.VITE_STRAPI_URL || 'http://localhost:1337/api').replace(
+  /\/$/,
+  ''
+);
 
+/** Async getter for Clerk session JWT — set from App via useAuth().getToken */
+let getAuthToken = async () => null;
 let currentUserEmail = '';
+
+export const setAuthTokenGetter = (fn) => {
+  getAuthToken = typeof fn === 'function' ? fn : async () => null;
+};
 
 export const setApiUserEmail = (email) => {
   currentUserEmail = (email || '').trim().toLowerCase();
@@ -13,11 +21,16 @@ const axiosClient = axios.create({
   baseURL: `${BASE_URL}/`,
   headers: {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${API_KEY}`,
   },
 });
 
-axiosClient.interceptors.request.use((config) => {
+axiosClient.interceptors.request.use(async (config) => {
+  const token = await getAuthToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  } else if (config.headers?.Authorization) {
+    delete config.headers.Authorization;
+  }
   if (currentUserEmail) {
     config.headers['X-User-Email'] = currentUserEmail;
   }
@@ -41,17 +54,37 @@ export const getResumeById = (id) =>
     params: { populate: '*' },
   });
 
-/** Public share view — no ownership header required */
-export const getPublicResumeById = (id) =>
-  axiosClient.get(`/user-resumes/public/${id}`);
+/** Public share view by opaque shareToken (or legacy documentId) */
+export const getPublicResumeById = (shareToken) =>
+  axiosClient.get(`/user-resumes/public/${shareToken}`);
 
 export const deleteResume = (id) => axiosClient.delete(`/user-resumes/${id}`);
 
-export const generateSummaryFromAI = (jobTitle) =>
-  axiosClient.post('/ai/summary', { jobTitle });
+export const duplicateResume = (id, resumeId) =>
+  axiosClient.post(`/user-resumes/${id}/duplicate`, { resumeId });
 
-export const generateExperienceFromAI = (title) =>
-  axiosClient.post('/ai/experience', { title });
+export const rotateShareToken = (id) =>
+  axiosClient.post(`/user-resumes/${id}/rotate-share`);
+
+export const generateSummaryFromAI = ({
+  jobTitle,
+  jobDescription = '',
+  currentSummary = '',
+} = {}) =>
+  axiosClient.post('/ai/summary', { jobTitle, jobDescription, currentSummary });
+
+export const generateExperienceFromAI = ({
+  title,
+  jobDescription = '',
+  currentHtml = '',
+  companyName = '',
+} = {}) =>
+  axiosClient.post('/ai/experience', {
+    title,
+    jobDescription,
+    currentHtml,
+    companyName,
+  });
 
 export default {
   createNewResume,
@@ -60,7 +93,10 @@ export default {
   getResumeById,
   getPublicResumeById,
   deleteResume,
+  duplicateResume,
+  rotateShareToken,
   generateSummaryFromAI,
   generateExperienceFromAI,
+  setAuthTokenGetter,
   setApiUserEmail,
 };

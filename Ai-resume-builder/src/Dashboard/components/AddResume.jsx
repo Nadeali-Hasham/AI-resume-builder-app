@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import GlobalApi, { setApiUserEmail } from "../../../Service/GlobalApi";
+import GlobalApi from "../../../Service/GlobalApi";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -27,13 +27,11 @@ const AddResume = () => {
             return;
         }
 
-        const userEmail = user?.primaryEmailAddress?.emailAddress;
-        if (!userEmail) {
+        if (!user) {
             toast.error("Please sign in again");
             return;
         }
 
-        setApiUserEmail(userEmail);
         setLoading(true);
 
         const data = {
@@ -41,6 +39,7 @@ const AddResume = () => {
                 title: resumeTitle.trim(),
                 userName: user?.fullName,
                 themeColor: "#0d9488",
+                template: "classic",
             }
         };
 
@@ -53,7 +52,11 @@ const AddResume = () => {
         } catch (error) {
             console.error("Error creating resume:", error);
             setLoading(false);
-            toast.error("Failed to create resume");
+            const msg =
+                error?.response?.data?.error?.message ||
+                error?.response?.data?.message ||
+                "Failed to create resume";
+            toast.error(msg);
         }
     };
 

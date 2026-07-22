@@ -1,35 +1,87 @@
-const SkillPreview = ({ resumeInfo }) => {
-  const themeColor = resumeInfo?.themeColor || "#ff6666";
+import {
+  sectionHeadingClass,
+  sectionHeadingStyle,
+} from "./sectionHeading";
 
-  if (!resumeInfo?.skills?.length) return null;
+const LEVEL_LABELS = {
+  1: "Beginner",
+  2: "Familiar",
+  3: "Intermediate",
+  4: "Advanced",
+  5: "Expert",
+};
+
+const normalizeRating = (rating) =>
+  Math.max(1, Math.min(5, Number(rating) || 3));
+
+const SkillPreview = ({ resumeInfo, variant = "classic" }) => {
+  const themeColor = resumeInfo?.themeColor || "#0f766e";
+  const skills = (resumeInfo?.skills || []).filter((s) => s?.name?.trim());
+  if (!skills.length) return null;
+
+  if (variant === "ats") {
+    return (
+      <div className="mt-4">
+        <h2
+          className={sectionHeadingClass(variant)}
+          style={sectionHeadingStyle(variant, themeColor)}
+        >
+          Skills
+        </h2>
+        <p className="mt-1 text-sm text-black">
+          {skills
+            .map((s) => {
+              const level = LEVEL_LABELS[normalizeRating(s.rating)];
+              return `${s.name} (${level})`;
+            })
+            .join(", ")}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-5">
       <h2
-        className="font-bold text-xl text-center"
-        style={{ color: themeColor }}
+        className={sectionHeadingClass(variant)}
+        style={sectionHeadingStyle(variant, themeColor)}
       >
         Skills
       </h2>
-      <div className="grid grid-cols-2 gap-x-5 mt-3">
-        {resumeInfo.skills.map((skill, index) => {
-          const rating = Math.max(1, Math.min(5, Number(skill.rating) || 1));
+
+      <div className="mt-3 grid grid-cols-1 gap-x-6 gap-y-2.5 sm:grid-cols-2">
+        {skills.map((skill, index) => {
+          const rating = normalizeRating(skill.rating);
           const widthPercent = rating * 20;
+          const level = LEVEL_LABELS[rating];
 
           return (
-            <div
-              key={index}
-              className="flex items-center justify-between gap-3 py-1"
-            >
-              <h2 className="text-sm font-medium shrink-0">{skill.name}</h2>
+            <div key={index} className="min-w-0">
+              <div className="mb-1 flex items-baseline justify-between gap-2">
+                <h3 className="truncate text-sm font-medium text-slate-900">
+                  {skill.name}
+                </h3>
+                <span className="shrink-0 text-[10px] font-medium uppercase tracking-wide text-slate-500">
+                  {level}
+                </span>
+              </div>
               <div
-                className="skill-rating-track h-2.5 w-[120px] shrink-0 rounded-sm border border-gray-300"
+                className="skill-rating-track h-2 w-full overflow-hidden rounded-sm border border-slate-200 bg-slate-100"
                 style={{
-                  backgroundImage: `linear-gradient(to right, ${themeColor} 0%, ${themeColor} ${widthPercent}%, #e5e7eb ${widthPercent}%, #e5e7eb 100%)`,
                   WebkitPrintColorAdjust: "exact",
                   printColorAdjust: "exact",
                 }}
-              />
+              >
+                <div
+                  className="skill-rating-fill h-full rounded-sm"
+                  style={{
+                    width: `${widthPercent}%`,
+                    background: themeColor,
+                    WebkitPrintColorAdjust: "exact",
+                    printColorAdjust: "exact",
+                  }}
+                />
+              </div>
             </div>
           );
         })}

@@ -1,4 +1,13 @@
-import { Download, Edit, MoreVertical, Share2, Trash2 } from "lucide-react";
+import {
+  Copy,
+  Download,
+  Edit,
+  MoreVertical,
+  Pencil,
+  Share2,
+  Trash2,
+  CopyPlus,
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -17,6 +26,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { RWebShare } from "react-web-share";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -25,12 +43,16 @@ import GlobalApi from "../../../Service/GlobalApi";
 const ResumeCardsItem = ({ resume, refreshData }) => {
   const navigate = useNavigate();
   const [deleting, setDeleting] = useState(false);
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [busy, setBusy] = useState(false);
 
   const resumeData = resume?.attributes || resume;
   const resumeId = resume.documentId || resumeData.documentId || resume.id;
   const resumeTitle = resumeData?.title || "Untitled Resume";
   const themeColor = resumeData?.themeColor || "#0d9488";
   const jobTitle = resumeData?.jobTitle;
+  const shareToken = resumeData?.shareToken || resumeId;
   const updatedLabel = resumeData?.updatedAt
     ? new Date(resumeData.updatedAt).toLocaleDateString(undefined, {
         month: "short",
@@ -39,11 +61,10 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
       })
     : null;
 
-  const shareUrl =
-    `${(import.meta.env.VITE_BASE_URL || window.location.origin).replace(/\/$/, "")}/my-resume/${resumeId}/view`;
+  const shareUrl = `${(import.meta.env.VITE_BASE_URL || window.location.origin).replace(/\/$/, "")}/my-resume/${shareToken}/view`;
 
   const handleDownload = () => {
-    navigate(`/my-resume/${resumeId}/view?download=true`);
+    navigate(`/my-resume/${shareToken}/view?download=true`);
   };
 
   const handleDelete = async () => {
@@ -51,10 +72,8 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
       toast.error("Resume id not found");
       return;
     }
-
     setDeleting(true);
     const toastId = toast.loading("Deleting resume...");
-
     try {
       await GlobalApi.deleteResume(resumeId);
       toast.dismiss(toastId);
@@ -69,6 +88,64 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
     }
   };
 
+  const handleDuplicate = async () => {
+    setBusy(true);
+    try {
+      await GlobalApi.duplicateResume(resumeId);
+      toast.success("Resume duplicated");
+      refreshData?.();
+    } catch (error) {
+      const msg =
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Failed to duplicate";
+      toast.error(msg);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleRename = async () => {
+    const title = newTitle.trim();
+    if (!title) {
+      toast.error("Enter a title");
+      return;
+    }
+    setBusy(true);
+    try {
+      await GlobalApi.updateResumeDetail(resumeId, { data: { title } });
+      toast.success("Renamed");
+      setRenameOpen(false);
+      refreshData?.();
+    } catch {
+      toast.error("Failed to rename");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const copyShareLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Share link copied");
+    } catch {
+      toast.error("Could not copy link");
+    }
+  };
+
+  const rotateShare = async () => {
+    setBusy(true);
+    try {
+      await GlobalApi.rotateShareToken(resumeId);
+      toast.success("New share link generated — old link stopped working");
+      refreshData?.();
+    } catch {
+      toast.error("Failed to rotate share link");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div
       className="group relative flex min-h-[280px] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-20px_rgba(15,23,42,0.4)]"
@@ -80,11 +157,9 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
         to={`/dashboard/resume/${resumeId}/edit`}
         className="relative flex flex-1 flex-col px-4 pt-5 pb-3"
       >
-        <div
-          className="relative mx-auto w-full max-w-[150px] flex-1 rounded-lg border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-3 shadow-inner transition-transform duration-300 group-hover:scale-[1.02]"
-        >
+        <div className="relative mx-auto w-full max-w-[150px] flex-1 rounded-lg border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-3 shadow-inner transition-transform duration-300 group-hover:scale-[1.02]">
           <div
-            className="mb-2 h-2 w-2/3 rounded-full"
+            className="mb-2 h-2 rounded-full"
             style={{ backgroundColor: themeColor, width: "65%" }}
           />
           <div className="mb-3 h-1.5 w-1/2 rounded-full bg-slate-200" />
@@ -93,18 +168,6 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
             <div className="h-1 w-5/6 rounded-full bg-slate-100" />
             <div className="h-1 w-4/6 rounded-full bg-slate-100" />
           </div>
-          <div className="mt-3 space-y-1.5">
-            <div
-              className="h-1.5 w-1/3 rounded-full"
-              style={{ backgroundColor: `${themeColor}99` }}
-            />
-            <div className="h-1 rounded-full bg-slate-100" />
-            <div className="h-1 w-4/5 rounded-full bg-slate-100" />
-          </div>
-          <div
-            className="absolute -right-1 bottom-2 h-8 w-1.5 rounded-full opacity-80"
-            style={{ backgroundColor: themeColor }}
-          />
         </div>
 
         <div className="mt-4 min-w-0">
@@ -126,7 +189,7 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
 
       <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/80 px-3 py-2.5">
         <Link
-          to={`/my-resume/${resumeId}/view`}
+          to={`/my-resume/${shareToken}/view`}
           className="text-xs font-medium text-teal-700 hover:text-teal-800 cursor-pointer"
         >
           Preview
@@ -143,7 +206,7 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
             </button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-48 bg-white">
+          <DropdownMenuContent align="end" className="w-52 bg-white">
             <DropdownMenuItem asChild className="cursor-pointer">
               <Link
                 to={`/dashboard/resume/${resumeId}/edit`}
@@ -156,10 +219,47 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
 
             <DropdownMenuItem
               className="cursor-pointer flex items-center gap-2"
+              onClick={() => {
+                setNewTitle(resumeTitle);
+                setRenameOpen(true);
+              }}
+            >
+              <Pencil className="w-4 h-4" />
+              Rename
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              className="cursor-pointer flex items-center gap-2"
+              onClick={handleDuplicate}
+              disabled={busy}
+            >
+              <CopyPlus className="w-4 h-4" />
+              Duplicate
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              className="cursor-pointer flex items-center gap-2"
               onClick={handleDownload}
             >
               <Download className="w-4 h-4" />
-                                Download PDF
+              Download PDF
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              className="cursor-pointer flex items-center gap-2"
+              onClick={copyShareLink}
+            >
+              <Copy className="w-4 h-4" />
+              Copy share link
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              className="cursor-pointer flex items-center gap-2"
+              onClick={rotateShare}
+              disabled={busy}
+            >
+              <Share2 className="w-4 h-4" />
+              Rotate share link
             </DropdownMenuItem>
 
             <DropdownMenuItem
@@ -208,27 +308,17 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
               </AlertDialogTrigger>
               <AlertDialogContent className="bg-white">
                 <AlertDialogHeader>
-                  <AlertDialogTitle className="text-xl font-bold">
-                    Are you absolutely sure?
-                  </AlertDialogTitle>
-                  <AlertDialogDescription className="text-gray-500">
-                    This action cannot be undone. This will permanently delete
-                    your resume "
-                    <span className="font-medium text-gray-700">
-                      {resumeTitle}
-                    </span>
-                    " from our servers.
+                  <AlertDialogTitle>Delete this resume?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This permanently deletes &quot;{resumeTitle}&quot;.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="flex gap-3 mt-4">
-                  <AlertDialogCancel
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition cursor-pointer"
-                    disabled={deleting}
-                  >
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="cursor-pointer" disabled={deleting}>
                     Cancel
                   </AlertDialogCancel>
                   <AlertDialogAction
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition cursor-pointer"
+                    className="bg-red-600 cursor-pointer"
                     onClick={handleDelete}
                     disabled={deleting}
                   >
@@ -240,6 +330,27 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle>Rename resume</DialogTitle>
+          </DialogHeader>
+          <Input
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleRename()}
+          />
+          <DialogFooter>
+            <Button variant="outline" className="cursor-pointer" onClick={() => setRenameOpen(false)}>
+              Cancel
+            </Button>
+            <Button className="cursor-pointer app-btn-accent" onClick={handleRename} disabled={busy}>
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

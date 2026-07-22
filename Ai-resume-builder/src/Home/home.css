@@ -299,6 +299,129 @@
   font-size: 1rem;
 }
 
+.home-steps {
+  list-style: none;
+  margin: 2rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+  text-align: left;
+}
+
+.home-steps li {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--home-line);
+  border-radius: 0.85rem;
+  background: #fff;
+}
+
+.home-steps strong {
+  font-family: "Fraunces", serif;
+  font-size: 1.05rem;
+  color: var(--home-ink);
+}
+
+.home-steps span {
+  font-size: 0.92rem;
+  color: var(--home-muted);
+  line-height: 1.5;
+}
+
+.home-templates {
+  padding: 1rem 6vw 5rem;
+}
+
+.home-templates__inner {
+  max-width: 56rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.home-templates__grid {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.home-tpl {
+  text-align: left;
+  padding: 1rem;
+  border: 1px solid var(--home-line);
+  border-radius: 0.9rem;
+  background: #fff;
+}
+
+.home-tpl h3 {
+  font-family: "Fraunces", serif;
+  margin: 0.85rem 0 0.35rem;
+  font-size: 1.05rem;
+}
+
+.home-tpl p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--home-muted);
+  line-height: 1.45;
+}
+
+.home-tpl__preview {
+  height: 110px;
+  border-radius: 0.5rem;
+  border: 1px solid var(--home-line);
+  background: linear-gradient(180deg, #f8fafc, #fff);
+  position: relative;
+  overflow: hidden;
+}
+
+.home-tpl__preview::before {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 18%;
+  height: 8px;
+  border-radius: 99px;
+  background: #cbd5e1;
+}
+
+.home-tpl__preview::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 28%;
+  top: 38%;
+  height: 42px;
+  border-radius: 4px;
+  background: repeating-linear-gradient(
+    180deg,
+    #e2e8f0 0 4px,
+    transparent 4px 10px
+  );
+}
+
+.home-tpl__preview--classic::before {
+  background: var(--home-accent);
+}
+
+.home-tpl__preview--modern {
+  border-left: 10px solid var(--home-accent);
+}
+
+.home-tpl__preview--ats::before {
+  background: #0f172a;
+  left: 10%;
+  right: 40%;
+}
+
+@media (max-width: 900px) {
+  .home-templates__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 900px) {
   .home-hero {
     grid-template-columns: 1fr;

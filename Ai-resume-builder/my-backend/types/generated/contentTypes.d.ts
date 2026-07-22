@@ -490,6 +490,11 @@ export interface ApiUserResumeUserResume extends Struct.CollectionTypeSchema {
   };
   attributes: {
     address: Schema.Attribute.String;
+    certifications: Schema.Attribute.Component<
+      'certifications.certification',
+      true
+    >;
+    clerkUserId: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -497,8 +502,11 @@ export interface ApiUserResumeUserResume extends Struct.CollectionTypeSchema {
     email: Schema.Attribute.Email;
     Experience: Schema.Attribute.Component<'experience.experience', true>;
     firstName: Schema.Attribute.String;
+    github: Schema.Attribute.String;
     jobTitle: Schema.Attribute.String;
+    languages: Schema.Attribute.Component<'languages.language', true>;
     lastName: Schema.Attribute.String;
+    linkedin: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -506,11 +514,16 @@ export interface ApiUserResumeUserResume extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     phone: Schema.Attribute.String;
+    portfolio: Schema.Attribute.String;
+    projects: Schema.Attribute.Component<'projects.project', true>;
     publishedAt: Schema.Attribute.DateTime;
     resumeId: Schema.Attribute.String;
+    shareToken: Schema.Attribute.String & Schema.Attribute.Unique;
     skills: Schema.Attribute.Component<'skills.skills', true>;
     summary: Schema.Attribute.Text;
-    themeColor: Schema.Attribute.String & Schema.Attribute.DefaultTo<'#ff6666'>;
+    template: Schema.Attribute.Enumeration<['classic', 'modern', 'ats']> &
+      Schema.Attribute.DefaultTo<'classic'>;
+    themeColor: Schema.Attribute.String & Schema.Attribute.DefaultTo<'#0f766e'>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

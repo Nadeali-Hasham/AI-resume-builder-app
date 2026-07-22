@@ -18,6 +18,13 @@
     "resumeId": {
       "type": "string"
     },
+    "shareToken": {
+      "type": "string",
+      "unique": true
+    },
+    "clerkUserId": {
+      "type": "string"
+    },
     "userEmail": {
       "type": "email"
     },
@@ -42,12 +49,26 @@
     "email": {
       "type": "email"
     },
+    "linkedin": {
+      "type": "string"
+    },
+    "github": {
+      "type": "string"
+    },
+    "portfolio": {
+      "type": "string"
+    },
     "summary": {
       "type": "text"
     },
     "themeColor": {
       "type": "string",
-      "default": "#ff6666"
+      "default": "#0f766e"
+    },
+    "template": {
+      "type": "enumeration",
+      "enum": ["classic", "modern", "ats"],
+      "default": "classic"
     },
     "Experience": {
       "type": "component",
@@ -62,6 +83,21 @@
     "skills": {
       "type": "component",
       "component": "skills.skills",
+      "repeatable": true
+    },
+    "projects": {
+      "type": "component",
+      "component": "projects.project",
+      "repeatable": true
+    },
+    "certifications": {
+      "type": "component",
+      "component": "certifications.certification",
+      "repeatable": true
+    },
+    "languages": {
+      "type": "component",
+      "component": "languages.language",
       "repeatable": true
     }
   }

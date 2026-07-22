@@ -21,6 +21,7 @@ const config: Core.Config.Middlewares = [
   'strapi::query',
   'strapi::body',
   'strapi::session',
+  'global::clerk-auth',
   'strapi::favicon',
   'strapi::public',
 ];

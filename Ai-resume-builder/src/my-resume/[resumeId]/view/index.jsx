@@ -8,12 +8,14 @@ import GlobalApi from "./../../../../Service/GlobalApi"
 import { RWebShare } from "react-web-share"
 import { Download, Share2 } from "lucide-react"
 import { emptyResumeInfo, mapResumeFromApi } from "@/lib/mapResumeFromApi"
+import { downloadResumePdf } from "@/lib/downloadResumePdf"
 import { toast, Toaster } from "sonner"
 import "./view-resume.css"
 
 const ViewResume = () => {
     const [resumeInfo, setResumeInfo] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [downloading, setDownloading] = useState(false)
     const { resumeId } = useParams()
     const [searchParams] = useSearchParams()
     const shouldAutoDownload = searchParams.get("download") === "true"
@@ -46,33 +48,32 @@ const ViewResume = () => {
             })
     }, [resumeId])
 
-    const printResume = () => {
-        const previousTitle = document.title
-        // Blank title so print dialog does not stamp "AI Resume Builder" if headers leak through
-        document.title = " "
-        const restoreTitle = () => {
-            document.title = previousTitle
-            window.removeEventListener("afterprint", restoreTitle)
+    const HandleDownloadResume = async () => {
+        setDownloading(true)
+        try {
+            await downloadResumePdf({
+                fileName: `${personName.replace(/\s+/g, "-")}-resume.pdf`,
+            })
+            toast.success("PDF downloaded")
+        } catch (error) {
+            console.error(error)
+            toast.error("PDF failed — opening print dialog")
+            window.print()
+        } finally {
+            setDownloading(false)
         }
-        window.addEventListener("afterprint", restoreTitle)
-        window.print()
-        // Fallback if afterprint does not fire (some browsers)
-        setTimeout(restoreTitle, 1000)
     }
 
     useEffect(() => {
         if (loading || !shouldAutoDownload || !resumeInfo) return
 
         const timer = setTimeout(() => {
-            printResume()
-        }, 400)
+            HandleDownloadResume()
+        }, 600)
 
         return () => clearTimeout(timer)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loading, shouldAutoDownload, resumeInfo])
-
-    const HandleDownloadResume = () => {
-        printResume()
-    }
 
     if (loading) {
         return (
@@ -102,9 +103,10 @@ const ViewResume = () => {
                                 size="sm"
                                 className="flex gap-2 app-btn-accent cursor-pointer"
                                 onClick={HandleDownloadResume}
+                                disabled={downloading}
                             >
                                 <Download className="w-4 h-4" />
-                                Download
+                                {downloading ? "Preparing..." : "Download PDF"}
                             </Button>
                             <RWebShare
                                 data={{

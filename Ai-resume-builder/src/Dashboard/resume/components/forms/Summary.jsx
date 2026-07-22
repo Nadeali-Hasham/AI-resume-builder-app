@@ -8,40 +8,32 @@ import { toast } from "sonner";
 import GlobalApi from "./../../../../../Service/GlobalApi";
 import { generateSummaryFromAI } from "./../../../../../Service/AiModal";
 
-const Summary = ({enableNextButton, requireSaveForNext = true}) => {
+const Summary = ({ enableNextButton, requireSaveForNext = true }) => {
     const params = useParams();
-    const {resumeInfo, setResumeInfo} = useContext(ResumeInfoContext);
+    const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
     const [summary, setSummary] = useState(resumeInfo?.summary || "");
+    const [jobDescription, setJobDescription] = useState("");
+    const [aiOptions, setAiOptions] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [aiLoading, setAiLoading] = useState(false); // ✅ AI loading state
+    const [aiLoading, setAiLoading] = useState(false);
 
-    // ✅ ResumeInfo update karo jab summary change ho
     useEffect(() => {
-        setResumeInfo((prev) => ({ ...prev, summary: summary }));
+        setResumeInfo((prev) => ({ ...prev, summary }));
     }, [summary, setResumeInfo]);
 
     const handleSummaryChange = (value) => {
-        if (requireSaveForNext) {
-            enableNextButton(false);
-        }
+        if (requireSaveForNext) enableNextButton(false);
         setSummary(value);
     };
 
-    // ✅ Save function (reusable)
     const saveSummary = async (summaryText) => {
         setLoading(true);
-        
-        const data = {
-            data: {
-                summary: summaryText || summary
-            }
-        };
-
         try {
-            const response = await GlobalApi.updateResumeDetail(params.resumeId, data);
+            await GlobalApi.updateResumeDetail(params.resumeId, {
+                data: { summary: summaryText || summary },
+            });
             enableNextButton(true);
             toast.success("Summary updated successfully");
-            return response;
         } catch (error) {
             console.error("Error updating resume:", error);
             toast.error("Failed to update summary");
@@ -51,71 +43,73 @@ const Summary = ({enableNextButton, requireSaveForNext = true}) => {
         }
     };
 
-    // ✅ AI Summary Generate Function
-   const generateAISummary = async () => {
-    if (!resumeInfo?.jobTitle) {
-        toast.error("Please add your job title first");
-        return;
-    }
-
-    setAiLoading(true);
-    
-    try {
-        const aiSummary = await generateSummaryFromAI(resumeInfo.jobTitle);
-        
-        if (!aiSummary) {
-            throw new Error("No summary generated");
-        }
-        
-        setSummary(aiSummary);
-        setResumeInfo((prev) => ({ ...prev, summary: aiSummary }));
-        await saveSummary(aiSummary);
-        
-        toast.success("AI summary generated and saved!");
-    } catch (error) {
-        console.error("Error in generateAISummary:", error); // ✅ Full error
-        console.error("Error message:", error.message);
-        
-        // ✅ Specific error messages
-        if (error.message.includes("API key")) {
-            toast.error("Invalid API key. Please check your .env file");
-        } else if (error.message.includes("network")) {
-            toast.error("Network error. Please check your internet connection");
-        } else if (error.message.includes("quota")) {
-            toast.error("API quota exceeded. Please try again later");
-        } else {
-            toast.error("Failed to generate AI summary: " + error.message);
-        }
-    } finally {
-        setAiLoading(false);
-    }
-};
-
-    const onSave = (e) => {
-        e.preventDefault();
-        
-        if (!summary) {
-            toast.error("Please add a summary");
+    const generateAISummary = async () => {
+        if (!resumeInfo?.jobTitle && !jobDescription.trim()) {
+            toast.error("Add a job title or paste a job description");
             return;
         }
 
+        setAiLoading(true);
+        try {
+            const result = await generateSummaryFromAI({
+                jobTitle: resumeInfo?.jobTitle || "",
+                jobDescription,
+                currentSummary: summary,
+            });
+            setAiOptions(result.options || []);
+            const pick = result.summary || result.options?.[0];
+            if (!pick) throw new Error("No summary generated");
+            setSummary(pick);
+            setResumeInfo((prev) => ({ ...prev, summary: pick }));
+            await saveSummary(pick);
+            toast.success("AI summary ready — pick another option below if you like");
+        } catch (error) {
+            console.error("Error in generateAISummary:", error);
+            const msg =
+                error?.response?.data?.error?.message ||
+                error?.message ||
+                "Failed to generate AI summary";
+            toast.error(msg);
+        } finally {
+            setAiLoading(false);
+        }
+    };
+
+    const onSave = (e) => {
+        e.preventDefault();
+        if (!summary.trim()) {
+            toast.error("Please add a summary");
+            return;
+        }
         saveSummary(summary);
     };
 
     return (
         <div className="app-form-panel">
             <h2 className="app-form-title">Summary</h2>
-            <p className="app-form-desc">Add a brief summary of your qualifications and experience.</p>
+            <p className="app-form-desc">
+                Write a short pitch — or tailor it to a job description with AI.
+            </p>
 
-            <form onSubmit={onSave} className="mt-4">
-                <div className="flex justify-between items-end">
-                    <label className="text-normal font-medium">Add Summary</label>
+            <form onSubmit={onSave} className="mt-4 space-y-4">
+                <div>
+                    <label className="text-sm font-medium">Job description (optional)</label>
+                    <Textarea
+                        placeholder="Paste a JD to tailor the summary..."
+                        className="mt-2 min-h-[90px]"
+                        value={jobDescription}
+                        onChange={(e) => setJobDescription(e.target.value)}
+                    />
+                </div>
+
+                <div className="flex justify-between items-end gap-2">
+                    <label className="text-sm font-medium">Your summary</label>
                     <Button
                         variant="outline"
                         size="sm"
                         className="flex gap-2 bg-white text-black cursor-pointer"
                         type="button"
-                        onClick={generateAISummary} // ✅ AI function attached
+                        onClick={generateAISummary}
                         disabled={aiLoading}
                     >
                         {aiLoading ? (
@@ -126,32 +120,53 @@ const Summary = ({enableNextButton, requireSaveForNext = true}) => {
                         {aiLoading ? "Generating..." : "Generate From AI"}
                     </Button>
                 </div>
+
                 <Textarea
                     placeholder="Add your summary here..."
-                    className="mt-6"
+                    className="min-h-[120px]"
                     required
                     value={summary}
                     onChange={(e) => handleSummaryChange(e.target.value)}
                 />
-                <div className="flex flex-col gap-2 col-span-2 my-5">
-                    <Button 
-                        type="submit"
-                        className="flex items-center justify-center gap-2 w-full px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 shadow-md hover:shadow-lg transition-all duration-200 rounded-xl disabled:opacity-60 disabled:cursor-not-allowed"
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <>
-                                <LoaderCircle className="w-4 h-4 animate-spin" />
-                                Saving...
-                            </>
-                        ) : (
-                            <>
-                                <Save className="w-4 h-4" />
-                                Save Changes
-                            </>
-                        )}
-                    </Button>
-                </div>
+
+                {aiOptions.length > 1 && (
+                    <div className="space-y-2">
+                        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                            AI options
+                        </p>
+                        {aiOptions.map((opt, i) => (
+                            <button
+                                key={i}
+                                type="button"
+                                className="w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-left text-sm hover:border-teal-500 cursor-pointer"
+                                onClick={() => {
+                                    handleSummaryChange(opt);
+                                    if (requireSaveForNext) enableNextButton(false);
+                                }}
+                            >
+                                {opt}
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                <Button
+                    type="submit"
+                    className="flex items-center justify-center gap-2 w-full px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 shadow-md hover:shadow-lg transition-all duration-200 rounded-xl disabled:opacity-60 cursor-pointer"
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <>
+                            <LoaderCircle className="w-4 h-4 animate-spin" />
+                            Saving...
+                        </>
+                    ) : (
+                        <>
+                            <Save className="w-4 h-4" />
+                            Save Changes
+                        </>
+                    )}
+                </Button>
             </form>
         </div>
     );

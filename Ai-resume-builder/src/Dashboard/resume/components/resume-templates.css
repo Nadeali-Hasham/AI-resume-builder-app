@@ -1,0 +1,31 @@
+.resume-template-modern {
+  display: flex;
+  min-height: 0;
+}
+
+.resume-modern-rail {
+  width: 14px;
+  flex-shrink: 0;
+  background: var(--resume-theme, #0f766e);
+}
+
+.resume-modern-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.resume-template-ats h2,
+.resume-template-ats h3 {
+  letter-spacing: 0.02em;
+}
+
+.resume-template-ats hr {
+  display: none;
+}
+
+@media print {
+  .resume-modern-rail {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
