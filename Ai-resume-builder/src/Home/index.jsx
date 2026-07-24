@@ -7,6 +7,7 @@ import { useUser } from "@clerk/clerk-react"
 import { ArrowRight } from "lucide-react"
 import { useEffect, useState } from "react"
 import { PAGE_SEO } from "@/lib/seo"
+import { useTilt3D } from "@/hooks/useTilt3D"
 import "./home.css"
 
 const TEMPLATES = [
@@ -32,6 +33,7 @@ const Homepage = () => {
   const primaryPath = isSignedIn ? "/dashboard" : "/auth/sign-in"
   const [activeTpl, setActiveTpl] = useState(0)
   const [typed, setTyped] = useState("")
+  const heroTilt = useTilt3D({ max: 10, perspective: 1100 })
 
   useEffect(() => {
     const full = "MERN Stack Developer"
@@ -95,9 +97,16 @@ const Homepage = () => {
           </div>
         </div>
 
-        <div className="home-hero__visual" aria-hidden="true">
+        <div
+          className="home-hero__visual home-hero__visual--3d"
+          aria-hidden="true"
+          ref={heroTilt.ref}
+          onPointerMove={heroTilt.onPointerMove}
+          onPointerLeave={heroTilt.onPointerLeave}
+          style={heroTilt.style}
+        >
           <div
-            className={`home-resume-sheet home-resume-sheet--main home-resume-sheet--${tpl.id}`}
+            className={`home-resume-sheet home-resume-sheet--main home-resume-sheet--${tpl.id} home-resume-sheet--3d`}
             key={tpl.id}
           >
             <div className="home-resume-sheet__accent" />
@@ -134,7 +143,7 @@ const Homepage = () => {
             </div>
           </div>
 
-          <div className="home-resume-sheet home-resume-sheet--back">
+          <div className="home-resume-sheet home-resume-sheet--back home-resume-sheet--3d-back">
             <div className="home-resume-sheet__accent" />
             <div className="home-resume-sheet__name faint">Jordan Lee</div>
             <div className="home-resume-sheet__lines faint-lines">
@@ -155,15 +164,15 @@ const Homepage = () => {
             Three focused steps — no clutter, just a resume you can send today.
           </p>
           <ol className="home-steps">
-            <li>
+            <li className="home-step--3d" style={{ "--step-i": 0 }}>
               <strong>Fill your story</strong>
               <span>Personal details, experience, education, projects, and skills.</span>
             </li>
-            <li>
+            <li className="home-step--3d" style={{ "--step-i": 1 }}>
               <strong>Refine with AI</strong>
               <span>Paste a job description and pick from tailored summary or bullet options.</span>
             </li>
-            <li>
+            <li className="home-step--3d" style={{ "--step-i": 2 }}>
               <strong>Download & share</strong>
               <span>Export a real PDF or send a private share link with one click.</span>
             </li>
@@ -193,7 +202,7 @@ const Homepage = () => {
             ))}
           </div>
 
-          <div className="home-tpl-stage">
+          <div className="home-tpl-stage home-tpl-stage--3d">
             <div className={`home-tpl-stage__preview home-tpl-stage__preview--${tpl.id}`} />
             <div className="home-tpl-stage__copy">
               <h3>{tpl.label}</h3>

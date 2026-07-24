@@ -370,6 +370,55 @@ html.dark .app-dashboard-bg {
     linear-gradient(180deg, var(--app-bg) 0%, var(--app-bg-mid) 45%, var(--app-bg-end) 100%);
 }
 
+/* Subtle 3D UI motion (site chrome — not resume paper) */
+.app-logo-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.35s ease;
+  animation: app-logo-float 4.5s ease-in-out infinite;
+}
+
+.app-logo-3d:hover {
+  transform: perspective(600px) rotateY(-12deg) rotateX(6deg) translateZ(6px);
+  animation-play-state: paused;
+}
+
+@keyframes app-logo-float {
+  0%,
+  100% {
+    transform: translateY(0) rotateY(0deg);
+  }
+  50% {
+    transform: translateY(-3px) rotateY(6deg);
+  }
+}
+
+.app-tilt-card {
+  transform-style: preserve-3d;
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease;
+  will-change: transform;
+}
+
+.app-tilt-card:hover {
+  transform: perspective(1000px) rotateX(5deg) rotateY(-6deg) translateY(-8px)
+    translateZ(12px);
+  box-shadow: 0 28px 48px -28px rgba(15, 23, 42, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-logo-3d,
+  .app-tilt-card {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .app-tilt-card:hover,
+  .app-logo-3d:hover {
+    transform: none !important;
+  }
+}
+
 /* Form chrome: borders/labels follow theme without touching resume paper */
 .app-form-panel .rounded-xl.border,
 .app-form-panel [class*="border-slate"] {

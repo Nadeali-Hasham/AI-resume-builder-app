@@ -15,7 +15,7 @@ const Header = () => {
         <img
           src="/logo.svg"
           alt="AI Resume Builder Logo"
-          className="h-9 w-9 shrink-0 sm:h-11 sm:w-11"
+          className="app-logo-3d h-9 w-9 shrink-0 sm:h-11 sm:w-11"
           height={44}
           width={44}
         />

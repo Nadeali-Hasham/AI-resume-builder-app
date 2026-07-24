@@ -170,7 +170,7 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
 
   return (
     <div
-      className="group relative flex min-h-[220px] flex-col overflow-hidden rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-20px_rgba(15,23,42,0.4)] sm:min-h-[280px]"
+      className="app-tilt-card group relative flex min-h-[220px] flex-col overflow-hidden rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] sm:min-h-[280px]"
       style={{ fontFamily: '"DM Sans", sans-serif' }}
     >
       <div className="h-1.5 w-full" style={{ backgroundColor: themeColor }} />

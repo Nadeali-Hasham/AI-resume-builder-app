@@ -67,7 +67,7 @@ const AddResume = ({ aiCount = 0, aiAtLimit = false }) => {
       <button
         type="button"
         onClick={() => setOpenDialog(true)}
-        className="group relative flex h-full min-h-[220px] w-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-teal-300/80 bg-gradient-to-br from-teal-50 via-[var(--app-surface)] to-[var(--app-soft)] p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:border-teal-500 hover:shadow-[0_20px_40px_-24px_rgba(13,148,136,0.55)] cursor-pointer dark:border-teal-700/60 dark:from-teal-950/40 sm:min-h-[280px] sm:p-6"
+        className="app-tilt-card group relative flex h-full min-h-[220px] w-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-teal-300/80 bg-gradient-to-br from-teal-50 via-[var(--app-surface)] to-[var(--app-soft)] p-5 text-left cursor-pointer dark:border-teal-700/60 dark:from-teal-950/40 sm:min-h-[280px] sm:p-6"
         style={{ fontFamily: '"DM Sans", sans-serif' }}
       >
         <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-teal-200/30 blur-2xl transition-opacity group-hover:opacity-80" />
