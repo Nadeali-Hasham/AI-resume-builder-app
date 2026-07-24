@@ -8,7 +8,7 @@ React + Vite frontend, Strapi 5 backend, Clerk auth, server-side Gemini AI.
 - Strapi middleware (`global::clerk-auth`) verifies the JWT via **JWKS** (from `CLERK_PUBLISHABLE_KEY`) and optionally enriches email with `CLERK_SECRET_KEY` (`sk_…`).
 - Controllers enforce ownership by **`clerkUserId`** (plus verified / session email for legacy rows).
 - Public share uses opaque **`shareToken` only** (document ids are not accepted).
-- Soft limits: `FREE_RESUME_LIMIT` (default **5** resumes), `AI_DAILY_LIMIT` (default 20 AI calls / 24h / user+IP).
+- Soft limits: **AI resumes max 5** (`AI_RESUME_LIMIT`); **manual resumes unlimited**. Daily AI generations: `AI_DAILY_LIMIT` (default 20).
 
 ## Go live (checklist)
 

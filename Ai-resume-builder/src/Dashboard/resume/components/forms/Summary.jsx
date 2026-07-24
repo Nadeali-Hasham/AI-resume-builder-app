@@ -9,6 +9,7 @@ import GlobalApi from "./../../../../../Service/GlobalApi";
 import { generateSummaryFromAI } from "./../../../../../Service/AiModal";
 import EmptySectionHint from "../EmptySectionHint";
 import { AI_DAILY_LIMIT, AI_JD_MAX_CHARS, apiErrorMessage } from "@/lib/planLimits";
+import { useEnsureResumeAi } from "../AiGate";
 
 const Summary = ({ enableNextButton, requireSaveForNext = true }) => {
     const params = useParams();
@@ -18,6 +19,7 @@ const Summary = ({ enableNextButton, requireSaveForNext = true }) => {
     const [aiOptions, setAiOptions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
+    const { ensureAi, enabling } = useEnsureResumeAi();
 
     useEffect(() => {
         setResumeInfo((prev) => ({ ...prev, summary }));
@@ -51,9 +53,13 @@ const Summary = ({ enableNextButton, requireSaveForNext = true }) => {
             return;
         }
 
+        const ok = await ensureAi();
+        if (!ok) return;
+
         setAiLoading(true);
         try {
             const result = await generateSummaryFromAI({
+                resumeId: params.resumeId,
                 jobTitle: resumeInfo?.jobTitle || "",
                 jobDescription: jobDescription.slice(0, AI_JD_MAX_CHARS),
                 currentSummary: summary,
@@ -86,8 +92,8 @@ const Summary = ({ enableNextButton, requireSaveForNext = true }) => {
         <div className="app-form-panel">
             <h2 className="app-form-title">Summary</h2>
             <p className="app-form-desc">
-                Write a short pitch — or tailor it to a job description with AI
-                (about {AI_DAILY_LIMIT} AI uses / day on the free plan).
+                Write a short pitch — or tailor it with AI (about {AI_DAILY_LIMIT}{" "}
+                generations / day when AI is on).
             </p>
             {!summary?.trim() && (
                 <EmptySectionHint
@@ -119,14 +125,14 @@ const Summary = ({ enableNextButton, requireSaveForNext = true }) => {
                         className="flex gap-2 bg-white text-black cursor-pointer"
                         type="button"
                         onClick={generateAISummary}
-                        disabled={aiLoading}
+                        disabled={aiLoading || enabling}
                     >
-                        {aiLoading ? (
+                        {aiLoading || enabling ? (
                             <LoaderCircle className="w-4 h-4 animate-spin" />
                         ) : (
                             <Brain className="w-4 h-4" />
                         )}
-                        {aiLoading ? "Generating..." : "Generate From AI"}
+                        {aiLoading || enabling ? "Working..." : "Generate From AI"}
                     </Button>
                 </div>
 

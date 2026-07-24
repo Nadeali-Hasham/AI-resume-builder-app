@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import ResumeCardsItem from "./components/ResumeCardsItem";
 import { FileText, Search, Sparkles } from "lucide-react";
 import { Input } from "../components/ui/input";
-import { FREE_RESUME_LIMIT, apiErrorMessage } from "../lib/planLimits";
+import { AI_RESUME_LIMIT, apiErrorMessage, isAiEnabledResume } from "../lib/planLimits";
 import { toast } from "sonner";
 
 const Dashboard = () => {
@@ -37,6 +37,12 @@ const Dashboard = () => {
       GetResumesList();
     }
   }, [isLoaded, user, GetResumesList]);
+
+  const aiCount = useMemo(
+    () => resumeList.filter((r) => isAiEnabledResume(r)).length,
+    [resumeList]
+  );
+  const aiAtLimit = aiCount >= AI_RESUME_LIMIT;
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -96,9 +102,8 @@ const Dashboard = () => {
               className="mt-2 max-w-xl text-sm leading-relaxed text-slate-600 sm:mt-3 sm:text-[15px]"
               style={{ fontFamily: '"DM Sans", sans-serif' }}
             >
-              Build polished, AI-assisted resumes (free plan: up to{" "}
-              {FREE_RESUME_LIMIT}). Keep every version ready for your next
-              opportunity.
+              Build polished resumes anytime. Manual is unlimited; AI-assisted
+              slots: {AI_RESUME_LIMIT} per account.
             </p>
           </div>
 
@@ -114,13 +119,15 @@ const Dashboard = () => {
                 Total resumes
               </p>
               <p className="text-lg font-semibold text-slate-900">
-                {loading ? "—" : `${resumeList.length} / ${FREE_RESUME_LIMIT}`}
+                {loading ? "—" : resumeList.length}
               </p>
-              <p className="text-[11px] text-slate-400">Free plan limit</p>
+              <p className="text-[11px] text-slate-400">Manual unlimited</p>
             </div>
-            <div className="ml-2 hidden sm:flex items-center gap-1 rounded-full bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-white">
-              <Sparkles className="h-3 w-3 text-teal-300" />
-              AI Ready
+            <div className="ml-2 flex flex-col items-start gap-1 sm:items-end">
+              <div className="flex items-center gap-1 rounded-full bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-white">
+                <Sparkles className="h-3 w-3 text-teal-300" />
+                AI {loading ? "—" : `${aiCount}/${AI_RESUME_LIMIT}`}
+              </div>
             </div>
           </div>
         </div>
@@ -155,10 +162,7 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:gap-5">
-          <AddResume
-            disabled={!loading && resumeList.length >= FREE_RESUME_LIMIT}
-            atLimit={!loading && resumeList.length >= FREE_RESUME_LIMIT}
-          />
+          <AddResume aiCount={aiCount} aiAtLimit={aiAtLimit} />
           {loading &&
             Array.from({ length: 3 }).map((_, i) => (
               <div
@@ -177,9 +181,10 @@ const Dashboard = () => {
             ))}
         </div>
 
-        {!loading && resumeList.length >= FREE_RESUME_LIMIT && (
+        {!loading && aiAtLimit && (
           <p className="mt-4 text-center text-xs text-slate-500">
-            Free plan: up to {FREE_RESUME_LIMIT} resumes. Delete one to create another.
+            AI slots full ({AI_RESUME_LIMIT}/{AI_RESUME_LIMIT}). You can still
+            create unlimited manual resumes.
           </p>
         )}
 

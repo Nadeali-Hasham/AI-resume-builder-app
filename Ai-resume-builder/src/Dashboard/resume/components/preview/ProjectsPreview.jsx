@@ -10,6 +10,9 @@ const ProjectsPreview = ({ resumeInfo, variant = "classic" }) => {
   const items = resumeInfo?.projects || [];
   if (!items.length) return null;
 
+  const linkStyle =
+    variant === "ats" ? { color: "#000" } : { color: theme };
+
   return (
     <div className="mt-5">
       <h2
@@ -22,24 +25,36 @@ const ProjectsPreview = ({ resumeInfo, variant = "classic" }) => {
         {items.map((p, i) => (
           <div key={i}>
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h3 className="text-sm font-semibold" style={subHeadingStyle(variant, theme)}>
+              <h3
+                className="text-sm font-semibold"
+                style={subHeadingStyle(variant, theme)}
+              >
                 {p.name}
               </h3>
-              {p.link?.trim() && (
-                <a
-                  href={toHref(p.link)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[11px] break-all underline-offset-2 hover:underline"
-                  style={
-                    variant === "ats"
-                      ? { color: "#000" }
-                      : { color: theme }
-                  }
-                >
-                  {displayUrl(p.link)}
-                </a>
-              )}
+              <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px]">
+                {p.link?.trim() && (
+                  <a
+                    href={toHref(p.link)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="break-all underline-offset-2 hover:underline"
+                    style={linkStyle}
+                  >
+                    Live: {displayUrl(p.link)}
+                  </a>
+                )}
+                {p.githubUrl?.trim() && (
+                  <a
+                    href={toHref(p.githubUrl)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="break-all underline-offset-2 hover:underline"
+                    style={linkStyle}
+                  >
+                    GitHub: {displayUrl(p.githubUrl)}
+                  </a>
+                )}
+              </div>
             </div>
             {p.technologies && (
               <p className="text-xs text-slate-600">{p.technologies}</p>

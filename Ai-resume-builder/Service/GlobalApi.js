@@ -47,6 +47,12 @@ axiosClient.interceptors.request.use(async (config) => {
   if (currentUserEmail) {
     config.headers['X-User-Email'] = currentUserEmail;
   }
+  // Let the browser set multipart boundary for FormData
+  if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+    if (config.headers) {
+      delete config.headers['Content-Type'];
+    }
+  }
   return config;
 });
 
@@ -88,20 +94,37 @@ export const duplicateResume = (id, resumeId) =>
 export const rotateShareToken = (id) =>
   axiosClient.post(`/user-resumes/${id}/rotate-share`);
 
+export const enableResumeAi = (id) =>
+  axiosClient.post(`/user-resumes/${id}/enable-ai`);
+
+export const uploadFile = (file) => {
+  const form = new FormData();
+  form.append('files', file);
+  return axiosClient.post('/user-resumes/upload', form);
+};
+
 export const generateSummaryFromAI = ({
+  resumeId,
   jobTitle,
   jobDescription = '',
   currentSummary = '',
 } = {}) =>
-  axiosClient.post('/ai/summary', { jobTitle, jobDescription, currentSummary });
+  axiosClient.post('/ai/summary', {
+    resumeId,
+    jobTitle,
+    jobDescription,
+    currentSummary,
+  });
 
 export const generateExperienceFromAI = ({
+  resumeId,
   title,
   jobDescription = '',
   currentHtml = '',
   companyName = '',
 } = {}) =>
   axiosClient.post('/ai/experience', {
+    resumeId,
     title,
     jobDescription,
     currentHtml,
@@ -117,6 +140,8 @@ export default {
   deleteResume,
   duplicateResume,
   rotateShareToken,
+  enableResumeAi,
+  uploadFile,
   generateSummaryFromAI,
   generateExperienceFromAI,
   setAuthTokenGetter,

@@ -35,5 +35,12 @@ export const checkRateLimit = (
 export const getAiDailyLimit = () =>
   Math.max(1, parseInt(process.env.AI_DAILY_LIMIT || '20', 10) || 20);
 
-export const getFreeResumeLimit = () =>
-  Math.max(1, parseInt(process.env.FREE_RESUME_LIMIT || '5', 10) || 5);
+/** Max resumes that may use AI features (manual resumes are unlimited). */
+export const getAiResumeLimit = () =>
+  Math.max(
+    1,
+    parseInt(process.env.AI_RESUME_LIMIT || process.env.FREE_RESUME_LIMIT || '5', 10) || 5
+  );
+
+/** @deprecated use getAiResumeLimit — kept for older imports */
+export const getFreeResumeLimit = getAiResumeLimit;

@@ -70,6 +70,10 @@
       "enum": ["classic", "modern", "ats"],
       "default": "classic"
     },
+    "aiEnabled": {
+      "type": "boolean",
+      "default": false
+    },
     "Experience": {
       "type": "component",
       "component": "experience.experience",

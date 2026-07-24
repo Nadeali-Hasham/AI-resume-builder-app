@@ -9,6 +9,7 @@ export interface CertificationsCertification extends Struct.ComponentSchema {
   attributes: {
     credentialUrl: Schema.Attribute.String;
     date: Schema.Attribute.String;
+    imageUrl: Schema.Attribute.Text;
     issuer: Schema.Attribute.String;
     name: Schema.Attribute.String;
   };
@@ -67,6 +68,7 @@ export interface ProjectsProject extends Struct.ComponentSchema {
   };
   attributes: {
     description: Schema.Attribute.Text;
+    githubUrl: Schema.Attribute.String;
     link: Schema.Attribute.String;
     name: Schema.Attribute.String;
     technologies: Schema.Attribute.String;

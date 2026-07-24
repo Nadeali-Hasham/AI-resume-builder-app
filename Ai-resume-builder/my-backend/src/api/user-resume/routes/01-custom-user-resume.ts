@@ -36,6 +36,26 @@ export default {
     },
     {
       method: 'POST',
+      path: '/user-resumes/upload',
+      handler: 'user-resume.uploadFile',
+      config: {
+        auth: false,
+        policies: [],
+        middlewares: [],
+      },
+    },
+    {
+      method: 'POST',
+      path: '/user-resumes/:id/enable-ai',
+      handler: 'user-resume.enableAi',
+      config: {
+        auth: false,
+        policies: [],
+        middlewares: [],
+      },
+    },
+    {
+      method: 'POST',
       path: '/ai/summary',
       handler: 'user-resume.generateSummary',
       config: {

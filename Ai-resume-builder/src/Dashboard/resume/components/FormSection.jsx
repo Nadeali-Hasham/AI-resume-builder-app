@@ -15,6 +15,7 @@ import TemplatePicker from "./TemplatePicker";
 import SaveStatusBadge from "./SaveStatusBadge";
 import { ResumeInfoContext } from "@/context/ResumeInfoContext";
 import { setSaveStatusListener } from "../../../../Service/GlobalApi";
+import { AiConfirmProvider, AiModeSwitch } from "./AiGate";
 
 const STEPS = [
   { id: 1, label: "Personal" },
@@ -79,6 +80,7 @@ const FormSection = () => {
   };
 
   return (
+    <AiConfirmProvider>
     <div className="font-[family-name:var(--font-body)]">
       <div className="app-toolbar">
         <div className="flex gap-2 items-center flex-wrap">
@@ -122,6 +124,8 @@ const FormSection = () => {
           </Button>
         </div>
       </div>
+
+      <AiModeSwitch />
 
       <div className="mb-4 rounded-xl border border-slate-200 bg-white/90 p-3">
         <div className="mb-2 flex items-center justify-between gap-2">
@@ -241,6 +245,7 @@ const FormSection = () => {
         </div>
       )}
     </div>
+    </AiConfirmProvider>
   );
 };
 

@@ -162,6 +162,16 @@ code {
     background: transparent !important;
   }
 
+  .resume-preview-root {
+    padding: 14mm 16mm !important;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  .resume-modern-body {
+    padding: 0 !important;
+  }
+
   .skill-rating-track,
   .skill-rating-fill {
     -webkit-print-color-adjust: exact !important;
@@ -169,7 +179,8 @@ code {
   }
 }
 
-/* margin: 0 hides browser-injected print header/footer (date, title, URL, page #) */
+/* Zero page margin so Chrome does not reserve space for date/title/URL headers.
+   Resume inset comes from .resume-preview-root padding (cloned per page). */
 @page {
   size: A4;
   margin: 0;

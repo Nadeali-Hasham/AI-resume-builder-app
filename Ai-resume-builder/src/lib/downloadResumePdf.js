@@ -2,11 +2,13 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 
 /**
- * Capture #resume-pdf-root (or #print-area) and download as A4 PDF.
+ * Capture #resume-pdf-root (or #print-area) as A4 PDF with page margins
+ * (no browser date/title/URL headers).
  */
 export async function downloadResumePdf({
   elementId = "resume-pdf-root",
   fileName = "resume.pdf",
+  marginMm = 12,
 } = {}) {
   const el =
     document.getElementById(elementId) ||
@@ -31,24 +33,29 @@ export async function downloadResumePdf({
 
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-  const imgWidth = pageWidth;
+  const margin = Math.max(0, Number(marginMm) || 0);
+  const contentWidth = pageWidth - margin * 2;
+  const contentHeight = pageHeight - margin * 2;
+
+  const imgWidth = contentWidth;
   const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
   let heightLeft = imgHeight;
-  let position = 0;
+  let position = margin;
 
-  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
+  pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+  heightLeft -= contentHeight;
 
   while (heightLeft > 0) {
-    position = heightLeft - imgHeight;
+    position = margin - (imgHeight - heightLeft);
     pdf.addPage();
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
+    pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+    heightLeft -= contentHeight;
   }
 
-  const safeName = String(fileName || "resume")
-    .replace(/[^\w\s.-]/g, "")
-    .trim() || "resume";
+  const safeName =
+    String(fileName || "resume")
+      .replace(/[^\w\s.-]/g, "")
+      .trim() || "resume";
   pdf.save(safeName.endsWith(".pdf") ? safeName : `${safeName}.pdf`);
 }

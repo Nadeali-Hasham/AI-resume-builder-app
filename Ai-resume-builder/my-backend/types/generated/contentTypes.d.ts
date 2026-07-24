@@ -490,6 +490,7 @@ export interface ApiUserResumeUserResume extends Struct.CollectionTypeSchema {
   };
   attributes: {
     address: Schema.Attribute.String;
+    aiEnabled: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     certifications: Schema.Attribute.Component<
       'certifications.certification',
       true

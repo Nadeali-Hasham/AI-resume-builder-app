@@ -17,6 +17,9 @@
     },
     "credentialUrl": {
       "type": "string"
+    },
+    "imageUrl": {
+      "type": "text"
     }
   }
 }

@@ -17,6 +17,9 @@
     },
     "link": {
       "type": "string"
+    },
+    "githubUrl": {
+      "type": "string"
     }
   }
 }

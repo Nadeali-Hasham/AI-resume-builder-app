@@ -6,17 +6,22 @@ import GlobalApi from './GlobalApi';
  */
 
 export const generateSummaryFromAI = async ({
+  resumeId,
   jobTitle = '',
   jobDescription = '',
   currentSummary = '',
 } = {}) => {
   const cleanJobTitle = String(jobTitle || '').trim();
   const cleanJd = String(jobDescription || '').trim();
+  if (!resumeId) {
+    throw new Error('resumeId is required');
+  }
   if (!cleanJobTitle && !cleanJd) {
     throw new Error('Job title or job description is required');
   }
 
   const response = await GlobalApi.generateSummaryFromAI({
+    resumeId,
     jobTitle: cleanJobTitle,
     jobDescription: cleanJd,
     currentSummary: String(currentSummary || '').trim(),
@@ -33,6 +38,7 @@ export const generateSummaryFromAI = async ({
 };
 
 export const generateExperienceBulletsFromAI = async ({
+  resumeId,
   title = '',
   jobDescription = '',
   currentHtml = '',
@@ -40,11 +46,15 @@ export const generateExperienceBulletsFromAI = async ({
 } = {}) => {
   const cleanTitle = String(title || '').trim();
   const cleanJd = String(jobDescription || '').trim();
+  if (!resumeId) {
+    throw new Error('resumeId is required');
+  }
   if (!cleanTitle && !cleanJd) {
     throw new Error('Position title or job description is required');
   }
 
   const response = await GlobalApi.generateExperienceFromAI({
+    resumeId,
     title: cleanTitle,
     jobDescription: cleanJd,
     currentHtml: String(currentHtml || '').trim(),

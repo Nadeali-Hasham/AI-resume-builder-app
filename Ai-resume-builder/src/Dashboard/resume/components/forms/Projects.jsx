@@ -14,6 +14,7 @@ const emptyProject = {
   description: "",
   technologies: "",
   link: "",
+  githubUrl: "",
 };
 
 const Projects = ({ enableNextButton, requireSaveForNext = true }) => {
@@ -46,7 +47,13 @@ const Projects = ({ enableNextButton, requireSaveForNext = true }) => {
     setLoading(true);
     try {
       const payload = list
-        .map(({ id, ...rest }) => rest)
+        .map(({ id, ...rest }) => ({
+          name: rest.name || "",
+          description: rest.description || "",
+          technologies: rest.technologies || "",
+          link: rest.link || "",
+          githubUrl: rest.githubUrl || "",
+        }))
         .filter((p) => p.name?.trim());
       await GlobalApi.updateResumeDetail(params.resumeId, {
         data: { projects: payload },
@@ -55,7 +62,11 @@ const Projects = ({ enableNextButton, requireSaveForNext = true }) => {
       toast.success("Projects saved");
     } catch (err) {
       console.error(err);
-      toast.error("Failed to save projects");
+      toast.error(
+        err?.response?.data?.error?.message ||
+          err?.response?.data?.message ||
+          "Failed to save projects"
+      );
     } finally {
       setLoading(false);
     }
@@ -68,7 +79,7 @@ const Projects = ({ enableNextButton, requireSaveForNext = true }) => {
       {!list.some((p) => p.name?.trim()) && (
         <EmptySectionHint
           title="Tip: ship proof beats buzzwords"
-          tip="Name the project, stack, and one measurable outcome. Add a live link when you can."
+          tip="Name the project, stack, and one measurable outcome. Add a live link or GitHub URL when you can."
         />
       )}
       <form onSubmit={onSave} className="mt-4 space-y-6">
@@ -89,11 +100,28 @@ const Projects = ({ enableNextButton, requireSaveForNext = true }) => {
               value={item.technologies || ""}
               onChange={(e) => handleChange(index, "technologies", e.target.value)}
             />
-            <Input
-              placeholder="Link (optional)"
-              value={item.link || ""}
-              onChange={(e) => handleChange(index, "link", e.target.value)}
-            />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-xs font-medium text-slate-500">
+                  Live link (optional)
+                </label>
+                <Input
+                  placeholder="https://your-demo.com"
+                  value={item.link || ""}
+                  onChange={(e) => handleChange(index, "link", e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-slate-500">
+                  GitHub URL (optional)
+                </label>
+                <Input
+                  placeholder="https://github.com/you/repo"
+                  value={item.githubUrl || ""}
+                  onChange={(e) => handleChange(index, "githubUrl", e.target.value)}
+                />
+              </div>
+            </div>
           </div>
         ))}
         <div className="flex flex-wrap gap-2">

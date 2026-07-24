@@ -56,6 +56,7 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
   const shareToken = resumeData?.shareToken;
   const personName = [resumeData?.firstName, resumeData?.lastName].filter(Boolean).join(" ");
   const templateLabel = (resumeData?.template || "classic").toUpperCase();
+  const isAi = Boolean(resumeData?.aiEnabled);
   const updatedLabel = resumeData?.updatedAt
     ? new Date(resumeData.updatedAt).toLocaleDateString(undefined, {
         month: "short",
@@ -203,6 +204,13 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
               style={{ backgroundColor: themeColor }}
             >
               {templateLabel}
+            </span>
+            <span
+              className={`rounded px-1 py-0.5 text-[8px] font-semibold uppercase tracking-wide ${
+                isAi ? "bg-teal-700 text-white" : "bg-slate-200 text-slate-700"
+              }`}
+            >
+              {isAi ? "AI" : "Manual"}
             </span>
           </div>
           <div

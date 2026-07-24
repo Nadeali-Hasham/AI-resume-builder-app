@@ -34,8 +34,11 @@ const Languages = ({ enableNextButton, requireSaveForNext = true }) => {
     setLoading(true);
     try {
       const payload = list
-        .map(({ id, ...rest }) => rest)
-        .filter((l) => l.name?.trim());
+        .map((item) => ({
+          name: (item.name || "").trim(),
+          proficiency: (item.proficiency || "").trim(),
+        }))
+        .filter((l) => l.name);
       await GlobalApi.updateResumeDetail(params.resumeId, {
         data: { languages: payload },
       });
@@ -43,7 +46,11 @@ const Languages = ({ enableNextButton, requireSaveForNext = true }) => {
       toast.success("Languages saved");
     } catch (err) {
       console.error(err);
-      toast.error("Failed to save languages");
+      toast.error(
+        err?.response?.data?.error?.message ||
+          err?.response?.data?.message ||
+          "Failed to save languages"
+      );
     } finally {
       setLoading(false);
     }

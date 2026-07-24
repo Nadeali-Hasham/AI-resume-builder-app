@@ -6,7 +6,7 @@ import { factories } from '@strapi/strapi';
 import {
   checkRateLimit,
   getAiDailyLimit,
-  getFreeResumeLimit,
+  getAiResumeLimit,
 } from '../../../utils/rate-limit';
 import { createShareToken } from '../../../utils/share-token';
 
@@ -54,11 +54,54 @@ const ownerFilters = (auth: AuthUser) => {
   if (auth.email) {
     parts.push({ userEmail: { $eq: auth.email } });
   }
-  // Resumes created when email wasn't in the JWT yet
   parts.push({
     userEmail: { $eq: `user-${auth.userId.slice(0, 8)}@clerk.local` },
   });
   return { $or: parts };
+};
+
+const countAiResumes = async (strapi: any, auth: AuthUser) => {
+  const load = async (status: 'published' | 'draft') => {
+    try {
+      return await strapi.documents('api::user-resume.user-resume').findMany({
+        filters: {
+          $and: [ownerFilters(auth), { aiEnabled: { $eq: true } }],
+        } as any,
+        limit: 100,
+        status,
+      });
+    } catch {
+      return [];
+    }
+  };
+  const [published, drafts] = await Promise.all([load('published'), load('draft')]);
+  const ids = new Set<string>();
+  for (const row of [...published, ...drafts]) {
+    if (row?.documentId) ids.add(row.documentId);
+  }
+  return ids.size;
+};
+
+const requireOwnedResume = async (strapi: any, ctx: any, auth: AuthUser) => {
+  const resumeId = String(
+    ctx.request.body?.resumeId || ctx.params?.id || ''
+  ).trim();
+  if (!resumeId) {
+    ctx.badRequest('resumeId is required');
+    return null;
+  }
+  const entity: any = await strapi.documents('api::user-resume.user-resume').findOne({
+    documentId: resumeId,
+  });
+  if (!entity) {
+    ctx.notFound('Resume not found');
+    return null;
+  }
+  if (!ownsResume(entity, auth)) {
+    ctx.forbidden('You do not own this resume');
+    return null;
+  }
+  return entity;
 };
 
 const toPublic = (entity: any) => {
@@ -67,6 +110,113 @@ const toPublic = (entity: any) => {
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+const asCleanString = (value: unknown) => String(value ?? '').trim();
+
+const sanitizeComponentList = (
+  items: any[] | undefined,
+  fields: string[]
+): any[] | undefined => {
+  if (!Array.isArray(items)) return items;
+  return items
+    .map((item) => {
+      const next: Record<string, unknown> = {};
+      for (const field of fields) {
+        const raw = item?.[field];
+        if (field === 'date') {
+          const d = asCleanString(raw);
+          next[field] = /^\d{4}-\d{2}-\d{2}/.test(d) ? d.slice(0, 10) : d || '';
+          continue;
+        }
+        if (field === 'rating') {
+          const n = Number(raw);
+          next[field] = Number.isFinite(n) ? Math.max(1, Math.min(5, n)) : 3;
+          continue;
+        }
+        next[field] = raw == null ? '' : raw;
+      }
+      return next;
+    })
+    .filter((item) =>
+      ['name', 'title', 'universityName'].some((key) => asCleanString(item[key]))
+    );
+};
+
+const sanitizeUpdateData = (data: any) => {
+  if (!data || typeof data !== 'object') return data;
+  const next = { ...data };
+
+  if (next.languages) {
+    next.languages = sanitizeComponentList(next.languages, ['name', 'proficiency']);
+  }
+  if (next.certifications) {
+    next.certifications = sanitizeComponentList(next.certifications, [
+      'name',
+      'issuer',
+      'date',
+      'credentialUrl',
+      'imageUrl',
+    ]);
+  }
+  if (next.projects) {
+    next.projects = sanitizeComponentList(next.projects, [
+      'name',
+      'description',
+      'technologies',
+      'link',
+      'githubUrl',
+    ]);
+  }
+  if (next.skills) {
+    next.skills = sanitizeComponentList(next.skills, ['name', 'rating']);
+  }
+  if (next.Experience) {
+    next.Experience = sanitizeComponentList(next.Experience, [
+      'title',
+      'companyName',
+      'city',
+      'state',
+      'startDate',
+      'endDate',
+      'workSummary',
+    ]);
+  }
+  if (next.experience) {
+    next.Experience = sanitizeComponentList(next.experience, [
+      'title',
+      'companyName',
+      'city',
+      'state',
+      'startDate',
+      'endDate',
+      'workSummary',
+    ]);
+    delete next.experience;
+  }
+  if (next.Education) {
+    next.Education = sanitizeComponentList(next.Education, [
+      'universityName',
+      'degree',
+      'major',
+      'startDate',
+      'endDate',
+      'description',
+    ]);
+  }
+  if (next.education) {
+    next.Education = sanitizeComponentList(next.education, [
+      'universityName',
+      'degree',
+      'major',
+      'startDate',
+      'endDate',
+      'description',
+    ]);
+    delete next.education;
+  }
+
+  return next;
+};
 
 export default factories.createCoreController(
   'api::user-resume.user-resume',
@@ -180,19 +330,19 @@ export default factories.createCoreController(
       const auth = requireAuth(ctx);
       if (!auth) return;
 
-      const existing = await strapi.documents('api::user-resume.user-resume').findMany({
-        filters: ownerFilters(auth) as any,
-        limit: 100,
-      });
+      const bodyData = ctx.request.body?.data || {};
+      const wantAi = Boolean(bodyData.aiEnabled);
+      const aiLimit = getAiResumeLimit();
 
-      const limit = getFreeResumeLimit();
-      if (existing.length >= limit) {
-        return ctx.tooManyRequests(
-          `Free plan allows up to ${limit} resumes. Delete one to create another.`
-        );
+      if (wantAi) {
+        const aiCount = await countAiResumes(strapi, auth);
+        if (aiCount >= aiLimit) {
+          return ctx.tooManyRequests(
+            `AI plan allows up to ${aiLimit} AI resumes. Create a manual resume (unlimited) or delete an AI resume.`
+          );
+        }
       }
 
-      const bodyData = ctx.request.body?.data || {};
       const userEmail =
         auth.email ||
         (typeof bodyData.userEmail === 'string'
@@ -209,6 +359,7 @@ export default factories.createCoreController(
           shareToken: bodyData.shareToken || createShareToken(),
           template: bodyData.template || 'classic',
           themeColor: bodyData.themeColor || '#0f766e',
+          aiEnabled: wantAi,
           publishedAt: new Date(),
         },
       };
@@ -223,6 +374,7 @@ export default factories.createCoreController(
       const { id } = ctx.params;
       const existing: any = await strapi.documents('api::user-resume.user-resume').findOne({
         documentId: id,
+        populate: POPULATE,
       });
 
       if (!existing) {
@@ -233,18 +385,64 @@ export default factories.createCoreController(
         return ctx.forbidden('You do not own this resume');
       }
 
-      if (ctx.request.body?.data) {
-        ctx.request.body.data.userEmail = existing.userEmail;
-        ctx.request.body.data.clerkUserId = existing.clerkUserId || auth.userId;
-        ctx.request.body.data.shareToken =
-          ctx.request.body.data.shareToken ||
-          existing.shareToken ||
-          createShareToken();
-        ctx.request.body.data.publishedAt =
-          ctx.request.body.data.publishedAt || existing.publishedAt || new Date();
+      const bodyData = ctx.request.body?.data;
+      if (!bodyData || typeof bodyData !== 'object') {
+        return ctx.badRequest('Missing data payload');
       }
 
-      return await super.update(ctx);
+      const nextAi = bodyData.aiEnabled;
+      if (nextAi === true && !existing.aiEnabled) {
+        const aiLimit = getAiResumeLimit();
+        const aiCount = await countAiResumes(strapi, auth);
+        if (aiCount >= aiLimit) {
+          return ctx.tooManyRequests(
+            `AI plan allows up to ${aiLimit} AI resumes. Disable AI on another resume first.`
+          );
+        }
+      }
+
+      const data = sanitizeUpdateData(bodyData);
+      // Ownership / share fields are server-controlled
+      delete data.userEmail;
+      delete data.clerkUserId;
+      delete data.shareToken;
+      delete data.publishedAt;
+      delete data.documentId;
+      delete data.id;
+      delete data.createdAt;
+      delete data.updatedAt;
+
+      data.clerkUserId = existing.clerkUserId || auth.userId;
+      if (!existing.shareToken) {
+        data.shareToken = createShareToken();
+      }
+      if (typeof nextAi !== 'boolean') {
+        delete data.aiEnabled;
+      }
+
+      const status = existing.publishedAt ? 'published' : 'draft';
+
+      try {
+        const updated = await strapi.documents('api::user-resume.user-resume').update({
+          documentId: id,
+          data: data as any,
+          status,
+          populate: POPULATE,
+        });
+        ctx.body = { data: updated };
+        return ctx.body;
+      } catch (error: any) {
+        strapi.log.error('Resume update failed', {
+          message: error?.message,
+          name: error?.name,
+          details: error?.details,
+        });
+        const message =
+          error?.message ||
+          error?.details?.errors?.[0]?.message ||
+          'Failed to update resume';
+        return ctx.badRequest(message);
+      }
     },
 
     async delete(ctx) {
@@ -320,17 +518,6 @@ export default factories.createCoreController(
       const auth = requireAuth(ctx);
       if (!auth) return;
 
-      const limit = getFreeResumeLimit();
-      const existingCount = await strapi.documents('api::user-resume.user-resume').findMany({
-        filters: ownerFilters(auth) as any,
-        limit: 100,
-      });
-      if (existingCount.length >= limit) {
-        return ctx.tooManyRequests(
-          `Free plan allows up to ${limit} resumes. Delete one to duplicate.`
-        );
-      }
-
       const { id } = ctx.params;
       const source: any = await strapi.documents('api::user-resume.user-resume').findOne({
         documentId: id,
@@ -344,6 +531,7 @@ export default factories.createCoreController(
         return ctx.forbidden('You do not own this resume');
       }
 
+      // Duplicates are always manual (unlimited). Enable AI later if slots remain.
       const stripIds = (items: any[] | undefined) =>
         (items || []).map(({ id: _id, ...rest }) => rest);
 
@@ -374,6 +562,7 @@ export default factories.createCoreController(
           summary: source.summary,
           themeColor: source.themeColor || '#0f766e',
           template: source.template || 'classic',
+          aiEnabled: false,
           Experience: stripIds(source.Experience),
           Education: stripIds(source.Education),
           skills: stripIds(source.skills),
@@ -388,9 +577,134 @@ export default factories.createCoreController(
       return ctx.body;
     },
 
+    async uploadFile(ctx) {
+      const auth = requireAuth(ctx);
+      if (!auth) return;
+
+      const file =
+        ctx.request.files?.files ||
+        ctx.request.files?.file ||
+        ctx.request.files?.image;
+
+      if (!file) {
+        return ctx.badRequest('No file uploaded. Use field name "files".');
+      }
+
+      const files = Array.isArray(file) ? file : [file];
+      const first = files[0] as {
+        mimetype?: string | null;
+        mime?: string;
+        type?: string;
+        originalFilename?: string | null;
+        name?: string;
+        filepath?: string;
+      };
+      const mime = String(first?.mimetype || first?.mime || first?.type || '');
+      if (!mime.startsWith('image/') && mime !== 'application/pdf') {
+        return ctx.badRequest('Only images or PDF are allowed');
+      }
+
+      try {
+        const uploaded = await strapi.plugin('upload').service('upload').upload({
+          data: {
+            fileInfo: {
+              name: first.originalFilename || first.name || 'certificate',
+              alternativeText: 'Certificate',
+              caption: `Uploaded by ${auth.userId}`,
+            },
+          },
+          files: first as any,
+        });
+
+        const item = Array.isArray(uploaded) ? uploaded[0] : uploaded;
+        if (!item) {
+          return ctx.internalServerError('Upload failed');
+        }
+
+        const base = `${ctx.request.protocol}://${ctx.request.get('host')}`;
+        const url = item.url?.startsWith('http')
+          ? item.url
+          : `${base}${item.url}`;
+
+        ctx.body = {
+          data: {
+            id: item.id,
+            url,
+            name: item.name,
+            mime: item.mime,
+          },
+        };
+        return ctx.body;
+      } catch (error: any) {
+        strapi.log.error('Upload failed', error);
+        return ctx.internalServerError('Upload failed');
+      }
+    },
+
+    async enableAi(ctx) {
+      const auth = requireAuth(ctx);
+      if (!auth) return;
+
+      const { id } = ctx.params;
+      const existing: any = await strapi.documents('api::user-resume.user-resume').findOne({
+        documentId: id,
+      });
+
+      if (!existing) {
+        return ctx.notFound('Resume not found');
+      }
+      if (!ownsResume(existing, auth)) {
+        return ctx.forbidden('You do not own this resume');
+      }
+
+      if (existing.aiEnabled) {
+        ctx.body = { data: { aiEnabled: true, alreadyEnabled: true } };
+        return ctx.body;
+      }
+
+      const aiLimit = getAiResumeLimit();
+      const aiCount = await countAiResumes(strapi, auth);
+      if (aiCount >= aiLimit) {
+        return ctx.tooManyRequests(
+          `AI plan allows up to ${aiLimit} AI resumes. Delete or disable AI on another resume first.`
+        );
+      }
+
+      await strapi.documents('api::user-resume.user-resume').update({
+        documentId: id,
+        data: { aiEnabled: true } as any,
+        status: existing.publishedAt ? 'published' : 'draft',
+      });
+
+      ctx.body = {
+        data: {
+          aiEnabled: true,
+          documentId: id,
+          aiSlotsUsed: aiCount + 1,
+          aiSlotsLimit: aiLimit,
+        },
+      };
+      return ctx.body;
+    },
+
     async generateSummary(ctx) {
       const auth = requireAuth(ctx);
       if (!auth) return;
+
+      const resume = await requireOwnedResume(strapi, ctx, auth);
+      if (!resume) return;
+
+      if (!resume.aiEnabled) {
+        ctx.status = 403;
+        ctx.body = {
+          error: {
+            message:
+              'AI is not enabled on this resume. Enable AI (max 5 AI resumes) or create an AI resume.',
+            code: 'AI_NOT_ENABLED',
+          },
+        };
+        return;
+      }
 
       const aiLimit = getAiDailyLimit();
       const ip = ctx.request.ip || 'unknown';
@@ -459,6 +773,21 @@ Example: ["summary one","summary two","summary three"]
       const auth = requireAuth(ctx);
       if (!auth) return;
 
+      const resume = await requireOwnedResume(strapi, ctx, auth);
+      if (!resume) return;
+
+      if (!resume.aiEnabled) {
+        ctx.status = 403;
+        ctx.body = {
+          error: {
+            message:
+              'AI is not enabled on this resume. Enable AI (max 5 AI resumes) or create an AI resume.',
+            code: 'AI_NOT_ENABLED',
+          },
+        };
+        return;
+      }
+
       const aiLimit = getAiDailyLimit();
       const ip = ctx.request.ip || 'unknown';
       const limited = checkRateLimit(`ai:${auth.userId}:${ip}`, aiLimit, DAY_MS);
@@ -504,7 +833,10 @@ Example: ["<ul><li>a</li></ul>","<ul><li>b</li></ul>","<ul><li>c</li></ul>"]
 `;
         const result = await model.generateContent(prompt);
         let raw = result.response.text().trim();
-        raw = raw.replace(/^```json\s*/i, '').replace(/^```html\s*/i, '').replace(/\s*```$/i, '');
+        raw = raw
+          .replace(/^```json\s*/i, '')
+          .replace(/^```html\s*/i, '')
+          .replace(/\s*```$/i, '');
         let options: string[] = [];
         try {
           const parsed = JSON.parse(raw);
@@ -520,7 +852,6 @@ Example: ["<ul><li>a</li></ul>","<ul><li>b</li></ul>","<ul><li>c</li></ul>"]
         ctx.body = { html: options[0], options, remaining: limited.remaining };
       } catch (error: any) {
         strapi.log.error('AI experience failed', error);
-        ctx.status = 500;
         ctx.status = 502;
         ctx.body = { error: 'AI experience failed' };
       }

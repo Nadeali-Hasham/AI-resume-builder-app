@@ -50,6 +50,19 @@ const ViewResume = () => {
             })
     }, [resumeId])
 
+    useEffect(() => {
+        const prev = document.title
+        document.title = "\u00A0"
+        const onBeforePrint = () => {
+            document.title = "\u00A0"
+        }
+        window.addEventListener("beforeprint", onBeforePrint)
+        return () => {
+            window.removeEventListener("beforeprint", onBeforePrint)
+            document.title = prev
+        }
+    }, [])
+
     const HandleDownloadResume = async () => {
         setDownloading(true)
         try {
@@ -60,6 +73,7 @@ const ViewResume = () => {
         } catch (error) {
             console.error(error)
             toast.error("PDF failed — using print")
+            document.title = "\u00A0"
             window.print()
         } finally {
             setDownloading(false)
@@ -115,7 +129,9 @@ const ViewResume = () => {
                                     {personName}&apos;s resume
                                 </h2>
                                 <p className="app-subtitle mt-1 text-xs sm:text-sm md:text-base">
-                                    Download a polished PDF or share a private link.
+                                    Prefer <strong>Download PDF</strong> for a clean file.
+                                    If you print, open More settings and turn off Headers and
+                                    footers.
                                 </p>
                             </div>
                             <div className="view-resume-actions__buttons">

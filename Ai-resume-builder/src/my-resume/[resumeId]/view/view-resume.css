@@ -201,7 +201,13 @@
   .resume-preview-root {
     height: auto !important;
     min-height: 0 !important;
-    padding: 18mm 16mm !important;
+    padding: 14mm 16mm !important;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
     box-shadow: none !important;
+  }
+
+  .resume-modern-body {
+    padding: 0 !important;
   }
 }

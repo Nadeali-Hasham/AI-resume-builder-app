@@ -20,6 +20,8 @@ import { generateExperienceBulletsFromAI } from "./../../../../Service/AiModal";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { toast } from "sonner";
 import { AI_JD_MAX_CHARS, apiErrorMessage } from "@/lib/planLimits";
+import { useEnsureResumeAi } from "./AiGate";
+import { useParams } from "react-router-dom";
 
 const RichTextEditor = ({ value = "", onRichTextEditorChange, index = 0 }) => {
   const [editorValue, setEditorValue] = useState(value);
@@ -27,6 +29,8 @@ const RichTextEditor = ({ value = "", onRichTextEditorChange, index = 0 }) => {
   const [aiOptions, setAiOptions] = useState([]);
   const { resumeInfo } = useContext(ResumeInfoContext);
   const [aiLoading, setAiLoading] = useState(false);
+  const { ensureAi, enabling } = useEnsureResumeAi();
+  const { resumeId } = useParams();
 
   useEffect(() => {
     setEditorValue(value || "");
@@ -51,9 +55,13 @@ const RichTextEditor = ({ value = "", onRichTextEditorChange, index = 0 }) => {
       return;
     }
 
+    const ok = await ensureAi();
+    if (!ok) return;
+
     setAiLoading(true);
     try {
       const result = await generateExperienceBulletsFromAI({
+        resumeId,
         title: title || "",
         companyName,
         jobDescription: jobDescription.slice(0, AI_JD_MAX_CHARS),
@@ -95,14 +103,14 @@ const RichTextEditor = ({ value = "", onRichTextEditorChange, index = 0 }) => {
           className="flex gap-2 bg-white text-black cursor-pointer"
           type="button"
           onClick={generateFromAI}
-          disabled={aiLoading}
+          disabled={aiLoading || enabling}
         >
-          {aiLoading ? (
+          {aiLoading || enabling ? (
             <LoaderCircle className="w-4 h-4 animate-spin" />
           ) : (
             <Brain className="w-4 h-4" />
           )}
-          {aiLoading ? "Generating..." : "Generate From AI"}
+          {aiLoading || enabling ? "Working..." : "Generate From AI"}
         </Button>
       </div>
       <EditorProvider>
