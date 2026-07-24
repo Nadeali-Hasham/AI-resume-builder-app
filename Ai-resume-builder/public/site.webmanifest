@@ -1,0 +1,24 @@
+{
+  "name": "AI Resume Builder",
+  "short_name": "Resume AI",
+  "description": "Free AI resume builder by Nade Ali Hasham — ATS-friendly resumes with live preview and PDF download.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f766e",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,1 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="52" height="44" viewBox="0 0 52 44" fill="none" id="Logo"><g id="logotype"><path d="M22.8601 0.415039L51.0641 28.5049V43.5849H37.9022V33.9259L17.4173 13.5237H13.1619V43.5849H0V0.415039H22.8601ZM37.9022 15.3963V0.415039H51.0641V15.3963H37.9022Z" fill="#212326"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-label="AI Resume Builder">
+  <!-- Document body -->
+  <path
+    d="M12 6h28l12 12v38a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4Z"
+    fill="#0f766e"
+  />
+  <!-- Folded corner -->
+  <path d="M40 6v10a2 2 0 0 0 2 2h10L40 6Z" fill="#134e4a" />
+  <path d="M40 6l12 12h-10a2 2 0 0 1-2-2V6Z" fill="#14b8a6" opacity="0.9" />
+  <!-- AI wordmark -->
+  <text
+    x="32"
+    y="36"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="16"
+    font-weight="700"
+    fill="#ffffff"
+    letter-spacing="0.5"
+  >AI</text>
+  <!-- Resume lines -->
+  <rect x="18" y="42" width="28" height="2.5" rx="1.25" fill="#ffffff" opacity="0.95" />
+  <rect x="18" y="48" width="20" height="2.5" rx="1.25" fill="#ffffff" opacity="0.75" />
+  <rect x="18" y="54" width="14" height="2.5" rx="1.25" fill="#ffffff" opacity="0.55" />
+</svg>

@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
 import Header from "@/components/custom/header";
 import Footer from "@/components/custom/footer";
+import Seo from "@/components/Seo";
 import { Button } from "@/components/ui/button";
+import { PAGE_SEO } from "@/lib/seo";
 
 const NotFound = () => (
   <div className="app-page flex min-h-screen flex-col">
+    <Seo {...PAGE_SEO.notFound} />
     <Header />
     <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-20 text-center">
       <p className="text-sm font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">

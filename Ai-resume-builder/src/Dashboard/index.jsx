@@ -7,6 +7,8 @@ import { FileText, Search, Sparkles } from "lucide-react";
 import { Input } from "../components/ui/input";
 import { AI_RESUME_LIMIT, apiErrorMessage, isAiEnabledResume } from "../lib/planLimits";
 import { toast } from "sonner";
+import Seo from "@/components/Seo";
+import { PAGE_SEO } from "@/lib/seo";
 
 const Dashboard = () => {
   const { user, isLoaded } = useUser();
@@ -75,6 +77,7 @@ const Dashboard = () => {
 
   return (
     <div className="relative min-h-[calc(100vh-90px)] overflow-x-hidden">
+      <Seo {...PAGE_SEO.dashboard} />
       <div className="app-dashboard-bg pointer-events-none absolute inset-0 -z-10" />
 
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 md:px-10 lg:px-16 xl:px-28 md:py-8">

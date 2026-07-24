@@ -1,10 +1,13 @@
 import { SignIn } from "@clerk/clerk-react"
 import Header from "@/components/custom/header"
 import Footer from "@/components/custom/footer"
+import Seo from "@/components/Seo"
+import { PAGE_SEO } from "@/lib/seo"
 
 const SignInPage = () => {
   return (
     <div className="app-auth-page flex min-h-screen flex-col">
+      <Seo {...PAGE_SEO.signIn} />
       <div className="w-full absolute top-0 left-0 z-10">
         <Header />
       </div>

@@ -1,5 +1,6 @@
 import Header from "@/components/custom/header"
 import Footer from "@/components/custom/footer"
+import Seo from "@/components/Seo"
 import { Button } from "@/components/ui/button"
 import { ResumeInfoContext } from "@/context/ResumeInfoContext"
 import ResumePreview from "@/Dashboard/resume/components/ResumePreview"
@@ -119,6 +120,12 @@ const ViewResume = () => {
     return (
         <ResumeInfoContext.Provider value={{ resumeInfo, setResumeInfo }}>
             <Toaster position="bottom-right" richColors closeButton />
+            <Seo
+                title={`${personName} — Resume`}
+                description={`View ${personName}'s professional resume on AI Resume Builder by Nade Ali Hasham.`}
+                path={`/my-resume/${resumeId}/view`}
+                noIndex
+            />
             <div className="view-resume-page">
                 <div id="no-print">
                     <Header />

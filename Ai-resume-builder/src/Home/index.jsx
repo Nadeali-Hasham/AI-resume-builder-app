@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom"
 import Header from "@/components/custom/header"
 import Footer from "@/components/custom/footer"
+import Seo from "@/components/Seo"
 import { Button } from "@/components/ui/button"
 import { useUser } from "@clerk/clerk-react"
 import { ArrowRight } from "lucide-react"
 import { useEffect, useState } from "react"
+import { PAGE_SEO } from "@/lib/seo"
 import "./home.css"
 
 const TEMPLATES = [
@@ -54,6 +56,7 @@ const Homepage = () => {
 
   return (
     <div className="home-page">
+      <Seo {...PAGE_SEO.home} />
       <Header />
 
       <section className="home-hero">
@@ -68,7 +71,8 @@ const Homepage = () => {
 
           <p className="home-hero__support">
             Build a clean, professional resume with AI-assisted writing and live
-            preview — ready to download and share in minutes.
+            preview — ready to download and share in minutes. Created by{" "}
+            <strong>Nade Ali Hasham</strong>.
           </p>
 
           <div className="home-hero__cta">

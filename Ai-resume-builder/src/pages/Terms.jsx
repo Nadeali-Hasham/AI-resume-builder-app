@@ -1,12 +1,15 @@
 import { Link } from "react-router-dom";
 import Header from "@/components/custom/header";
 import Footer from "@/components/custom/footer";
+import Seo from "@/components/Seo";
+import { PAGE_SEO } from "@/lib/seo";
 
 const Terms = () => {
   const updated = "July 24, 2026";
 
   return (
     <div className="app-page flex min-h-screen flex-col">
+      <Seo {...PAGE_SEO.terms} />
       <Header />
       <main className="app-shell flex-1 py-8 sm:py-10">
         <article className="mx-auto max-w-3xl">
