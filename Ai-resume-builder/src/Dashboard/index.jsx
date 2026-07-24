@@ -75,31 +75,25 @@ const Dashboard = () => {
 
   return (
     <div className="relative min-h-[calc(100vh-90px)] overflow-x-hidden">
-      <div
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 50% at 10% -10%, rgba(13, 148, 136, 0.12), transparent 55%), radial-gradient(ellipse 60% 40% at 90% 0%, rgba(15, 23, 42, 0.06), transparent 50%), linear-gradient(180deg, #f8fafc 0%, #ffffff 45%, #f1f5f9 100%)",
-        }}
-      />
+      <div className="app-dashboard-bg pointer-events-none absolute inset-0 -z-10" />
 
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 md:px-10 lg:px-16 xl:px-28 md:py-8">
         <div className="mb-6 flex flex-col gap-4 sm:mb-8 md:mb-10 md:flex-row md:items-end md:justify-between md:gap-6">
           <div className="min-w-0">
             <p
-              className="mb-2 text-sm font-medium tracking-wide text-teal-700"
+              className="mb-2 text-sm font-medium tracking-wide text-teal-700 dark:text-teal-300"
               style={{ fontFamily: '"DM Sans", sans-serif' }}
             >
               Welcome back, {firstName}
             </p>
             <h1
-              className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl md:text-4xl"
+              className="text-2xl font-semibold tracking-tight text-[var(--app-ink)] sm:text-3xl md:text-4xl"
               style={{ fontFamily: '"Fraunces", serif' }}
             >
               My Resumes
             </h1>
             <p
-              className="mt-2 max-w-xl text-sm leading-relaxed text-slate-600 sm:mt-3 sm:text-[15px]"
+              className="mt-2 max-w-xl text-sm leading-relaxed text-[var(--app-muted)] sm:mt-3 sm:text-[15px]"
               style={{ fontFamily: '"DM Sans", sans-serif' }}
             >
               Build polished resumes anytime. Manual is unlimited; AI-assisted
@@ -108,24 +102,24 @@ const Dashboard = () => {
           </div>
 
           <div
-            className="flex w-full items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/80 px-3 py-3 shadow-sm backdrop-blur-sm sm:w-auto sm:px-4"
+            className="flex w-full items-center gap-3 rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)]/80 px-3 py-3 shadow-sm backdrop-blur-sm sm:w-auto sm:px-4"
             style={{ fontFamily: '"DM Sans", sans-serif' }}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300">
               <FileText className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs uppercase tracking-wider text-slate-500">
+              <p className="text-xs uppercase tracking-wider text-[var(--app-muted)]">
                 Total resumes
               </p>
-              <p className="text-lg font-semibold text-slate-900">
+              <p className="text-lg font-semibold text-[var(--app-ink)]">
                 {loading ? "—" : resumeList.length}
               </p>
-              <p className="text-[11px] text-slate-400">Manual unlimited</p>
+              <p className="text-[11px] text-[var(--app-muted)]">Manual unlimited</p>
             </div>
             <div className="ml-2 flex flex-col items-start gap-1 sm:items-end">
-              <div className="flex items-center gap-1 rounded-full bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-white">
-                <Sparkles className="h-3 w-3 text-teal-300" />
+              <div className="flex items-center gap-1 rounded-full bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-white dark:bg-slate-100 dark:text-slate-900">
+                <Sparkles className="h-3 w-3 text-teal-300 dark:text-teal-700" />
                 AI {loading ? "—" : `${aiCount}/${AI_RESUME_LIMIT}`}
               </div>
             </div>
@@ -134,25 +128,25 @@ const Dashboard = () => {
 
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h2
-            className="text-sm font-semibold uppercase tracking-[0.14em] text-slate-500"
+            className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--app-muted)]"
             style={{ fontFamily: '"DM Sans", sans-serif' }}
           >
             Your workspace
           </h2>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
             <div className="relative w-full sm:w-64">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--app-muted)]" />
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search title, role, template…"
-                className="h-10 w-full bg-white pl-9"
+                className="h-10 w-full border-[var(--app-border)] bg-[var(--app-surface)] pl-9 text-[var(--app-ink)]"
               />
             </div>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="h-10 w-full cursor-pointer rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-700 sm:w-auto"
+              className="h-10 w-full cursor-pointer rounded-md border border-[var(--app-border)] bg-[var(--app-surface)] px-3 text-sm text-[var(--app-ink)] sm:w-auto"
             >
               <option value="updated">Sort: Updated</option>
               <option value="created">Sort: Created</option>
@@ -167,7 +161,7 @@ const Dashboard = () => {
             Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={`sk-${i}`}
-                className="min-h-[220px] animate-pulse rounded-2xl border border-slate-200 bg-slate-100/80 sm:min-h-[280px]"
+                className="min-h-[220px] animate-pulse rounded-2xl border border-[var(--app-border)] bg-[var(--app-soft)] sm:min-h-[280px]"
               />
             ))}
           {!loading &&
@@ -182,7 +176,7 @@ const Dashboard = () => {
         </div>
 
         {!loading && aiAtLimit && (
-          <p className="mt-4 text-center text-xs text-slate-500">
+          <p className="mt-4 text-center text-xs text-[var(--app-muted)]">
             AI slots full ({AI_RESUME_LIMIT}/{AI_RESUME_LIMIT}). You can still
             create unlimited manual resumes.
           </p>
@@ -190,7 +184,7 @@ const Dashboard = () => {
 
         {!loading && resumeList.length === 0 && (
           <p
-            className="mt-8 text-center text-sm text-slate-500"
+            className="mt-8 text-center text-sm text-[var(--app-muted)]"
             style={{ fontFamily: '"DM Sans", sans-serif' }}
           >
             No resumes yet — create your first one to get started.
@@ -198,7 +192,7 @@ const Dashboard = () => {
         )}
 
         {!loading && resumeList.length > 0 && filtered.length === 0 && (
-          <p className="mt-8 text-center text-sm text-slate-500">
+          <p className="mt-8 text-center text-sm text-[var(--app-muted)]">
             No resumes match “{query}”.
           </p>
         )}

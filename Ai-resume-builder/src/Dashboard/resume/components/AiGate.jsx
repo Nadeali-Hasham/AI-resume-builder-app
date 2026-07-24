@@ -114,19 +114,19 @@ export const AiConfirmProvider = ({ children }) => {
           if (!next) cancelSwitch();
         }}
       >
-        <AlertDialogContent className="bg-white">
+        <AlertDialogContent className="border-[var(--app-border)] bg-[var(--app-surface)] text-[var(--app-ink)]">
           <AlertDialogHeader>
             <AlertDialogTitle style={{ fontFamily: '"Fraunces", serif' }}>
               Switch to AI mode?
             </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2 text-slate-600">
+            <AlertDialogDescription className="space-y-2 text-[var(--app-muted)]">
               <span className="block">
                 Generate From AI needs AI mode on this resume. With AI mode you
                 can only have{" "}
-                <strong className="text-slate-900">{AI_RESUME_LIMIT} AI resumes</strong>.
+                <strong className="text-[var(--app-ink)]">{AI_RESUME_LIMIT} AI resumes</strong>.
                 Manual resumes stay unlimited.
               </span>
-              <span className="block text-amber-800">
+              <span className="block text-amber-800 dark:text-amber-200">
                 You have used {aiUsed} of {AI_RESUME_LIMIT} AI slots (
                 {remaining} left).
               </span>
@@ -226,15 +226,15 @@ export const AiModeSwitch = () => {
   return (
     <div className="mb-3 space-y-2">
       <div className="flex flex-wrap items-center gap-3">
-        <div className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5">
+        <div className="inline-flex rounded-lg border border-[var(--app-border)] bg-[var(--app-surface)] p-0.5">
           <button
             type="button"
             disabled={busy || ctx?.busy}
             onClick={() => setMode(false)}
             className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-semibold transition ${
               !enabled
-                ? "bg-slate-900 text-white"
-                : "text-slate-600 hover:bg-slate-50"
+                ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
+                : "text-[var(--app-muted)] hover:bg-[var(--app-soft)]"
             }`}
           >
             Manual
@@ -246,7 +246,7 @@ export const AiModeSwitch = () => {
             className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-semibold transition ${
               enabled
                 ? "bg-teal-600 text-white"
-                : "text-slate-600 hover:bg-slate-50"
+                : "text-[var(--app-muted)] hover:bg-[var(--app-soft)]"
             } ${!enabled && remaining === 0 ? "opacity-40 cursor-not-allowed" : ""}`}
           >
             {busy || ctx?.busy ? (
@@ -256,13 +256,13 @@ export const AiModeSwitch = () => {
             )}
           </button>
         </div>
-        <p className="text-[11px] text-slate-500">
-          AI slots: <span className="font-semibold text-slate-800">{aiUsed}</span>/
+        <p className="text-[11px] text-[var(--app-muted)]">
+          AI slots: <span className="font-semibold text-[var(--app-ink)]">{aiUsed}</span>/
           {AI_RESUME_LIMIT} used ·{" "}
-          <span className="font-semibold text-teal-800">{remaining}</span> left
+          <span className="font-semibold text-teal-700 dark:text-teal-300">{remaining}</span> left
         </p>
       </div>
-      <p className="text-[11px] leading-relaxed text-amber-800/90 bg-amber-50 border border-amber-100 rounded-lg px-2.5 py-1.5">
+      <p className="text-[11px] leading-relaxed text-amber-900/90 bg-amber-50 border border-amber-100 rounded-lg px-2.5 py-1.5 dark:bg-amber-950/40 dark:text-amber-100 dark:border-amber-900/50">
         Warning: AI mode allows only {AI_RESUME_LIMIT} resumes with AI tools.
         Manual mode is unlimited. You have used {aiUsed} AI resume
         {aiUsed === 1 ? "" : "s"}; {remaining} AI slot

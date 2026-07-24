@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 import Header from "@/components/custom/header"
+import Footer from "@/components/custom/footer"
 import { Button } from "@/components/ui/button"
 import { useUser } from "@clerk/clerk-react"
 import { ArrowRight } from "lucide-react"
@@ -197,6 +198,7 @@ const Homepage = () => {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   )
 }

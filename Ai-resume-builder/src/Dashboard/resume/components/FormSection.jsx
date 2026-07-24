@@ -127,16 +127,16 @@ const FormSection = () => {
 
       <AiModeSwitch />
 
-      <div className="mb-4 rounded-xl border border-slate-200 bg-white/90 p-3">
+      <div className="mb-4 rounded-xl border border-[var(--app-border)] bg-[var(--app-surface)]/90 p-3">
         <div className="mb-2 flex items-center justify-between gap-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--app-muted)]">
             Progress
           </p>
-          <p className="text-xs font-medium text-teal-800">
+          <p className="text-xs font-medium text-teal-800 dark:text-teal-300">
             {filled}/{STEPS.length} sections · {progressPct}%
           </p>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+        <div className="h-2 overflow-hidden rounded-full bg-[var(--app-soft)]">
           <div
             className="h-full rounded-full bg-teal-600 transition-all duration-500 ease-out"
             style={{ width: `${progressPct}%` }}
@@ -164,8 +164,8 @@ const FormSection = () => {
                   isActive
                     ? "bg-teal-700 text-white shadow-sm"
                     : isDone
-                      ? "bg-teal-50 text-teal-800 ring-1 ring-teal-200"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      ? "bg-teal-50 text-teal-800 ring-1 ring-teal-200 dark:bg-teal-950/50 dark:text-teal-200 dark:ring-teal-800"
+                      : "bg-[var(--app-soft)] text-[var(--app-muted)] hover:brightness-95"
                 }`}
               >
                 <span
@@ -174,7 +174,7 @@ const FormSection = () => {
                       ? "bg-white/20 text-white"
                       : isDone
                         ? "bg-teal-600 text-white"
-                        : "bg-white text-slate-500"
+                        : "bg-[var(--app-surface)] text-[var(--app-muted)]"
                   }`}
                 >
                   {step.id}

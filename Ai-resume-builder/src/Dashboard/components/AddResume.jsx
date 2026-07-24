@@ -67,34 +67,34 @@ const AddResume = ({ aiCount = 0, aiAtLimit = false }) => {
       <button
         type="button"
         onClick={() => setOpenDialog(true)}
-        className="group relative flex h-full min-h-[220px] w-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-teal-300/80 bg-gradient-to-br from-teal-50 via-white to-slate-50 p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:border-teal-500 hover:shadow-[0_20px_40px_-24px_rgba(13,148,136,0.55)] cursor-pointer sm:min-h-[280px] sm:p-6"
+        className="group relative flex h-full min-h-[220px] w-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-teal-300/80 bg-gradient-to-br from-teal-50 via-[var(--app-surface)] to-[var(--app-soft)] p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:border-teal-500 hover:shadow-[0_20px_40px_-24px_rgba(13,148,136,0.55)] cursor-pointer dark:border-teal-700/60 dark:from-teal-950/40 sm:min-h-[280px] sm:p-6"
         style={{ fontFamily: '"DM Sans", sans-serif' }}
       >
         <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-teal-200/30 blur-2xl transition-opacity group-hover:opacity-80" />
-        <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg transition-transform duration-300 group-hover:scale-105">
+        <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg transition-transform duration-300 group-hover:scale-105 dark:bg-slate-100 dark:text-slate-900">
           <Plus className="h-6 w-6" strokeWidth={2.25} />
         </div>
         <p
-          className="relative z-10 mt-5 text-lg font-semibold text-slate-900"
+          className="relative z-10 mt-5 text-lg font-semibold text-[var(--app-ink)]"
           style={{ fontFamily: '"Fraunces", serif' }}
         >
           Create New
         </p>
-        <p className="relative z-10 mt-1 max-w-[12rem] text-center text-sm text-slate-500">
+        <p className="relative z-10 mt-1 max-w-[12rem] text-center text-sm text-[var(--app-muted)]">
           Manual unlimited · AI up to {AI_RESUME_LIMIT}
         </p>
       </button>
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="bg-white sm:max-w-md">
+        <DialogContent className="border-[var(--app-border)] bg-[var(--app-surface)] text-[var(--app-ink)] sm:max-w-md">
           <DialogHeader>
             <DialogTitle
-              className="text-xl text-slate-900"
+              className="text-xl text-[var(--app-ink)]"
               style={{ fontFamily: '"Fraunces", serif' }}
             >
               Create New Resume
             </DialogTitle>
-            <DialogDescription className="text-slate-500">
+            <DialogDescription className="text-[var(--app-muted)]">
               Choose AI-assisted (max {AI_RESUME_LIMIT}) or write manually
               (unlimited).
             </DialogDescription>
@@ -108,13 +108,13 @@ const AddResume = ({ aiCount = 0, aiAtLimit = false }) => {
                 disabled={aiAtLimit}
                 className={`rounded-xl border p-3 text-left cursor-pointer transition ${
                   mode === "ai"
-                    ? "border-teal-600 bg-teal-50 ring-1 ring-teal-600"
-                    : "border-slate-200 hover:border-slate-300"
+                    ? "border-teal-600 bg-teal-50 ring-1 ring-teal-600 dark:bg-teal-950/50"
+                    : "border-[var(--app-border)] hover:border-teal-400"
                 } ${aiAtLimit ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                <Sparkles className="mb-1 h-4 w-4 text-teal-700" />
-                <p className="text-sm font-semibold text-slate-900">Use AI</p>
-                <p className="text-[11px] text-slate-500">
+                <Sparkles className="mb-1 h-4 w-4 text-teal-700 dark:text-teal-300" />
+                <p className="text-sm font-semibold text-[var(--app-ink)]">Use AI</p>
+                <p className="text-[11px] text-[var(--app-muted)]">
                   {aiAtLimit
                     ? `Slots full (${aiCount}/${AI_RESUME_LIMIT})`
                     : `${aiCount}/${AI_RESUME_LIMIT} slots used`}
@@ -125,13 +125,13 @@ const AddResume = ({ aiCount = 0, aiAtLimit = false }) => {
                 onClick={() => setMode("manual")}
                 className={`rounded-xl border p-3 text-left cursor-pointer transition ${
                   mode === "manual"
-                    ? "border-slate-900 bg-slate-50 ring-1 ring-slate-900"
-                    : "border-slate-200 hover:border-slate-300"
+                    ? "border-[var(--app-ink)] bg-[var(--app-soft)] ring-1 ring-[var(--app-ink)]"
+                    : "border-[var(--app-border)] hover:border-teal-400"
                 }`}
               >
-                <PenLine className="mb-1 h-4 w-4 text-slate-700" />
-                <p className="text-sm font-semibold text-slate-900">Manual</p>
-                <p className="text-[11px] text-slate-500">Unlimited resumes</p>
+                <PenLine className="mb-1 h-4 w-4 text-[var(--app-muted)]" />
+                <p className="text-sm font-semibold text-[var(--app-ink)]">Manual</p>
+                <p className="text-[11px] text-[var(--app-muted)]">Unlimited resumes</p>
               </button>
             </div>
 

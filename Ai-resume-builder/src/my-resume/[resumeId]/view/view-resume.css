@@ -1,11 +1,12 @@
 .view-resume-page {
   background:
-    radial-gradient(ellipse 70% 40% at 0% 0%, rgba(15, 118, 110, 0.08), transparent 55%),
-    linear-gradient(180deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%);
+    radial-gradient(ellipse 70% 40% at 0% 0%, var(--app-accent-soft), transparent 55%),
+    linear-gradient(180deg, var(--app-bg) 0%, var(--app-bg-mid) 50%, var(--app-bg-end) 100%);
   min-height: 100vh;
   padding-bottom: 4.5rem;
   overflow-x: hidden;
   width: 100%;
+  color: var(--app-ink);
 }
 
 .view-resume-hero {
@@ -26,7 +27,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #0f766e;
+  color: var(--app-accent);
 }
 
 .view-resume-actions {
@@ -36,11 +37,12 @@
   justify-content: space-between;
   gap: 0.75rem 1rem;
   padding: 0.85rem 0.9rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--app-toolbar);
   backdrop-filter: blur(8px);
   box-shadow: 0 14px 34px -28px rgba(15, 23, 42, 0.4);
+  color: var(--app-ink);
 }
 
 .view-resume-actions__text {
@@ -171,8 +173,8 @@
     bottom: 0;
     z-index: 30;
     padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
-    background: rgba(255, 255, 255, 0.92);
-    border-top: 1px solid #e2e8f0;
+    background: color-mix(in srgb, var(--app-surface) 92%, transparent);
+    border-top: 1px solid var(--app-border);
     backdrop-filter: blur(10px);
   }
 }

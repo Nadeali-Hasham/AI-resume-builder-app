@@ -4,11 +4,42 @@
   --app-border: #e2e8f0;
   --app-surface: #ffffff;
   --app-bg: #f8fafc;
+  --app-bg-mid: #ffffff;
+  --app-bg-end: #f1f5f9;
   --app-accent: #0f766e;
   --app-accent-hover: #0d9488;
+  --app-accent-soft: rgba(15, 118, 110, 0.12);
   --app-danger: #dc2626;
+  --app-panel-label: #334155;
+  --app-soft: #f8fafc;
+  --app-soft-hover: #f0fdfa;
+  --app-toolbar: rgba(255, 255, 255, 0.85);
+  --app-outline-btn-bg: #ffffff;
+  --app-outline-btn-hover: #f8fafc;
   --font-display: "Fraunces", serif;
   --font-body: "DM Sans", sans-serif;
+  color-scheme: light;
+}
+
+html.dark {
+  --app-ink: #f1f5f9;
+  --app-muted: #94a3b8;
+  --app-border: #334155;
+  --app-surface: #1e293b;
+  --app-bg: #0f172a;
+  --app-bg-mid: #111827;
+  --app-bg-end: #0b1220;
+  --app-accent: #14b8a6;
+  --app-accent-hover: #2dd4bf;
+  --app-accent-soft: rgba(20, 184, 166, 0.18);
+  --app-danger: #f87171;
+  --app-panel-label: #cbd5e1;
+  --app-soft: #1e293b;
+  --app-soft-hover: #134e4a;
+  --app-toolbar: rgba(30, 41, 59, 0.9);
+  --app-outline-btn-bg: #1e293b;
+  --app-outline-btn-hover: #334155;
+  color-scheme: dark;
 }
 
 *,
@@ -36,6 +67,7 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 img,
@@ -51,9 +83,16 @@ canvas {
   width: 100%;
   overflow-x: hidden;
   background:
-    radial-gradient(ellipse 70% 45% at 0% 0%, rgba(15, 118, 110, 0.08), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 0% 0%, var(--app-accent-soft), transparent 55%),
     radial-gradient(ellipse 50% 35% at 100% 0%, rgba(15, 23, 42, 0.05), transparent 50%),
-    linear-gradient(180deg, #f8fafc 0%, #ffffff 40%, #f1f5f9 100%);
+    linear-gradient(180deg, var(--app-bg) 0%, var(--app-bg-mid) 40%, var(--app-bg-end) 100%);
+}
+
+html.dark .app-page {
+  background:
+    radial-gradient(ellipse 70% 45% at 0% 0%, var(--app-accent-soft), transparent 55%),
+    radial-gradient(ellipse 50% 35% at 100% 0%, rgba(148, 163, 184, 0.06), transparent 50%),
+    linear-gradient(180deg, var(--app-bg) 0%, var(--app-bg-mid) 40%, var(--app-bg-end) 100%);
 }
 
 .app-shell {
@@ -96,6 +135,7 @@ canvas {
   box-shadow: 0 14px 34px -28px rgba(15, 23, 42, 0.45);
   width: 100%;
   max-width: 100%;
+  color: var(--app-ink);
 }
 
 @media (min-width: 640px) {
@@ -107,7 +147,7 @@ canvas {
 .app-form-panel label {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #334155;
+  color: var(--app-panel-label);
   letter-spacing: 0.01em;
 }
 
@@ -115,6 +155,9 @@ canvas {
 .app-form-panel textarea,
 .app-form-panel select {
   max-width: 100%;
+  background: var(--app-bg);
+  color: var(--app-ink);
+  border-color: var(--app-border);
 }
 
 .app-form-panel input:focus,
@@ -122,7 +165,7 @@ canvas {
 .app-form-panel select:focus {
   outline: none;
   border-color: var(--app-accent);
-  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+  box-shadow: 0 0 0 3px var(--app-accent-soft);
 }
 
 .app-form-panel h2,
@@ -145,7 +188,8 @@ canvas {
   width: 100%;
   border-radius: 0.75rem;
   border: 1px solid var(--app-border);
-  background: #f8fafc;
+  background: var(--app-soft);
+  color: var(--app-ink);
   padding: 0.75rem 0.9rem;
   text-align: left;
   font-size: 0.8125rem;
@@ -157,7 +201,7 @@ canvas {
 
 .app-ai-option:hover {
   border-color: var(--app-accent);
-  background: #f0fdfa;
+  background: var(--app-soft-hover);
   transform: translateY(-1px);
 }
 
@@ -169,19 +213,25 @@ canvas {
   gap: 0.6rem;
   margin-bottom: 0.85rem;
   padding: 0.55rem 0.6rem;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--app-toolbar);
   border: 1px solid var(--app-border);
   border-radius: 0.9rem;
   backdrop-filter: blur(8px);
+  color: var(--app-ink);
 }
 
 .app-btn-dark {
   background: var(--app-ink) !important;
-  color: #fff !important;
+  color: var(--app-surface) !important;
+}
+
+html.dark .app-btn-dark {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
 }
 
 .app-btn-dark:hover {
-  background: #1e293b !important;
+  filter: brightness(1.08);
 }
 
 .app-btn-accent {
@@ -194,13 +244,13 @@ canvas {
 }
 
 .app-btn-outline {
-  background: #fff !important;
+  background: var(--app-outline-btn-bg) !important;
   color: var(--app-ink) !important;
   border: 1px solid var(--app-border) !important;
 }
 
 .app-btn-outline:hover {
-  background: #f8fafc !important;
+  background: var(--app-outline-btn-hover) !important;
 }
 
 .app-btn-danger {
@@ -209,7 +259,7 @@ canvas {
 }
 
 .app-preview-frame {
-  background: #fff;
+  background: var(--app-surface);
   border: 1px solid var(--app-border);
   border-radius: 1rem;
   overflow: hidden;
@@ -218,13 +268,20 @@ canvas {
 
 .app-preview-paper {
   border-radius: 0.85rem;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--app-border);
   background:
     linear-gradient(145deg, #e2e8f0 0%, #f1f5f9 40%, #dbe3ee 100%);
   padding: 0.55rem;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.7),
     0 22px 48px -28px rgba(15, 23, 42, 0.55);
+}
+
+html.dark .app-preview-paper {
+  background: linear-gradient(145deg, #1e293b 0%, #334155 40%, #1e293b 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 22px 48px -28px rgba(0, 0, 0, 0.65);
 }
 
 @media (min-width: 640px) {
@@ -258,9 +315,12 @@ canvas {
   border-radius: 0.35rem;
 }
 
+/* Resume sheet stays light for print/PDF fidelity */
 .resume-preview-root {
   box-sizing: border-box;
   width: 100%;
+  color: #0f172a;
+  background: #fff;
 }
 
 @media (max-width: 640px) {
@@ -280,12 +340,65 @@ canvas {
   justify-content: center;
   padding: 1.25rem 0.85rem;
   background:
-    radial-gradient(ellipse 60% 40% at 20% 10%, rgba(15, 118, 110, 0.12), transparent 55%),
-    linear-gradient(180deg, #f8fafc, #ffffff 50%, #f1f5f9);
+    radial-gradient(ellipse 60% 40% at 20% 10%, var(--app-accent-soft), transparent 55%),
+    linear-gradient(180deg, var(--app-bg), var(--app-bg-mid) 50%, var(--app-bg-end));
 }
 
 @media (min-width: 640px) {
   .app-auth-page {
     padding: 2rem 1rem;
   }
+}
+
+.app-site-header {
+  border-color: var(--app-border);
+  background: color-mix(in srgb, var(--app-surface) 90%, transparent);
+  color: var(--app-ink);
+}
+
+.app-dashboard-bg {
+  background:
+    radial-gradient(ellipse 80% 50% at 10% -10%, var(--app-accent-soft), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 0%, rgba(15, 23, 42, 0.06), transparent 50%),
+    linear-gradient(180deg, var(--app-bg) 0%, var(--app-bg-mid) 45%, var(--app-bg-end) 100%);
+}
+
+html.dark .app-dashboard-bg {
+  background:
+    radial-gradient(ellipse 80% 50% at 10% -10%, var(--app-accent-soft), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 0%, rgba(148, 163, 184, 0.05), transparent 50%),
+    linear-gradient(180deg, var(--app-bg) 0%, var(--app-bg-mid) 45%, var(--app-bg-end) 100%);
+}
+
+/* Form chrome: borders/labels follow theme without touching resume paper */
+.app-form-panel .rounded-xl.border,
+.app-form-panel [class*="border-slate"] {
+  border-color: var(--app-border);
+}
+
+.app-form-panel .text-slate-500,
+.app-form-panel .text-slate-400,
+.app-form-panel .text-slate-600 {
+  color: var(--app-muted);
+}
+
+.app-form-panel .text-slate-700,
+.app-form-panel .text-slate-800,
+.app-form-panel .text-slate-900,
+.app-form-panel .text-black {
+  color: var(--app-ink);
+}
+
+.app-form-panel .bg-slate-50,
+.app-form-panel .bg-white {
+  background-color: var(--app-soft);
+}
+
+.app-form-panel input,
+.app-form-panel textarea,
+.app-form-panel select,
+.app-form-panel [data-slot="input"] {
+  background-color: var(--app-bg);
+  color: var(--app-ink);
+  border-color: var(--app-border);
 }

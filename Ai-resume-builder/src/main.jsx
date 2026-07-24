@@ -7,6 +7,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Homepage from './Home'
 import Dashboard from './Dashboard'
 import { ClerkProvider } from '@clerk/clerk-react'
+import { ThemeProvider } from 'next-themes'
 import SignInPage from './auth/sign-in'
 import EditResume from './Dashboard/resume/[resumeId]/edit'
 import ViewResume from './my-resume/[resumeId]/view'
@@ -68,7 +69,14 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
       <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-        <RouterProvider router={router} />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          storageKey="resume-ui-theme"
+        >
+          <RouterProvider router={router} />
+        </ThemeProvider>
       </ClerkProvider>
     </ErrorBoundary>
   </StrictMode>,

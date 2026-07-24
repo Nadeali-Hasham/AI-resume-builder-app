@@ -1,12 +1,15 @@
 import { Link } from "react-router-dom";
 import Header from "@/components/custom/header";
+import Footer from "@/components/custom/footer";
 import { Button } from "@/components/ui/button";
 
 const NotFound = () => (
-  <div className="app-page min-h-screen">
+  <div className="app-page flex min-h-screen flex-col">
     <Header />
-    <div className="flex flex-col items-center justify-center gap-4 px-4 py-20 text-center">
-      <p className="text-sm font-semibold uppercase tracking-wide text-teal-700">404</p>
+    <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-20 text-center">
+      <p className="text-sm font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
+        404
+      </p>
       <h1 className="app-title text-3xl">Page not found</h1>
       <p className="app-subtitle max-w-md text-sm">
         This URL doesn’t exist. Head home or open your dashboard.
@@ -20,6 +23,7 @@ const NotFound = () => (
         </Link>
       </div>
     </div>
+    <Footer />
   </div>
 );
 

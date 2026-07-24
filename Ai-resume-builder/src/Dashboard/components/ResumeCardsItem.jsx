@@ -170,7 +170,7 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
 
   return (
     <div
-      className="group relative flex min-h-[220px] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-20px_rgba(15,23,42,0.4)] sm:min-h-[280px]"
+      className="group relative flex min-h-[220px] flex-col overflow-hidden rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-20px_rgba(15,23,42,0.4)] sm:min-h-[280px]"
       style={{ fontFamily: '"DM Sans", sans-serif' }}
     >
       <div className="h-1.5 w-full" style={{ backgroundColor: themeColor }} />
@@ -190,13 +190,13 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
           >
             {personName || resumeTitle}
           </p>
-          <p className="mt-0.5 truncate text-[9px] text-slate-500">
+          <p className="mt-0.5 truncate text-[9px] text-[var(--app-muted)]">
             {jobTitle || "Role title"}
           </p>
           <div className="mt-2 space-y-1">
-            <div className="h-1 rounded-full bg-slate-100" />
-            <div className="h-1 w-5/6 rounded-full bg-slate-100" />
-            <div className="h-1 w-4/6 rounded-full bg-slate-100" />
+            <div className="h-1 rounded-full bg-slate-100 dark:bg-slate-700" />
+            <div className="h-1 w-5/6 rounded-full bg-slate-100 dark:bg-slate-700" />
+            <div className="h-1 w-4/6 rounded-full bg-slate-100 dark:bg-slate-700" />
           </div>
           <div className="mt-2 flex gap-1">
             <span
@@ -207,19 +207,21 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
             </span>
             <span
               className={`rounded px-1 py-0.5 text-[8px] font-semibold uppercase tracking-wide ${
-                isAi ? "bg-teal-700 text-white" : "bg-slate-200 text-slate-700"
+                isAi
+                  ? "bg-teal-700 text-white"
+                  : "bg-slate-200 text-slate-700 dark:bg-slate-600 dark:text-slate-100"
               }`}
             >
               {isAi ? "AI" : "Manual"}
             </span>
           </div>
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 flex translate-y-2 items-center justify-center gap-2 bg-gradient-to-t from-white via-white/95 to-transparent px-2 pb-2 pt-8 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100"
+            className="pointer-events-none absolute inset-x-0 bottom-0 flex translate-y-2 items-center justify-center gap-2 bg-gradient-to-t from-white via-white/95 to-transparent px-2 pb-2 pt-8 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 dark:from-slate-900 dark:via-slate-900/95"
           >
-            <span className="rounded-md bg-slate-900 px-2 py-1 text-[10px] font-medium text-white">
+            <span className="rounded-md bg-slate-900 px-2 py-1 text-[10px] font-medium text-white dark:bg-slate-100 dark:text-slate-900">
               Edit
             </span>
-            <span className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-medium text-slate-700">
+            <span className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-medium text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">
               Open
             </span>
           </div>
@@ -227,26 +229,26 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
 
         <div className="mt-4 min-w-0">
           <h3
-            className="truncate text-[15px] font-semibold text-slate-900"
+            className="truncate text-[15px] font-semibold text-[var(--app-ink)]"
             style={{ fontFamily: '"Fraunces", serif' }}
             title={resumeTitle}
           >
             {resumeTitle}
           </h3>
-          <p className="mt-0.5 truncate text-xs text-slate-500">
+          <p className="mt-0.5 truncate text-xs text-[var(--app-muted)]">
             {jobTitle || "Open to edit details"}
           </p>
           {updatedLabel && (
-            <p className="mt-1 text-[11px] text-slate-400">Updated {updatedLabel}</p>
+            <p className="mt-1 text-[11px] text-[var(--app-muted)]">Updated {updatedLabel}</p>
           )}
         </div>
       </Link>
 
-      <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/80 px-2 py-2">
+      <div className="flex items-center justify-between border-t border-[var(--app-border)] bg-[var(--app-soft)]/80 px-2 py-2">
         <div className="flex items-center gap-0.5">
           <Link
             to={`/dashboard/resume/${resumeId}/edit`}
-            className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-white hover:text-teal-700"
+            className="rounded-lg p-1.5 text-[var(--app-muted)] transition-colors hover:bg-[var(--app-surface)] hover:text-teal-700 dark:hover:text-teal-300"
             title="Edit"
             onClick={(e) => e.stopPropagation()}
           >
@@ -254,7 +256,7 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
           </Link>
           <Link
             to={`/my-resume/${shareToken}/view`}
-            className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-white hover:text-teal-700"
+            className="rounded-lg p-1.5 text-[var(--app-muted)] transition-colors hover:bg-[var(--app-surface)] hover:text-teal-700 dark:hover:text-teal-300"
             title="Preview"
             onClick={(e) => e.stopPropagation()}
           >
@@ -262,7 +264,7 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
           </Link>
           <button
             type="button"
-            className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-white hover:text-teal-700 cursor-pointer"
+            className="rounded-lg p-1.5 text-[var(--app-muted)] transition-colors hover:bg-[var(--app-surface)] hover:text-teal-700 cursor-pointer dark:hover:text-teal-300"
             title="Download PDF"
             onClick={(e) => {
               e.stopPropagation();
@@ -277,14 +279,14 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-white hover:text-slate-800 cursor-pointer"
+              className="rounded-lg p-1.5 text-[var(--app-muted)] transition-colors hover:bg-[var(--app-surface)] hover:text-[var(--app-ink)] cursor-pointer"
               onClick={(e) => e.stopPropagation()}
             >
               <MoreVertical className="h-4 w-4" />
             </button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-52 bg-white">
+          <DropdownMenuContent align="end" className="w-52 border-[var(--app-border)] bg-[var(--app-surface)] text-[var(--app-ink)]">
             <DropdownMenuItem asChild className="cursor-pointer">
               <Link
                 to={`/dashboard/resume/${resumeId}/edit`}
@@ -384,7 +386,7 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
                   Delete
                 </DropdownMenuItem>
               </AlertDialogTrigger>
-              <AlertDialogContent className="bg-white">
+              <AlertDialogContent className="border-[var(--app-border)] bg-[var(--app-surface)] text-[var(--app-ink)]">
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete this resume?</AlertDialogTitle>
                   <AlertDialogDescription>
@@ -410,7 +412,7 @@ const ResumeCardsItem = ({ resume, refreshData }) => {
       </div>
 
       <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
-        <DialogContent className="bg-white">
+        <DialogContent className="border-[var(--app-border)] bg-[var(--app-surface)] text-[var(--app-ink)]">
           <DialogHeader>
             <DialogTitle>Rename resume</DialogTitle>
           </DialogHeader>

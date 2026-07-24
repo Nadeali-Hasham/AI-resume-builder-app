@@ -2,6 +2,7 @@ import { Navigate, Outlet } from 'react-router-dom'
 import './App.css'
 import { useAuth, useUser } from '@clerk/clerk-react'
 import Header from './components/custom/header';
+import Footer from './components/custom/footer';
 import { Toaster } from 'sonner';
 import { useEffect, useState } from 'react';
 import { setApiUserEmail, setAuthTokenGetter } from '../Service/GlobalApi';
@@ -48,11 +49,14 @@ function App() {
   }
 
   return (
-    <>
+    <div className="flex min-h-screen flex-col">
       <Header />
-      <Outlet />
+      <div className="flex-1">
+        <Outlet />
+      </div>
+      <Footer />
       <Toaster position="bottom-right" richColors closeButton />
-    </>
+    </div>
   );
 }
 

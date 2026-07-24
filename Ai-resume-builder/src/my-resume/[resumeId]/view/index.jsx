@@ -1,4 +1,5 @@
 import Header from "@/components/custom/header"
+import Footer from "@/components/custom/footer"
 import { Button } from "@/components/ui/button"
 import { ResumeInfoContext } from "@/context/ResumeInfoContext"
 import ResumePreview from "@/Dashboard/resume/components/ResumePreview"
@@ -193,6 +194,8 @@ const ViewResume = () => {
                         <ResumePreview />
                     </div>
                 </div>
+
+                <Footer />
 
                 <div id="no-print" className="view-resume-mobile-bar">
                     <Button

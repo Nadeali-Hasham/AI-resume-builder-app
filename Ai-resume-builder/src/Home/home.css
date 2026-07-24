@@ -9,9 +9,19 @@
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
-  background: #f8fafc;
+  background: var(--home-paper-bg, #f8fafc);
   color: var(--home-ink);
   font-family: "DM Sans", sans-serif;
+}
+
+html.dark .home-page {
+  --home-ink: #f1f5f9;
+  --home-muted: #94a3b8;
+  --home-accent: #14b8a6;
+  --home-accent-soft: #134e4a;
+  --home-paper: #1e293b;
+  --home-line: #334155;
+  --home-paper-bg: #0f172a;
 }
 
 .home-hero {
@@ -35,6 +45,13 @@
     radial-gradient(ellipse 55% 45% at 100% 20%, rgba(15, 23, 42, 0.07), transparent 55%),
     linear-gradient(180deg, #f8fafc 0%, #ffffff 48%, #f1f5f9 100%);
   animation: home-atmosphere 10s ease-in-out infinite alternate;
+}
+
+html.dark .home-hero__atmosphere {
+  background:
+    radial-gradient(ellipse 70% 55% at 0% 0%, rgba(20, 184, 166, 0.16), transparent 58%),
+    radial-gradient(ellipse 55% 45% at 100% 20%, rgba(148, 163, 184, 0.08), transparent 55%),
+    linear-gradient(180deg, #0f172a 0%, #111827 48%, #0b1220 100%);
 }
 
 @keyframes home-atmosphere {
@@ -77,7 +94,7 @@
 .home-hero__support {
   font-size: 1rem;
   line-height: 1.65;
-  color: #64748b;
+  color: var(--home-muted);
   margin: 0 0 1.75rem;
   max-width: 30rem;
 }
@@ -277,7 +294,7 @@
 
 .home-next {
   border-top: 1px solid var(--home-line);
-  background: #fff;
+  background: var(--home-paper);
   padding: 3.5rem 6vw 4.5rem;
 }
 
@@ -318,7 +335,7 @@
   padding: 1rem 1.15rem;
   border: 1px solid var(--home-line);
   border-radius: 0.85rem;
-  background: #fff;
+  background: var(--home-paper);
 }
 
 .home-steps strong {
@@ -355,7 +372,7 @@
   padding: 1rem;
   border: 1px solid var(--home-line);
   border-radius: 0.9rem;
-  background: #fff;
+  background: var(--home-paper);
 }
 
 .home-tpl h3 {
@@ -672,4 +689,22 @@
   .home-steps li {
     padding: 0.85rem 0.95rem;
   }
+}
+
+html.dark .home-next,
+html.dark .home-templates {
+  background: var(--home-paper-bg, #0f172a);
+}
+
+html.dark .home-steps li,
+html.dark .home-tpl {
+  background: var(--home-paper);
+  border-color: var(--home-line);
+  color: var(--home-ink);
+}
+
+html.dark .home-resume-sheet--main,
+html.dark .home-resume-sheet--back {
+  background: #fff;
+  color: #0f172a;
 }

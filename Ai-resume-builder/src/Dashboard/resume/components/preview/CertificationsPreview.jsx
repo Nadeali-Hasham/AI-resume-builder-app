@@ -81,7 +81,7 @@ const CertificationsPreview = ({ resumeInfo, variant = "classic" }) => {
                 <img
                   src={c.imageUrl}
                   alt=""
-                  className="h-120 w-120 rounded-md border border-slate-200 object-contain bg-slate-50"
+                  className="h-24 w-24 rounded-md border border-slate-200 object-contain bg-slate-50"
                 />
               )}
           </li>
