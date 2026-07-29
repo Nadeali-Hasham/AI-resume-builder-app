@@ -522,7 +522,18 @@ export interface ApiUserResumeUserResume extends Struct.CollectionTypeSchema {
     shareToken: Schema.Attribute.String & Schema.Attribute.Unique;
     skills: Schema.Attribute.Component<'skills.skills', true>;
     summary: Schema.Attribute.Text;
-    template: Schema.Attribute.Enumeration<['classic', 'modern', 'ats']> &
+    template: Schema.Attribute.Enumeration<
+      [
+        'classic',
+        'modern',
+        'ats',
+        'elegant',
+        'compact',
+        'executive',
+        'minimal',
+        'sidebar',
+      ]
+    > &
       Schema.Attribute.DefaultTo<'classic'>;
     themeColor: Schema.Attribute.String & Schema.Attribute.DefaultTo<'#0f766e'>;
     title: Schema.Attribute.String & Schema.Attribute.Required;

@@ -1,4 +1,5 @@
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
+import { isCenterAlign } from "@/lib/resumeTemplates";
 import {
   sectionHeadingClass,
   sectionHeadingStyle,
@@ -7,6 +8,7 @@ import {
 
 const ExperiencePreview = ({ resumeInfo, variant = "classic" }) => {
   const theme = resumeInfo?.themeColor || "#0f766e";
+  const center = isCenterAlign(variant);
 
   if (!resumeInfo?.experience || resumeInfo.experience.length === 0) {
     return (
@@ -19,7 +21,7 @@ const ExperiencePreview = ({ resumeInfo, variant = "classic" }) => {
         </h2>
         <p
           className={`text-gray-400 text-sm mt-2 ${
-            variant === "classic" ? "text-center" : "text-left"
+            center ? "text-center" : "text-left"
           }`}
         >
           No experience added yet

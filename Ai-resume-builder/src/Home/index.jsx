@@ -7,26 +7,15 @@ import { useUser } from "@clerk/clerk-react"
 import { ArrowRight } from "lucide-react"
 import { useEffect, useState } from "react"
 import { PAGE_SEO } from "@/lib/seo"
+import { RESUME_TEMPLATES } from "@/lib/resumeTemplates"
 import { useTilt3D } from "@/hooks/useTilt3D"
 import "./home.css"
 
-const TEMPLATES = [
-  {
-    id: "classic",
-    label: "Classic",
-    desc: "Centered and polished for most applications.",
-  },
-  {
-    id: "modern",
-    label: "Modern",
-    desc: "Sidebar accent for a sharper product look.",
-  },
-  {
-    id: "ats",
-    label: "ATS",
-    desc: "Plain structure that parses cleanly in applicant systems.",
-  },
-]
+const TEMPLATES = RESUME_TEMPLATES.map(({ id, label, desc }) => ({
+  id,
+  label,
+  desc,
+}))
 
 const Homepage = () => {
   const { isSignedIn } = useUser()

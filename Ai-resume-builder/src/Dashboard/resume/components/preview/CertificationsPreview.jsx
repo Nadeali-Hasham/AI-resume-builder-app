@@ -1,4 +1,5 @@
 import { toHref } from "@/lib/urlHelpers";
+import { isMonoTone } from "@/lib/resumeTemplates";
 import {
   sectionHeadingClass,
   sectionHeadingStyle,
@@ -21,8 +22,7 @@ const CertificationsPreview = ({ resumeInfo, variant = "classic" }) => {
   const items = resumeInfo?.certifications || [];
   if (!items.length) return null;
 
-  const linkStyle =
-    variant === "ats" ? { color: "#000" } : { color: theme };
+  const linkStyle = isMonoTone(variant) ? { color: "#000" } : { color: theme };
 
   return (
     <div className="mt-5 text-left">

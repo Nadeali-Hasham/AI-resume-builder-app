@@ -568,12 +568,15 @@ html.dark .home-hero__atmosphere {
 
 .home-tpl-tabs {
   margin: 1.75rem auto 1rem;
-  display: inline-flex;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 0.35rem;
   padding: 0.3rem;
-  border-radius: 999px;
+  border-radius: 1rem;
   border: 1px solid var(--home-line);
   background: #fff;
+  max-width: 100%;
 }
 
 .home-tpl-tab {
@@ -655,6 +658,53 @@ html.dark .home-hero__atmosphere {
   background: #0f172a;
   left: 10%;
   right: 45%;
+}
+
+.home-tpl-stage__preview--elegant::before {
+  background: var(--home-accent);
+  height: 3px;
+  top: 22%;
+  left: 12%;
+  right: 55%;
+  border-radius: 0;
+}
+
+.home-tpl-stage__preview--compact::before {
+  background: var(--home-accent);
+  height: 6px;
+  top: 10%;
+}
+
+.home-tpl-stage__preview--compact::after {
+  top: 28%;
+  height: 90px;
+}
+
+.home-tpl-stage__preview--executive {
+  background: linear-gradient(180deg, var(--home-accent) 0 36%, #fff 36%);
+}
+
+.home-tpl-stage__preview--executive::before {
+  background: rgba(255, 255, 255, 0.85);
+  top: 12%;
+}
+
+.home-tpl-stage__preview--minimal::before {
+  background: #94a3b8;
+  height: 2px;
+  top: 20%;
+  left: 14%;
+  right: 40%;
+}
+
+.home-tpl-stage__preview--sidebar {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--home-accent) 18%, #f8fafc) 34%, #fff 34%);
+}
+
+.home-tpl-stage__preview--sidebar::before {
+  left: 40%;
+  right: 10%;
 }
 
 .home-tpl-stage__copy h3 {

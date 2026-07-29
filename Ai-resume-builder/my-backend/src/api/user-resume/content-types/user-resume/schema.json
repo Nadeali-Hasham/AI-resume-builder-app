@@ -67,7 +67,16 @@
     },
     "template": {
       "type": "enumeration",
-      "enum": ["classic", "modern", "ats"],
+      "enum": [
+        "classic",
+        "modern",
+        "ats",
+        "elegant",
+        "compact",
+        "executive",
+        "minimal",
+        "sidebar"
+      ],
       "default": "classic"
     },
     "aiEnabled": {

@@ -5,17 +5,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ResumeInfoContext } from "@/context/ResumeInfoContext";
+import { RESUME_TEMPLATES } from "@/lib/resumeTemplates";
 import { LayoutTemplate } from "lucide-react";
 import { useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import GlobalApi from "../../../../Service/GlobalApi";
 import { toast } from "sonner";
-
-const TEMPLATES = [
-  { id: "classic", label: "Classic", desc: "Centered, clean" },
-  { id: "modern", label: "Modern", desc: "Sidebar accent" },
-  { id: "ats", label: "ATS", desc: "Plain & scannable" },
-];
 
 const TemplatePicker = () => {
   const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
@@ -43,24 +38,29 @@ const TemplatePicker = () => {
           <span className="hidden xs:inline">Template</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 bg-white p-3" align="start">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-          Layout
+      <PopoverContent
+        className="w-72 max-h-[70vh] overflow-y-auto border-[var(--app-border)] bg-[var(--app-surface)] p-3 text-[var(--app-ink)]"
+        align="start"
+      >
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--app-muted)]">
+          Layout ({RESUME_TEMPLATES.length})
         </p>
         <div className="space-y-2">
-          {TEMPLATES.map((t) => (
+          {RESUME_TEMPLATES.map((t) => (
             <button
               key={t.id}
               type="button"
               onClick={() => select(t.id)}
               className={`w-full rounded-lg border p-2.5 text-left cursor-pointer transition ${
                 current === t.id
-                  ? "border-teal-500 bg-teal-50"
-                  : "border-slate-200 hover:border-slate-300"
+                  ? "border-teal-500 bg-teal-50 dark:bg-teal-950/40"
+                  : "border-[var(--app-border)] hover:border-teal-400"
               }`}
             >
-              <span className="block text-sm font-semibold text-slate-900">{t.label}</span>
-              <span className="text-xs text-slate-500">{t.desc}</span>
+              <span className="block text-sm font-semibold text-[var(--app-ink)]">
+                {t.label}
+              </span>
+              <span className="text-xs text-[var(--app-muted)]">{t.desc}</span>
             </button>
           ))}
         </div>
