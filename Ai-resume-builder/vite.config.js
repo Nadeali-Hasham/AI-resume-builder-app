@@ -22,6 +22,7 @@ function sitemapPlugin(baseUrl) {
       const urls = [
         { loc: `${origin}/`, priority: '1.0', changefreq: 'weekly' },
         { loc: `${origin}/terms`, priority: '0.5', changefreq: 'monthly' },
+        { loc: `${origin}/privacy`, priority: '0.5', changefreq: 'monthly' },
       ]
 
       const body = urls
@@ -48,6 +49,7 @@ ${body}
         `User-agent: *
 Allow: /
 Allow: /terms
+Allow: /privacy
 
 Disallow: /dashboard
 Disallow: /dashboard/

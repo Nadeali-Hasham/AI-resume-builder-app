@@ -315,10 +315,17 @@ html.dark .app-preview-paper {
   border-radius: 0.35rem;
 }
 
-/* Resume sheet stays light for print/PDF fidelity */
+/* Resume sheet stays light for print/PDF fidelity (ignore app dark ink) */
 .resume-preview-root {
   box-sizing: border-box;
   width: 100%;
+  color: #0f172a;
+  background: #fff;
+  --app-ink: #0f172a;
+  --app-muted: #64748b;
+}
+
+html.dark .resume-preview-root {
   color: #0f172a;
   background: #fff;
 }

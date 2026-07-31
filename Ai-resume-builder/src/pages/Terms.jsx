@@ -141,7 +141,14 @@ const Terms = () => {
               <p className="text-[var(--app-muted)]">
                 Questions about these Terms can be sent through the contact
                 method listed on the Service or via your account support channel
-                once published.
+                once published. See also our{" "}
+                <Link
+                  to="/privacy"
+                  className="font-medium text-teal-700 underline-offset-2 hover:underline dark:text-teal-300"
+                >
+                  Privacy Policy
+                </Link>
+                .
               </p>
             </section>
           </div>

@@ -218,8 +218,12 @@ const PersonalPreviewDetail = ({ resumeInfo, variant = "classic" }) => {
       <h2 style={{ color: theme }} className="break-words text-center text-2xl font-bold">
         {resumeInfo?.firstName} {resumeInfo?.lastName}
       </h2>
-      <h2 className="break-words text-center text-xl">{resumeInfo?.jobTitle}</h2>
-      <h2 className="break-words text-center text-sm font-normal">{resumeInfo?.address}</h2>
+      <h2 className="break-words text-center text-xl text-slate-800">
+        {resumeInfo?.jobTitle}
+      </h2>
+      <h2 className="break-words text-center text-sm font-normal text-slate-600">
+        {resumeInfo?.address}
+      </h2>
       <div className="mt-1 flex flex-col items-center gap-0.5 text-sm" style={{ color: theme }}>
         {resumeInfo?.phone ? <span className="break-all text-center">{resumeInfo.phone}</span> : null}
         {resumeInfo?.email ? <span className="break-all text-center">{resumeInfo.email}</span> : null}

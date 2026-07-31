@@ -590,6 +590,7 @@ export default factories.createCoreController(
         return ctx.badRequest('No file uploaded. Use field name "files".');
       }
 
+      const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
       const files = Array.isArray(file) ? file : [file];
       const first = files[0] as {
         mimetype?: string | null;
@@ -598,10 +599,15 @@ export default factories.createCoreController(
         originalFilename?: string | null;
         name?: string;
         filepath?: string;
+        size?: number;
       };
       const mime = String(first?.mimetype || first?.mime || first?.type || '');
       if (!mime.startsWith('image/') && mime !== 'application/pdf') {
         return ctx.badRequest('Only images or PDF are allowed');
+      }
+      const size = Number(first?.size || 0);
+      if (size > MAX_UPLOAD_BYTES) {
+        return ctx.badRequest('File too large. Maximum size is 5MB');
       }
 
       try {

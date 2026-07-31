@@ -41,13 +41,15 @@ const ExperiencePreview = ({ resumeInfo, variant = "classic" }) => {
       {resumeInfo.experience.map((exp, index) => (
         <div key={index} className="py-2">
           <h3
-            className="font-semibold"
+            className="font-semibold text-slate-900"
             style={subHeadingStyle(variant, theme)}
           >
             {exp.title || "Untitled"}
           </h3>
-          <p className="text-sm font-medium">{exp.companyName || "Company Name"}</p>
-          <div className="flex justify-between text-sm gap-2">
+          <p className="text-sm font-medium text-slate-700">
+            {exp.companyName || "Company Name"}
+          </p>
+          <div className="flex justify-between text-sm gap-2 text-slate-600">
             <p>
               {exp.city || ""}, {exp.state || ""}
             </p>

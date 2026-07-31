@@ -837,8 +837,80 @@ html.dark .home-tpl {
   color: var(--home-ink);
 }
 
+/* Primary CTA: never use light --home-ink as button fill */
+html.dark .home-hero__btn-primary {
+  background: var(--home-accent) !important;
+  color: #fff !important;
+}
+
+html.dark .home-hero__btn-primary:hover {
+  background: #2dd4bf !important;
+  color: #0f172a !important;
+}
+
+html.dark .home-hero__btn-secondary {
+  background: var(--home-paper) !important;
+  border-color: var(--home-line) !important;
+  color: var(--home-ink) !important;
+}
+
+/* Layout tabs + stage: dark surfaces, readable labels */
+html.dark .home-tpl-tabs {
+  background: var(--home-paper);
+  border-color: var(--home-line);
+}
+
+html.dark .home-tpl-tab {
+  color: var(--home-muted);
+}
+
+html.dark .home-tpl-tab:hover {
+  color: var(--home-ink);
+  background: rgba(148, 163, 184, 0.12);
+}
+
+html.dark .home-tpl-tab.is-active {
+  background: var(--home-accent);
+  color: #0f172a;
+}
+
+html.dark .home-tpl-stage {
+  background: var(--home-paper);
+  border-color: var(--home-line);
+  color: var(--home-ink);
+}
+
+html.dark .home-tpl-stage__copy h3 {
+  color: var(--home-ink);
+}
+
+html.dark .home-tpl-stage__copy p {
+  color: var(--home-muted);
+}
+
+html.dark .home-tpl-stage__preview {
+  background: linear-gradient(180deg, #0f172a, #1e293b);
+  border-color: var(--home-line);
+}
+
+/* Keep demo resume paper light; don't inherit page dark --home-ink */
 html.dark .home-resume-sheet--main,
 html.dark .home-resume-sheet--back {
+  --home-ink: #0f172a;
+  --home-muted: #475569;
+  --home-accent: #0f766e;
+  --home-line: #e2e8f0;
   background: #fff;
   color: #0f172a;
+  border-color: #e2e8f0;
+}
+
+html.dark .home-resume-sheet__role,
+html.dark .home-resume-sheet__job strong {
+  color: #0f172a;
+}
+
+html.dark .home-resume-sheet__meta,
+html.dark .home-resume-sheet__job em {
+  color: #64748b;
 }

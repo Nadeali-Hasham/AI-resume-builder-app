@@ -25,6 +25,8 @@ services:
         condition: service_healthy
     ports:
       - "${STRAPI_PORT:-1337}:1337"
+    volumes:
+      - strapi_uploads:/opt/app/public/uploads
     environment:
       HOST: 0.0.0.0
       PORT: 1337
@@ -52,3 +54,4 @@ services:
 
 volumes:
   strapi_pg_data:
+  strapi_uploads:

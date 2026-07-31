@@ -44,6 +44,12 @@ export const PAGE_SEO = {
       "Terms and Conditions for AI Resume Builder by Nade Ali Hasham — accounts, AI features, sharing, and acceptable use.",
     path: "/terms",
   },
+  privacy: {
+    title: "Privacy Policy | AI Resume Builder",
+    description:
+      "Privacy Policy for AI Resume Builder by Nade Ali Hasham — how we collect, use, and share account and resume data.",
+    path: "/privacy",
+  },
   signIn: {
     title: "Sign In | AI Resume Builder",
     description: "Sign in to AI Resume Builder to create and manage your resumes.",

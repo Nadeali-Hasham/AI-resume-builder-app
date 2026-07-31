@@ -13,6 +13,7 @@ import EditResume from './Dashboard/resume/[resumeId]/edit'
 import ViewResume from './my-resume/[resumeId]/view'
 import NotFound from './pages/NotFound'
 import Terms from './pages/Terms'
+import Privacy from './pages/Privacy'
 import ErrorBoundary from './components/ErrorBoundary'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
@@ -63,6 +64,11 @@ const router = createBrowserRouter([
   {
     path: '/terms',
     element: <Terms />,
+    errorElement: <NotFound />,
+  },
+  {
+    path: '/privacy',
+    element: <Privacy />,
     errorElement: <NotFound />,
   },
   {

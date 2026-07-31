@@ -18,12 +18,20 @@ const Footer = () => {
             Nade Ali Hasham
           </span>
         </p>
-        <Link
-          to="/terms"
-          className="text-xs font-medium text-teal-700 underline-offset-2 hover:underline dark:text-teal-300 sm:text-sm"
-        >
-          Terms and Conditions
-        </Link>
+        <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+          <Link
+            to="/terms"
+            className="text-xs font-medium text-teal-700 underline-offset-2 hover:underline dark:text-teal-300 sm:text-sm"
+          >
+            Terms and Conditions
+          </Link>
+          <Link
+            to="/privacy"
+            className="text-xs font-medium text-teal-700 underline-offset-2 hover:underline dark:text-teal-300 sm:text-sm"
+          >
+            Privacy Policy
+          </Link>
+        </nav>
       </div>
     </footer>
   );
